@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDAS2_SEM", "BDAS2_SEM\BDAS2_SEM.csproj", "{30454940-E596-481C-BE35-FDBDD7816DFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30454940-E596-481C-BE35-FDBDD7816DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30454940-E596-481C-BE35-FDBDD7816DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30454940-E596-481C-BE35-FDBDD7816DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30454940-E596-481C-BE35-FDBDD7816DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9BC1993B-02F2-4CEE-A18E-6609B71D0EA6}
+	EndGlobalSection
+EndGlobal
