@@ -1,9 +1,11 @@
 ﻿<Application x:Class="BDAS2_SEM.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:BDAS2_SEM"
-             StartupUri="MainWindow.xaml">
+             xmlns:converters="clr-namespace:BDAS2_SEM.Converters"
+             StartupUri="View/AuthWindow.xaml">
     <Application.Resources>
-         
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <converters:BoolToEyeConverter x:Key="BoolToEyeConverter"/>
     </Application.Resources>
 </Application>
