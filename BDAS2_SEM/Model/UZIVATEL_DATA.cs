@@ -16,6 +16,8 @@ namespace BDAS2_SEM.Model
         private string email;
         private string heslo;
         private Role role;
+        public int? pacientId { get; set; }
+        public int? zamestnanecId { get; set; }
 
         public int Id
         {

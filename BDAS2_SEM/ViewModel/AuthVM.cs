@@ -145,7 +145,7 @@ namespace BDAS2_SEM.ViewModel
                 };
 
                 // Перевіряємо, чи користувач з таким email вже існує
-                string checkQuery = "SELECT COUNT(*) FROM USERS WHERE EMAIL = :email";
+                string checkQuery = "SELECT COUNT(*) FROM UZIVATEL_DATA WHERE EMAIL = :email";
                 OracleParameter emailParam = new OracleParameter("email", newUser.Email);
 
                 DataTable existingUser = dataAccess.ExecuteQuery(checkQuery, emailParam);

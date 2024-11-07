@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace BDAS2_SEM.Model.Enum
 {
     public enum Role
     {
-        NEOVERENY = 0,    
-        PACIENT = 1,      
-        ZAMESTNANEC = 2,  
-        ADMIN = 3         
+        [Description("neovereny")]
+        NEOVERENY = 0,
+
+        [Description("pacient")]
+        PACIENT = 1,
+
+        [Description("zamestnanec")]
+        ZAMESTNANEC = 2,
+
+        [Description("admin")]
+        ADMIN = 3
     }
 
     public static class RoleService
@@ -26,6 +31,17 @@ namespace BDAS2_SEM.Model.Enum
             {
                 throw new ArgumentException("Invalid role ID");
             }
+        }
+
+        public static string GetRoleName(Role role)
+        {
+            FieldInfo fi = role.GetType().GetField(role.ToString());
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (attributes != null && attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return role.ToString().ToLower();
         }
     }
 }

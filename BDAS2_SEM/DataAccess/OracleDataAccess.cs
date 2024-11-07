@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Configuration;
 using BDAS2_SEM.Model;
+using BDAS2_SEM.Model.Enum;
 
 namespace BDAS2_SEM.DataAccess
 {
@@ -68,14 +69,23 @@ namespace BDAS2_SEM.DataAccess
         // Метод для вставки користувача
         public int InsertUzivatel(UZIVATEL_DATA uzivatel)
         {
-            string insertQuery = "INSERT INTO UZIVATEL_DATA (EMAIL, PASSWORD) VALUES (:email, :password)";
+            string insertQuery = @"
+        INSERT INTO UZIVATEL_DATA 
+            (id_user_data, email, heslo, role, pacient_id_c, zamestnanec_id_c) 
+        VALUES 
+            (user_data_seq.NEXTVAL, :email, :password, :role, :pacient_id, :zamestnanec_id)";
+
             OracleParameter[] parameters = new OracleParameter[]
             {
                 new OracleParameter("email", uzivatel.Email),
-                new OracleParameter("password", uzivatel.Heslo)
+                new OracleParameter("password", uzivatel.Heslo),
+                new OracleParameter("role", RoleService.GetRoleName(Role.NEOVERENY)),
+                new OracleParameter("pacient_id", (object)uzivatel.pacientId ?? DBNull.Value),
+                new OracleParameter("zamestnanec_id", (object)uzivatel.zamestnanecId ?? DBNull.Value)
             };
 
             return ExecuteNonQuery(insertQuery, parameters);
         }
+
     }
 }
