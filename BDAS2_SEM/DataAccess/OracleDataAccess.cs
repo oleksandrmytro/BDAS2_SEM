@@ -73,12 +73,12 @@ namespace BDAS2_SEM.DataAccess
         INSERT INTO UZIVATEL_DATA 
             (id_user_data, email, heslo, role, pacient_id_c, zamestnanec_id_c) 
         VALUES 
-            (user_data_seq.NEXTVAL, :email, :password, :role, :pacient_id, :zamestnanec_id)";
+            (user_data_seq.NEXTVAL, :email, :heslo, :role, :pacient_id, :zamestnanec_id)";
 
             OracleParameter[] parameters = new OracleParameter[]
             {
                 new OracleParameter("email", uzivatel.Email),
-                new OracleParameter("password", uzivatel.Heslo),
+                new OracleParameter("heslo", uzivatel.Heslo),
                 new OracleParameter("role", RoleService.GetRoleName(Role.NEOVERENY)),
                 new OracleParameter("pacient_id", (object)uzivatel.pacientId ?? DBNull.Value),
                 new OracleParameter("zamestnanec_id", (object)uzivatel.zamestnanecId ?? DBNull.Value)

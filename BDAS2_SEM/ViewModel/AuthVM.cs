@@ -180,11 +180,11 @@ namespace BDAS2_SEM.ViewModel
         {
             try
             {
-                string query = "SELECT * FROM UZIVATEL_DATA WHERE EMAIL = :email AND PASSWORD = :password";
+                string query = "SELECT * FROM UZIVATEL_DATA WHERE EMAIL = :email AND heslo = :heslo";
                 OracleParameter[] parameters = new OracleParameter[]
                 {
                     new OracleParameter("email", this.Email),
-                    new OracleParameter("password", this.Heslo) // Пароль зберігається як є
+                    new OracleParameter("heslo", this.Heslo) // Пароль зберігається як є
                 };
 
                 DataTable userTable = dataAccess.ExecuteQuery(query, parameters);
