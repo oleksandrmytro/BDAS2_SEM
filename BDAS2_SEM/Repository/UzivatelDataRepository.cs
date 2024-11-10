@@ -27,9 +27,9 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID AS Id, 
+                        ID_UZIVATEL_DATA AS Id, 
                         EMAIL AS Email, 
-                        ROLE AS RoleUzivatel 
+                        ROLE_ID_ROLE AS RoleUzivatel 
                     FROM 
                         UZIVATEL_DATA 
                     WHERE 
@@ -41,19 +41,20 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<int> RegisterNewUserData(string email, string heslo, Role role)
+        public async Task<int> RegisterNewUserData(string email, string heslo)
         {
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    INSERT INTO UZIVATEL_DATA (EMAIL, HESLO, ROLE) 
-                    VALUES (:Email, :Heslo, :Role) 
-                    RETURNING ID INTO :Id";
+            INSERT INTO UZIVATEL_DATA 
+                (ID_UZIVATEL_DATA, EMAIL, HESLO, PACIENT_ID_C, ZAMESTNANEC_ID_C, ROLE_ID_ROLE) 
+            VALUES 
+                (user_data_seq.NEXTVAL, :Email, :Heslo, NULL, NULL, 0) 
+            RETURNING ID_UZIVATEL_DATA INTO :Id";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("Email", email, DbType.String);
                 parameters.Add("Heslo", heslo, DbType.String);
-                parameters.Add("Role", (int)role, DbType.Int32);
                 parameters.Add("Id", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 try
@@ -61,7 +62,7 @@ namespace BDAS2_SEM.Repository
                     await db.ExecuteAsync(sql, parameters);
                     return parameters.Get<int>("Id");
                 }
-                catch (Oracle.ManagedDataAccess.Client.OracleException ex) when (ex.Number == 1) // Unique constraint violation
+                catch (Oracle.ManagedDataAccess.Client.OracleException ex) when (ex.Number == 1)
                 {
                     throw new Exception("User already exists.");
                 }
@@ -119,5 +120,24 @@ namespace BDAS2_SEM.Repository
                 return await db.QueryFirstOrDefaultAsync<UZIVATEL_DATA>(sql, new { Id = id });
             }
         }
+
+        public async Task<UZIVATEL_DATA> GetUserByEmailAsync(string email)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+                    SELECT 
+                        ID_UZIVATEL_DATA AS Id, 
+                        EMAIL AS Email, 
+                        ROLE_ID_ROLE AS RoleUzivatel 
+                    FROM 
+                        UZIVATEL_DATA 
+                    WHERE 
+                        LOWER(EMAIL) = LOWER(:Email)";
+
+                return await db.QueryFirstOrDefaultAsync<UZIVATEL_DATA>(sql, new { Email = email.Trim() });
+            }
+        }
+
     }
 }

@@ -10,9 +10,10 @@ namespace BDAS2_SEM.View
     /// </summary>
     public partial class AuthWindow : Window
     {
-        public AuthWindow()
+        public AuthWindow(AuthVM viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

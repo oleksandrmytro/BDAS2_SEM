@@ -1,11 +1,10 @@
-﻿using BDAS2_SEM.Commands;
-using BDAS2_SEM.DataAccess;
-using BDAS2_SEM.Model;
-using Oracle.ManagedDataAccess.Client;
-using System;
+﻿// ViewModel/AuthVM.cs
+using BDAS2_SEM.Commands;
+using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.Services.Interfaces;
 using System.ComponentModel;
-using System.Data;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace BDAS2_SEM.ViewModel
@@ -18,14 +17,14 @@ namespace BDAS2_SEM.ViewModel
         private string errorMessage;
         private bool isRegistering;
 
-        private readonly OracleDataAccess dataAccess;
+        private readonly IAuthenticationService _authenticationService;
 
-        public AuthVM()
+        public AuthVM(IAuthenticationService authenticationService)
         {
-            dataAccess = new OracleDataAccess();
-            IsRegistering = false; // Починаємо з виду входу
-            ToggleRegisterCommand = new RelayCommand(ToggleRegister);
-            SubmitCommand = new RelayCommand(Submit, CanSubmit);
+            _authenticationService = authenticationService;
+            IsRegistering = false; // Start with login view
+            ToggleRegisterCommand = new RelayCommand((o) => ToggleRegister(o));
+            SubmitCommand = new RelayCommand(async (o) => await SubmitAsync(), CanSubmit);
         }
 
         public string Email
@@ -93,7 +92,7 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // Команди
+        // Commands
         public RelayCommand ToggleRegisterCommand { get; }
         public RelayCommand SubmitCommand { get; }
 
@@ -119,90 +118,56 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        private void Submit(object parameter)
+        private async Task SubmitAsync()
         {
             ErrorMessage = string.Empty;
 
+            if (!IsValidEmail(Email))
+            {
+                ErrorMessage = "Invalid email format.";
+                return;
+            }
+
             if (IsRegistering)
             {
-                Register();
-            }
-            else
-            {
-                Login();
-            }
-        }
-
-        private void Register()
-        {
-            try
-            {
-                // Створюємо об'єкт UZIVATEL_DATA
-                UZIVATEL_DATA newUser = new UZIVATEL_DATA
+                bool success = await _authenticationService.RegisterUserAsync(Email, Heslo);
+                if (success)
                 {
-                    Email = this.Email,
-                    Heslo = this.Heslo // Зберігаємо пароль як є
-                };
-
-                // Перевіряємо, чи користувач з таким email вже існує
-                string checkQuery = "SELECT COUNT(*) FROM UZIVATEL_DATA WHERE EMAIL = :email";
-                OracleParameter emailParam = new OracleParameter("email", newUser.Email);
-
-                DataTable existingUser = dataAccess.ExecuteQuery(checkQuery, emailParam);
-
-                if (existingUser.Rows.Count > 0 && Convert.ToInt32(existingUser.Rows[0][0]) > 0)
-                {
-                    ErrorMessage = "Користувач з таким email вже існує.";
-                    return;
-                }
-
-                // Вставляємо нового користувача у базу даних
-                int rowsInserted = dataAccess.InsertUzivatel(newUser);
-
-                if (rowsInserted > 0)
-                {
-                    ErrorMessage = "Реєстрація успішна!";
+                    ErrorMessage = "Registration successful!";
                     ClearFields();
                     IsRegistering = false;
                 }
                 else
                 {
-                    ErrorMessage = "Помилка при реєстрації.";
+                    var existingUser = await _authenticationService.CheckUserExistsAsync(Email);
+                    if (existingUser)
+                    {
+                        ErrorMessage = "A user with this email already exists.";
+                    }
+                    else
+                    {
+                        ErrorMessage = "An error occurred during registration. Please try again.";
+                    }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                ErrorMessage = "Помилка при реєстрації: " + ex.Message;
-            }
-        }
-
-        private void Login()
-        {
-            try
-            {
-                string query = "SELECT * FROM UZIVATEL_DATA WHERE EMAIL = :email AND heslo = :heslo";
-                OracleParameter[] parameters = new OracleParameter[]
+                bool success = await _authenticationService.LoginAsync(Email, Heslo);
+                if (success)
                 {
-                    new OracleParameter("email", this.Email),
-                    new OracleParameter("heslo", this.Heslo) // Пароль зберігається як є
-                };
-
-                DataTable userTable = dataAccess.ExecuteQuery(query, parameters);
-
-                if (userTable.Rows.Count > 0)
-                {
-                    ErrorMessage = "Вхід успішний!";
-                    // Додаткова логіка після успішного входу
+                    ErrorMessage = "Login successful!";
+                    // Additional logic after successful login, e.g., opening the main window
                 }
                 else
                 {
-                    ErrorMessage = "Невірний email або пароль.";
+                    ErrorMessage = "Invalid email or password.";
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorMessage = "Помилка при спробі входу: " + ex.Message;
-            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            return email.Contains("@");
         }
 
         private void ClearFields()
@@ -213,13 +178,13 @@ namespace BDAS2_SEM.ViewModel
             ErrorMessage = string.Empty;
         }
 
-        // Реалізація INotifyPropertyChanged
+        // Implementation of INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-            // Викликаємо RaiseCanExecuteChanged при зміні властивостей
+            // Invoke RaiseCanExecuteChanged when properties change
             if (propertyName == nameof(Email) ||
                 propertyName == nameof(Heslo) ||
                 propertyName == nameof(ConfirmPassword) ||

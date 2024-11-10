@@ -4,21 +4,21 @@ using Dapper;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 
-public class LekDiagnozaFKRepository : ILekDiagnozaFKRepository
+public class LekDiagnozaRepository : ILekDiagnozaRepository
 {
     private readonly string connectionString;
 
-    public LekDiagnozaFKRepository(string connectionString)
+    public LekDiagnozaRepository(string connectionString)
     {
         this.connectionString = connectionString;
     }
 
-    public async Task AddLekDiagnoza(LEK_DIAGNOZA_FK lekDiagnoza)
+    public async Task AddLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
     {
         using (var db = new OracleConnection(this.connectionString))
         {
             string sql = @"
-                    INSERT INTO LEK_DIAGNOZA_FK (LEK_ID, DIAGNOZA_ID) 
+                    INSERT INTO LEK_DIAGNOZA (LEK_ID, DIAGNOZA_ID) 
                     VALUES (:LekId, :DiagnozaId)";
 
             var parameters = new DynamicParameters();
@@ -29,12 +29,12 @@ public class LekDiagnozaFKRepository : ILekDiagnozaFKRepository
         }
     }
 
-    public async Task UpdateLekDiagnoza(LEK_DIAGNOZA_FK lekDiagnoza)
+    public async Task UpdateLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
     {
         using (var db = new OracleConnection(this.connectionString))
         {
             string sql = @"
-                    UPDATE LEK_DIAGNOZA_FK 
+                    UPDATE LEK_DIAGNOZA 
                     SET LEK_ID = :LekId, DIAGNOZA_ID = :DiagnozaId 
                     WHERE LEK_ID = :OldLekId AND DIAGNOZA_ID = :OldDiagnozaId";
 
@@ -48,30 +48,30 @@ public class LekDiagnozaFKRepository : ILekDiagnozaFKRepository
         }
     }
 
-    public async Task<LEK_DIAGNOZA_FK> GetLekDiagnoza(int diagnozaId, int lekId)
+    public async Task<LEK_DIAGNOZA> GetLekDiagnoza(int diagnozaId, int lekId)
     {
         using (var db = new OracleConnection(this.connectionString))
         {
             string sql = @"
                     SELECT LEK_ID AS LekId, 
                            DIAGNOZA_ID AS DiagnozaId 
-                    FROM LEK_DIAGNOZA_FK 
+                    FROM LEK_DIAGNOZA 
                     WHERE DIAGNOZA_ID = :DiagnozaId AND LEK_ID = :LekId";
 
-            return await db.QueryFirstOrDefaultAsync<LEK_DIAGNOZA_FK>(sql, new { DiagnozaId = diagnozaId, LekId = lekId });
+            return await db.QueryFirstOrDefaultAsync<LEK_DIAGNOZA>(sql, new { DiagnozaId = diagnozaId, LekId = lekId });
         }
     }
 
-    public async Task<IEnumerable<LEK_DIAGNOZA_FK>> GetAllLekDiagnoza()
+    public async Task<IEnumerable<LEK_DIAGNOZA>> GetAllLekDiagnoza()
     {
         using (var db = new OracleConnection(this.connectionString))
         {
             string sql = @"
                     SELECT LEK_ID AS LekId, 
                            DIAGNOZA_ID AS DiagnozaId 
-                    FROM LEK_DIAGNOZA_FK";
+                    FROM LEK_DIAGNOZA";
 
-            return await db.QueryAsync<LEK_DIAGNOZA_FK>(sql);
+            return await db.QueryAsync<LEK_DIAGNOZA>(sql);
         }
     }
 
@@ -80,7 +80,7 @@ public class LekDiagnozaFKRepository : ILekDiagnozaFKRepository
         using (var db = new OracleConnection(this.connectionString))
         {
             string sql = @"
-                    DELETE FROM LEK_DIAGNOZA_FK 
+                    DELETE FROM LEK_DIAGNOZA 
                     WHERE DIAGNOZA_ID = :DiagnozaId AND LEK_ID = :LekId";
 
             var parameters = new

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BDAS2_SEM.Model
 {
-    public class LEK_DIAGNOZA_FK : INotifyPropertyChanged
+    public class LEK_DIAGNOZA : INotifyPropertyChanged
     {
         private int diagnozaId;
         private int lekId;

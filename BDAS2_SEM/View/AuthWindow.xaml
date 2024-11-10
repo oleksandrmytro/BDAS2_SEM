@@ -10,9 +10,9 @@
         WindowStartupLocation="CenterScreen"
         Background="#f0f4f7">
 
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <viewModel:AuthVM/>
-    </Window.DataContext>
+    </Window.DataContext>-->
 
     <!-- Styles and templates in a single resource block -->
     <Window.Resources>
