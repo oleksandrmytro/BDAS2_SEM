@@ -1,0 +1,89 @@
+﻿<!-- View/NewUsersView.xaml -->
+<UserControl x:Class="BDAS2_SEM.View.NewUsersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:BDAS2_SEM.ViewModel"
+             xmlns:converters="clr-namespace:BDAS2_SEM.Converters"
+             xmlns:local="clr-namespace:BDAS2_SEM.View">
+    <UserControl.Resources>
+
+        <!-- Retain other styles if necessary -->
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#f9f9f9"/>
+            <Setter Property="BorderBrush" Value="#e0e0e0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel Margin="10">
+            <!-- Header Row -->
+            <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Email" FontWeight="Bold" FontSize="14"/>
+                    <TextBlock Grid.Column="1" Text="Role" FontWeight="Bold" FontSize="14"/>
+                    <TextBlock Grid.Column="2" Text="Action" FontWeight="Bold" FontSize="14"/>
+                </Grid>
+            </Border>
+
+            <!-- ListView -->
+            <ListView ItemsSource="{Binding NewUsers}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Email}" VerticalAlignment="Center" FontSize="14"/>
+
+                            <ComboBox Grid.Column="1"
+                                      SelectedItem="{Binding RoleUzivatel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding DataContext.AvailableRoles, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      SelectedValuePath="."
+                                      VerticalAlignment="Center"
+                                      FontSize="14">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ., Converter={StaticResource EnumDescriptionConverter}}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Button Grid.Column="2" Content="Assign Role" 
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Command="{Binding DataContext.AssignRoleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                    CommandParameter="{Binding}" 
+                                    Margin="10,0,0,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</UserControl>

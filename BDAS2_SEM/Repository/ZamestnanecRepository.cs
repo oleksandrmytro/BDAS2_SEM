@@ -26,9 +26,9 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     INSERT INTO ZAMESTNANEC 
-                        (Jmeno, Prijmeni, Telefon, NadrazenyZamestnanecId, AdresaId, PoziceId, UserDataId) 
+                        (ID_ZAMESTNANEC, Jmeno, Prijmeni, Telefon, ZAMESTNANEC_ID_ZAMESTNANEC, ADRESA_ID_ADRESA, POZICE_ID_POZICE, UZIVATEL_DATA_ID_UZIVATEL_DATA) 
                     VALUES 
-                        (:Jmeno, :Prijmeni, :Telefon, :NadrazenyZamestnanecId, :AdresaId, :PoziceId, :UserDataId) 
+                        (ZAMESTNANEC_SEQ.NEXTVAL, :Jmeno, :Prijmeni, :Telefon, :NadrazenyZamestnanecId, :AdresaId, :PoziceId, :UserDataId) 
                     RETURNING ID_ZAMESTNANEC INTO :IdZamestnanec";
 
                 var parameters = new DynamicParameters();
@@ -111,10 +111,10 @@ namespace BDAS2_SEM.Repository
                         Jmeno AS Jmeno, 
                         Prijmeni AS Prijmeni, 
                         Telefon AS Telefon, 
-                        NadrazenyZamestnanecId AS NadrazenyZamestnanecId, 
-                        AdresaId AS AdresaId, 
-                        PoziceId AS PoziceId, 
-                        UserDataId AS UserDataId 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS NadrazenyZamestnanecId, 
+                        ADRESA_ID_ADRESA AS AdresaId, 
+                        POZICE_ID_POZICE AS PoziceId, 
+                        UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId 
                     FROM 
                         ZAMESTNANEC";
 

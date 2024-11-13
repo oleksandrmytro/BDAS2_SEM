@@ -1,0 +1,77 @@
+﻿<Window x:Class="BDAS2_SEM.View.DoctorsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModel="clr-namespace:BDAS2_SEM.ViewModel"
+        Title="Doctors Dashboard" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Side Navigation Panel -->
+        <ListBox Grid.Column="0" 
+                 SelectedItem="{Binding SelectedTab}" 
+                 ItemsSource="{Binding Tabs}"
+                 BorderThickness="0"
+                 Background="#2c3e50"
+                 ItemContainerStyle="{StaticResource TabListBoxItemStyle}"
+                 ItemTemplate="{StaticResource TabHeaderTemplate}" />
+
+        <!-- Main Content -->
+        <Grid Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <DockPanel Margin="0,0,0,10">
+                <TextBlock Text="Hello Doctor 👋" FontSize="24" FontWeight="Bold" DockPanel.Dock="Left"/>
+                <TextBox Width="200" Height="30" Text="{Binding SearchQuery}" DockPanel.Dock="Right" 
+                         VerticalAlignment="Center" Margin="0,0,10,0"/>
+            </DockPanel>
+
+            <!-- Metrics Cards -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,10">
+                <Border Background="#ecf0f1" Padding="20" Margin="0,0,10,0" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Total Patients" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalPatients}" FontSize="24"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#ecf0f1" Padding="20" Margin="0,0,10,0" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Appointments Today" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding AppointmentsToday}" FontSize="24"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#ecf0f1" Padding="20" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Active Doctors" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding ActiveDoctors}" FontSize="24"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Patients Section -->
+            <TextBlock Text="My Patients" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" Grid.Row="1"/>
+
+            <!-- Patients DataGrid -->
+            <DataGrid ItemsSource="{Binding Patients}" AutoGenerateColumns="False" Grid.Row="2" CanUserAddRows="False" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding IdPacient}" />
+                    <DataGridTextColumn Header="First Name" Binding="{Binding Jmeno}" />
+                    <DataGridTextColumn Header="Last Name" Binding="{Binding Prijmeni}" />
+                    <DataGridTextColumn Header="Phone" Binding="{Binding Telefon}" />
+                    <DataGridTextColumn Header="Date of Birth" Binding="{Binding DatumNarozeni, StringFormat=\{0:dd/MM/yyyy\}}" />
+                    <DataGridTextColumn Header="Gender" Binding="{Binding Pohlavi}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

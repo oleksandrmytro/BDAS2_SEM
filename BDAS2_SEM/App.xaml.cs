@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Data;
 using System.Windows;
 using BDAS2_SEM.Services.Interfaces;
+using BDAS2_SEM.Services;
 
 namespace BDAS2_SEM
 {
@@ -63,15 +64,25 @@ namespace BDAS2_SEM
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<IWindowService, WindowService>();
             // Add other services if needed
 
             // Register ViewModels
             services.AddTransient<AuthVM>();
+            services.AddTransient<DoctorsVM>();
+            services.AddTransient<AdminVM>();
+            services.AddTransient<NewUsersVM>();
+            services.AddTransient<AddAddressVM>();
+            services.AddTransient<NewEmployeeVM>();
             // Register other ViewModels if needed
 
             // Register Views
             services.AddTransient<AuthWindow>();
-            services.AddTransient<MainWindow>();
+            services.AddTransient<DoctorsWindow>();
+            services.AddTransient<AdminWindow>();
+            services.AddTransient<NewUsersView>();
+            services.AddSingleton<NewEmployeeWindow>();
+            services.AddSingleton<AddAddressWindow>();
             // Register other Views if needed
 
         }

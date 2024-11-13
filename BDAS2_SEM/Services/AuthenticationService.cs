@@ -44,17 +44,13 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<bool> LoginAsync(string email, string password)
+        public async Task<UZIVATEL_DATA> LoginAsync(string email, string password)
         {
             try
             {
                 var user = await _uzivatelRepository.CheckCredentials(email, HashPassword(password));
-                if (user != null)
-                {
-                    return true;
-                }
 
-                return false;
+                return user;
             }
             catch (Exception)
             {

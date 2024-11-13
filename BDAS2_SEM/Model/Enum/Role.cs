@@ -7,16 +7,16 @@ namespace BDAS2_SEM.Model.Enum
     public enum Role
     {
         [Description("neovereny")]
-        NEOVERENY = 0,
+        NEOVERENY = 1,
 
         [Description("pacient")]
-        PACIENT = 1,
+        PACIENT = 2,
 
         [Description("zamestnanec")]
-        ZAMESTNANEC = 2,
+        ZAMESTNANEC = 3,
 
         [Description("admin")]
-        ADMIN = 3
+        ADMIN = 4
     }
 
     public static class RoleService

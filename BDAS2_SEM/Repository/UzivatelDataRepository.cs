@@ -49,7 +49,7 @@ namespace BDAS2_SEM.Repository
             INSERT INTO UZIVATEL_DATA 
                 (ID_UZIVATEL_DATA, EMAIL, HESLO, PACIENT_ID_C, ZAMESTNANEC_ID_C, ROLE_ID_ROLE) 
             VALUES 
-                (user_data_seq.NEXTVAL, :Email, :Heslo, NULL, NULL, 0) 
+                (uzivatel_data_seq.NEXTVAL, :Email, :Heslo, NULL, NULL, 1) 
             RETURNING ID_UZIVATEL_DATA INTO :Id";
 
                 var parameters = new DynamicParameters();
@@ -98,6 +98,43 @@ namespace BDAS2_SEM.Repository
                 var parameters = new DynamicParameters();
                 parameters.Add("NewPassword", newPassword, DbType.String);
                 parameters.Add("Id", id, DbType.Int32);
+
+                await db.ExecuteAsync(sql, parameters);
+            }
+        }
+        public async Task<IEnumerable<UZIVATEL_DATA>> GetUsersWithUndefinedRole()
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+            SELECT 
+                ID_UZIVATEL_DATA AS Id, 
+                EMAIL AS Email, 
+                HESLO AS Heslo, 
+                ROLE_ID_ROLE AS RoleUzivatel 
+            FROM 
+                UZIVATEL_DATA 
+            WHERE 
+                ROLE_ID_ROLE = :UndefinedRole";
+
+                var parameters = new { UndefinedRole = (int)Role.NEOVERENY };
+                var users = await db.QueryAsync<UZIVATEL_DATA>(sql, parameters);
+                return users;
+            }
+        }
+
+        public async Task UpdateUserRole(int userId, Role newRole)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+            UPDATE UZIVATEL_DATA 
+            SET ROLE_ID_ROLE = :RoleId 
+            WHERE ID_UZIVATEL_DATA = :UserId";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("RoleId", (int)newRole, DbType.Int32);
+                parameters.Add("UserId", userId, DbType.Int32);
 
                 await db.ExecuteAsync(sql, parameters);
             }

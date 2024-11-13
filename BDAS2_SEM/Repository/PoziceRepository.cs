@@ -25,8 +25,8 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    INSERT INTO POZICE (NAZEV) 
-                    VALUES (:Nazev) 
+                    INSERT INTO POZICE (ID_POZICE, NAZEV) 
+                    VALUES (POZICE_SEQ.NEXTVAL, :Nazev) 
                     RETURNING ID_POZICE INTO :IdPozice";
 
                 var parameters = new DynamicParameters();

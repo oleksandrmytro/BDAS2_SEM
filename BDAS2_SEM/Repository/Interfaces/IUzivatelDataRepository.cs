@@ -14,7 +14,10 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> RegisterNewUserData(string email, string heslo);
         Task UpdateUserEmail(int id, string newEmail);
         Task UpdateUserPassword(int id, string newPassword);
+        Task UpdateUserRole(int userId, Role newRole);
         Task<UZIVATEL_DATA> GetUzivatelById(int id);
         Task<UZIVATEL_DATA> GetUserByEmailAsync(string email);
+        Task<IEnumerable<UZIVATEL_DATA>> GetUsersWithUndefinedRole();
+        
     }
 }

@@ -25,8 +25,8 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(this.connection))
             {
                 var sqlQuery = @"
-                    INSERT INTO ADRESA (STAT, MESTO, PSC, ULICE, CISLO_POPISNE) 
-                    VALUES (:Stat, :Mesto, :PSC, :Ulice, :CisloPopisne) 
+                    INSERT INTO ADRESA (ID_ADRESA, STAT, MESTO, PSC, ULICE, CISLO_POPISNE) 
+                    VALUES (ADRESA_SEQ.NEXTVAL, :Stat, :Mesto, :PSC, :Ulice, :CisloPopisne) 
                     RETURNING ID_ADRESA INTO :IdAdresa";
 
                 var parameters = new DynamicParameters();
@@ -74,6 +74,23 @@ namespace BDAS2_SEM.Repository
                     WHERE id_adresa = :Id";
 
                 return await db.QueryFirstOrDefaultAsync<ADRESA>(sqlQuery, new { Id = id });
+            }
+        }
+
+        public async Task<IEnumerable<ADRESA>> GetAllAddresses()
+        {
+            using (var db = new OracleConnection(this.connection))
+            {
+                var sqlQuery = @"
+                    SELECT id_adresa AS IdAdresa, 
+                           stat AS Stat, 
+                           mesto AS Mesto, 
+                           psc AS PSC, 
+                           ulice AS Ulice, 
+                           cislo_popisne AS CisloPopisne 
+                    FROM ADRESA";
+
+                return await db.QueryAsync<ADRESA>(sqlQuery);
             }
         }
 

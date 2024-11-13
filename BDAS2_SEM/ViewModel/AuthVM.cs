@@ -1,10 +1,13 @@
 ﻿// ViewModel/AuthVM.cs
 using BDAS2_SEM.Commands;
-using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.Model;
+using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Services.Interfaces;
+using BDAS2_SEM.View;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace BDAS2_SEM.ViewModel
@@ -18,10 +21,12 @@ namespace BDAS2_SEM.ViewModel
         private bool isRegistering;
 
         private readonly IAuthenticationService _authenticationService;
+        private readonly IWindowService _windowService;
 
-        public AuthVM(IAuthenticationService authenticationService)
+        public AuthVM(IAuthenticationService authenticationService, IWindowService windowService)
         {
             _authenticationService = authenticationService;
+            _windowService = windowService;
             IsRegistering = false; // Start with login view
             ToggleRegisterCommand = new RelayCommand((o) => ToggleRegister(o));
             SubmitCommand = new RelayCommand(async (o) => await SubmitAsync(), CanSubmit);
@@ -152,11 +157,31 @@ namespace BDAS2_SEM.ViewModel
             }
             else
             {
-                bool success = await _authenticationService.LoginAsync(Email, Heslo);
-                if (success)
+                var user = await _authenticationService.LoginAsync(Email, Heslo);
+                if (user != null)
                 {
                     ErrorMessage = "Login successful!";
-                    // Additional logic after successful login, e.g., opening the main window
+
+                    if (user.RoleUzivatel == Role.ADMIN)
+                    {
+                        _windowService.OpenAdminWindow();
+                    }
+                    else
+                    {
+                        // Тут можна відкрити інше вікно для звичайних користувачів
+                        // Наприклад, MainWindow
+                        // var mainWindow = // отримати MainWindow через DI
+                        // mainWindow.Show();
+                        // Закрити AuthWindow
+                        foreach (Window window in Application.Current.Windows)
+                        {
+                            if (window is AuthWindow)
+                            {
+                                window.Close();
+                                break;
+                            }
+                        }
+                    }
                 }
                 else
                 {

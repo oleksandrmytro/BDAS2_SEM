@@ -12,6 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddNewAdresa(ADRESA adresa);
         Task UpdateAdresa(int id, ADRESA adresa);
         Task<ADRESA> GetAdresaById(int id);
+        Task<IEnumerable<ADRESA>> GetAllAddresses();
         Task DeleteAdresa(int id);
     }
 }
