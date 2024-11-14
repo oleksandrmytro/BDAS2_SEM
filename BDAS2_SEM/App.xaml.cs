@@ -70,19 +70,24 @@ namespace BDAS2_SEM
             // Register ViewModels
             services.AddTransient<AuthVM>();
             services.AddTransient<DoctorsVM>();
+            services.AddTransient<PatientsVM>();
             services.AddTransient<AdminVM>();
             services.AddTransient<NewUsersVM>();
             services.AddTransient<AddAddressVM>();
+            services.AddTransient<AddPositionVM>();
             services.AddTransient<NewEmployeeVM>();
+            services.AddTransient<NewPatientVM>();
             // Register other ViewModels if needed
 
             // Register Views
             services.AddTransient<AuthWindow>();
             services.AddTransient<DoctorsWindow>();
+            services.AddTransient<PatientsWindow>();
             services.AddTransient<AdminWindow>();
             services.AddTransient<NewUsersView>();
             services.AddSingleton<NewEmployeeWindow>();
             services.AddSingleton<AddAddressWindow>();
+            services.AddSingleton<NewPatientWindow>();
             // Register other Views if needed
 
         }

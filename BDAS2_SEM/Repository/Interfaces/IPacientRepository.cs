@@ -9,5 +9,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<PACIENT> GetPacientById(int id);
         Task<IEnumerable<PACIENT>> GetAllPacienti();
         Task DeletePacient(int id);
+        Task<PACIENT> GetPacientByUserDataId(int userDataId);
     }
 }

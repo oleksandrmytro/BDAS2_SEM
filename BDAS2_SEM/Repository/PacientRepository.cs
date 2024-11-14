@@ -136,5 +136,14 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(sql, new { Id = id });
             }
         }
+
+        public async Task<PACIENT> GetPacientByUserDataId(int userDataId)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = "SELECT * FROM PACIENT WHERE UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId";
+                return await db.QueryFirstOrDefaultAsync<PACIENT>(sql, new { UserDataId = userDataId });
+            }
+        }
     }
 }

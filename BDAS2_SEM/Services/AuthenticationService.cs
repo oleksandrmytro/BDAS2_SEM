@@ -13,10 +13,12 @@ namespace BDAS2_SEM.Repository
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUzivatelDataRepository _uzivatelRepository;
+        private readonly IPacientRepository _pacientRepository;
 
-        public AuthenticationService(IUzivatelDataRepository uzivatelRepository)
+        public AuthenticationService(IUzivatelDataRepository uzivatelRepository, IPacientRepository pacientRepository)
         {
             _uzivatelRepository = uzivatelRepository;
+            _pacientRepository = pacientRepository;
 
         }
 
@@ -72,6 +74,17 @@ namespace BDAS2_SEM.Repository
         {
             var existingUser = await _uzivatelRepository.GetUserByEmailAsync(email);
             return existingUser != null;
+        }
+
+        public async Task<bool> IsPatientDataComplete(int userId)
+        {
+            var pacient = await _pacientRepository.GetPacientByUserDataId(userId);
+            return pacient != null;
+        }
+
+        public async Task<PACIENT> GetPatientByUserId(int userId)
+        {
+            return await _pacientRepository.GetPacientByUserDataId(userId);
         }
     }
 }

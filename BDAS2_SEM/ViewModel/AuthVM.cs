@@ -125,67 +125,101 @@ namespace BDAS2_SEM.ViewModel
 
         private async Task SubmitAsync()
         {
-            ErrorMessage = string.Empty;
-
-            if (!IsValidEmail(Email))
+            try
             {
-                ErrorMessage = "Invalid email format.";
-                return;
-            }
+                ErrorMessage = string.Empty;
 
-            if (IsRegistering)
-            {
-                bool success = await _authenticationService.RegisterUserAsync(Email, Heslo);
-                if (success)
+                if (!IsValidEmail(Email))
                 {
-                    ErrorMessage = "Registration successful!";
-                    ClearFields();
-                    IsRegistering = false;
+                    ErrorMessage = "Invalid email format.";
+                    return;
                 }
-                else
+
+                if (IsRegistering)
                 {
-                    var existingUser = await _authenticationService.CheckUserExistsAsync(Email);
-                    if (existingUser)
+                    bool success = await _authenticationService.RegisterUserAsync(Email, Heslo);
+                    if (success)
                     {
-                        ErrorMessage = "A user with this email already exists.";
+                        ErrorMessage = "Registration successful!";
+                        ClearFields();
+                        IsRegistering = false;
                     }
                     else
                     {
-                        ErrorMessage = "An error occurred during registration. Please try again.";
-                    }
-                }
-            }
-            else
-            {
-                var user = await _authenticationService.LoginAsync(Email, Heslo);
-                if (user != null)
-                {
-                    ErrorMessage = "Login successful!";
-
-                    if (user.RoleUzivatel == Role.ADMIN)
-                    {
-                        _windowService.OpenAdminWindow();
-                    }
-                    else
-                    {
-                        // Тут можна відкрити інше вікно для звичайних користувачів
-                        // Наприклад, MainWindow
-                        // var mainWindow = // отримати MainWindow через DI
-                        // mainWindow.Show();
-                        // Закрити AuthWindow
-                        foreach (Window window in Application.Current.Windows)
+                        var existingUser = await _authenticationService.CheckUserExistsAsync(Email);
+                        if (existingUser)
                         {
-                            if (window is AuthWindow)
-                            {
-                                window.Close();
-                                break;
-                            }
+                            ErrorMessage = "A user with this email already exists.";
+                        }
+                        else
+                        {
+                            ErrorMessage = "An error occurred during registration. Please try again.";
                         }
                     }
                 }
                 else
                 {
-                    ErrorMessage = "Invalid email or password.";
+                    var user = await _authenticationService.LoginAsync(Email, Heslo);
+                    if (user != null)
+                    {
+                        PACIENT pacient = await _authenticationService.GetPatientByUserId(user.Id);
+                        ErrorMessage = "Login successful!";
+
+                        if (user.RoleUzivatel == Role.ADMIN)
+                        {
+                            _windowService.OpenAdminWindow();
+                        }
+                        else if (user.RoleUzivatel == Role.PACIENT)
+                        {
+                            bool isPatientDataComplete = await _authenticationService.IsPatientDataComplete(user.Id);
+
+                            if (!isPatientDataComplete)
+                            {
+                                _windowService.OpenNewPatientWindow(user, async (bool isSaved) =>
+                                {
+                                    if (isSaved)
+                                    {
+                                        _windowService.OpenPatientWindow(pacient);
+                                        CloseAuthWindow();
+                                    }
+                                    else
+                                    {
+                                        _windowService.OpenAuthWindow();
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                _windowService.OpenPatientWindow(pacient);
+                            }
+                        }
+                        else
+                        {
+                            _windowService.OpenPatientWindow(pacient);
+                        }
+
+                        CloseAuthWindow();
+                    }
+                    else
+                    {
+                        ErrorMessage = "Invalid email or password.";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseAuthWindow()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is AuthWindow)
+                {
+                    window.Close();
+                    break;
                 }
             }
         }

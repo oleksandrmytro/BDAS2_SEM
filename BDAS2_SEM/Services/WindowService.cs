@@ -26,12 +26,26 @@ namespace BDAS2_SEM.Services
             CloseAuthWindow();
         }
 
+        public void OpenAuthWindow()
+        {
+            var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+            authWindow.Show();
+        }
+
         public void OpenNewEmployeeWindow(UZIVATEL_DATA user, Action<bool> onClosed)
         {
             var newEmployeeWindow = new NewEmployeeWindow();
             var newEmployeeVM = new NewEmployeeVM(user, this, _serviceProvider.GetRequiredService<IServiceProvider>(), onClosed);
             newEmployeeWindow.DataContext = newEmployeeVM;
             newEmployeeWindow.ShowDialog();
+        }
+
+        public void OpenNewPatientWindow(UZIVATEL_DATA userData, Action<bool> onClosed)
+        {
+            var window = new NewPatientWindow();
+            var viewModel = new NewPatientVM(userData, this, _serviceProvider, onClosed);
+            window.DataContext = viewModel;
+            window.Show();
         }
 
         public void CloseWindow(Action closeAction)
@@ -53,6 +67,15 @@ namespace BDAS2_SEM.Services
             var addPositionVM = new AddPositionVM(onPositionAdded, this, _serviceProvider.GetRequiredService<IPoziceRepository>());
             addPositionWindow.DataContext = addPositionVM;
             addPositionWindow.ShowDialog();
+        }
+
+        public void OpenPatientWindow(PACIENT pacient)
+        {
+            var patientWindow = _serviceProvider.GetRequiredService<PatientsWindow>();
+            var viewModel = _serviceProvider.GetRequiredService<PatientsVM>();
+            // Ви можете ініціалізувати ViewModel з даними пацієнта, якщо потрібно
+            patientWindow.DataContext = viewModel;
+            patientWindow.Show();
         }
 
         private void CloseAuthWindow()

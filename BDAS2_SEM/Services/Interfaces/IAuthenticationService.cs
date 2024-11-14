@@ -12,5 +12,7 @@ namespace BDAS2_SEM.Services.Interfaces
         Task<bool> RegisterUserAsync(string email, string password);
         Task<UZIVATEL_DATA> LoginAsync(string email, string password);
         Task<bool> CheckUserExistsAsync(string email);
+        Task<bool> IsPatientDataComplete(int userId);
+        Task<PACIENT> GetPatientByUserId(int userId);
     }
 }
