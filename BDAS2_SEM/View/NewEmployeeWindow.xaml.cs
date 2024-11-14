@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BDAS2_SEM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,17 @@ namespace BDAS2_SEM.View
         public NewEmployeeWindow()
         {
             InitializeComponent();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            if (DataContext is NewEmployeeVM vm)
+            {
+                // Indicate that the window was closed without saving
+                vm.InvokeOnClosed(false);
+            }
         }
     }
 }

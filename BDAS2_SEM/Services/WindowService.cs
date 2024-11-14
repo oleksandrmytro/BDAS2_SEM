@@ -26,12 +26,12 @@ namespace BDAS2_SEM.Services
             CloseAuthWindow();
         }
 
-        public void OpenNewEmployeeWindow(UZIVATEL_DATA user)
+        public void OpenNewEmployeeWindow(UZIVATEL_DATA user, Action<bool> onClosed)
         {
             var newEmployeeWindow = new NewEmployeeWindow();
-            var newEmployeeVM = new NewEmployeeVM(user, this, _serviceProvider);
+            var newEmployeeVM = new NewEmployeeVM(user, this, _serviceProvider.GetRequiredService<IServiceProvider>(), onClosed);
             newEmployeeWindow.DataContext = newEmployeeVM;
-            newEmployeeWindow.Show();
+            newEmployeeWindow.ShowDialog();
         }
 
         public void CloseWindow(Action closeAction)

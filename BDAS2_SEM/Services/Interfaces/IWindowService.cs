@@ -10,7 +10,7 @@ namespace BDAS2_SEM.Services.Interfaces
     public interface IWindowService
     {
         void OpenAdminWindow();
-        void OpenNewEmployeeWindow(UZIVATEL_DATA user);
+        void OpenNewEmployeeWindow(UZIVATEL_DATA user, Action<bool> onClosed);
         void OpenAddAddressWindow(Action<ADRESA> onAddressAdded);
         void OpenAddPositionWindow(Action<POZICE> onPositionAdded);
         void CloseWindow(Action closeAction);

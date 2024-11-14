@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -40,6 +41,7 @@ namespace BDAS2_SEM.ViewModel
         {
             AvailableRoles = new ObservableCollection<Role>
             {
+                Role.NEOVERENY,
                 Role.PACIENT,
                 Role.ZAMESTNANEC
             };
@@ -50,13 +52,42 @@ namespace BDAS2_SEM.ViewModel
         {
             if (parameter is UZIVATEL_DATA user)
             {
-                await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
-                NewUsers.Remove(user);
-                OnPropertyChanged(nameof(NewUsers));
-
-                if (user.RoleUzivatel == Role.ZAMESTNANEC)
+                if (user.RoleUzivatel == Role.PACIENT || user.RoleUzivatel == Role.ZAMESTNANEC)
                 {
-                    _windowService.OpenNewEmployeeWindow(user);
+                    if (user.RoleUzivatel == Role.ZAMESTNANEC)
+                    {
+                        _windowService.OpenNewEmployeeWindow(user, async (bool isSaved) =>
+                        {
+                            if (isSaved)
+                            {
+                                await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    NewUsers.Remove(user);
+                                    OnPropertyChanged(nameof(NewUsers));
+                                });
+                            }
+                            else
+                            {
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    user.RoleUzivatel = Role.NEOVERENY;
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+
+                        NewUsers.Remove(user);
+                        OnPropertyChanged(nameof(NewUsers));
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a role before assigning.", "Role Not Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }

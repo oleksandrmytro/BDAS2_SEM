@@ -19,6 +19,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPoziceRepository _poziceRepository;
         private readonly UZIVATEL_DATA _userData;
         private readonly IWindowService _windowService;
+        private readonly Action<bool> _onClosed;
 
         public ObservableCollection<ADRESA> Addresses { get; set; }
         public ObservableCollection<ZAMESTNANEC> Supervisors { get; set; }
@@ -37,10 +38,11 @@ namespace BDAS2_SEM.ViewModel
         public ICommand AddAddressCommand { get; }
         public ICommand AddPositionCommand { get; }
 
-        public NewEmployeeVM(UZIVATEL_DATA userData, IWindowService windowService, IServiceProvider serviceProvider)
+        public NewEmployeeVM(UZIVATEL_DATA userData, IWindowService windowService, IServiceProvider serviceProvider, Action<bool> onClosed)
         {
             _userData = userData;
             _windowService = windowService;
+            _onClosed = onClosed;
 
             _zamestnanecRepository = serviceProvider.GetRequiredService<IZamestnanecRepository>();
             _adresaRepository = serviceProvider.GetRequiredService<IAdresaRepository>();
@@ -90,6 +92,9 @@ namespace BDAS2_SEM.ViewModel
             };
 
             await _zamestnanecRepository.AddZamestnanec(zamestnanec);
+
+            _onClosed?.Invoke(true);
+
             _windowService.CloseWindow(() =>
             {
                 foreach (Window window in Application.Current.Windows)
@@ -133,6 +138,11 @@ namespace BDAS2_SEM.ViewModel
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public void InvokeOnClosed(bool isSaved)
+        {
+            _onClosed?.Invoke(isSaved);
         }
     }
 }
