@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using BDAS2_SEM.View;
+using BDAS2_SEM.View.PatientViews;
 
 public class NewPatientVM : INotifyPropertyChanged
 {

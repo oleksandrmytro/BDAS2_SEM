@@ -8,8 +8,12 @@ using Microsoft.Extensions.Logging;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Controls;
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.Services;
+using BDAS2_SEM.View.AdminViews;
+using BDAS2_SEM.View.PatientViews;
+using BDAS2_SEM.View.DoctorViews;
 
 namespace BDAS2_SEM
 {
@@ -70,24 +74,29 @@ namespace BDAS2_SEM
             // Register ViewModels
             services.AddTransient<AuthVM>();
             services.AddTransient<DoctorsVM>();
+            services.AddTransient<MainDoctorVM>();
             services.AddTransient<PatientsVM>();
             services.AddTransient<AdminVM>();
+            services.AddTransient<AppointmentsVM>();
             services.AddTransient<NewUsersVM>();
             services.AddTransient<AddAddressVM>();
             services.AddTransient<AddPositionVM>();
             services.AddTransient<NewEmployeeVM>();
             services.AddTransient<NewPatientVM>();
+            services.AddTransient<TabItemVM>();
             // Register other ViewModels if needed
 
             // Register Views
             services.AddTransient<AuthWindow>();
             services.AddTransient<DoctorsWindow>();
+            services.AddTransient<MainDoctorView>();
             services.AddTransient<PatientsWindow>();
             services.AddTransient<AdminWindow>();
             services.AddTransient<NewUsersView>();
             services.AddSingleton<NewEmployeeWindow>();
             services.AddSingleton<AddAddressWindow>();
             services.AddSingleton<NewPatientWindow>();
+            services.AddSingleton<AppointmentsView>();
             // Register other Views if needed
 
         }

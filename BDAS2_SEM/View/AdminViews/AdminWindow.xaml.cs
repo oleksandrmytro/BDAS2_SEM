@@ -13,14 +13,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace BDAS2_SEM.View
+namespace BDAS2_SEM.View.AdminViews
 {
     /// <summary>
-    /// Interaction logic for NewUsersView.xaml
+    /// Interaction logic for AdminWindow.xaml
     /// </summary>
-    public partial class NewUsersView : UserControl
+    public partial class AdminWindow : Window
     {
-        public NewUsersView(NewUsersVM viewModel)
+        public AdminWindow(AdminVM viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;

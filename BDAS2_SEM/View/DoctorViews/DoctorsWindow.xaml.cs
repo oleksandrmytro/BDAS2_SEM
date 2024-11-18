@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BDAS2_SEM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,16 +13,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace BDAS2_SEM.View
+namespace BDAS2_SEM.View.DoctorViews
 {
     /// <summary>
-    /// Interaction logic for AddPositionWindow.xaml
+    /// Interaction logic for DoctorsWindow.xaml
     /// </summary>
-    public partial class AddPositionWindow : Window
+    public partial class DoctorsWindow : Window
     {
-        public AddPositionWindow()
+        public DoctorsWindow(DoctorsVM viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

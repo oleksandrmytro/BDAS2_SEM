@@ -42,7 +42,7 @@ public class AddPositionVM : INotifyPropertyChanged
         {
             foreach (Window window in Application.Current.Windows)
             {
-                if (window is BDAS2_SEM.View.AddPositionWindow)
+                if (window is BDAS2_SEM.View.AdminViews.AddPositionWindow)
                 {
                     window.Close();
                     break;

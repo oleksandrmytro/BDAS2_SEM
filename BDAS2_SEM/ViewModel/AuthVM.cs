@@ -2,6 +2,7 @@
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Model.Enum;
+using BDAS2_SEM.Repository.Interfaces; // Add this using directive
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.View;
 using System.ComponentModel;
@@ -22,11 +23,13 @@ namespace BDAS2_SEM.ViewModel
 
         private readonly IAuthenticationService _authenticationService;
         private readonly IWindowService _windowService;
+        private readonly IZamestnanecRepository _zamestnanecRepository; // Add this field
 
-        public AuthVM(IAuthenticationService authenticationService, IWindowService windowService)
+        public AuthVM(IAuthenticationService authenticationService, IWindowService windowService, IZamestnanecRepository zamestnanecRepository)
         {
             _authenticationService = authenticationService;
             _windowService = windowService;
+            _zamestnanecRepository = zamestnanecRepository; // Initialize the repository
             IsRegistering = false; // Start with login view
             ToggleRegisterCommand = new RelayCommand((o) => ToggleRegister(o));
             SubmitCommand = new RelayCommand(async (o) => await SubmitAsync(), CanSubmit);
@@ -193,9 +196,34 @@ namespace BDAS2_SEM.ViewModel
                                 _windowService.OpenPatientWindow(pacient);
                             }
                         }
-                        else
+                        else // Handle other roles, such as employees
                         {
-                            _windowService.OpenPatientWindow(pacient);
+                            if (user.zamestnanecId.HasValue)
+                            {
+                                var zamestnanec = await _zamestnanecRepository.GetZamestnanecById(user.zamestnanecId.Value);
+                                if (zamestnanec != null)
+                                {
+                                    if (zamestnanec.PoziceId == 1 || zamestnanec.PoziceId == 4) // Hlavní lékař or Lékař
+                                    {
+                                        _windowService.OpenDoctorWindow(zamestnanec);
+                                    }
+                                    else
+                                    {
+                                        // Handle other employee positions if necessary
+                                        // For example, open a default employee window
+                                        //_windowService.OpenEmployeeWindow(user);
+                                    }
+                                }
+                                else
+                                {
+                                    ErrorMessage = "Employee information not found.";
+                                }
+                            }
+                            else
+                            {
+                                // Handle users without ZamestnanecId if necessary
+                                ErrorMessage = "User is not associated with any employee record.";
+                            }
                         }
 
                         CloseAuthWindow();
@@ -226,6 +254,7 @@ namespace BDAS2_SEM.ViewModel
 
         private bool IsValidEmail(string email)
         {
+            // You can enhance this with a more robust email validation
             return email.Contains("@");
         }
 

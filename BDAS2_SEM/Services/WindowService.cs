@@ -6,6 +6,9 @@ using BDAS2_SEM.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
+using BDAS2_SEM.View.AdminViews;
+using BDAS2_SEM.View.PatientViews;
+using BDAS2_SEM.View.DoctorViews;
 
 namespace BDAS2_SEM.Services
 {
@@ -59,6 +62,14 @@ namespace BDAS2_SEM.Services
             var addAddressVM = new AddAddressVM(onAddressAdded, this, _serviceProvider);
             addAddressWindow.DataContext = addAddressVM;
             addAddressWindow.ShowDialog();
+        }
+
+        public void OpenDoctorWindow(ZAMESTNANEC zamestnanec) // Змінено тип параметра
+        {
+            var doctorViewModel = _serviceProvider.GetRequiredService<DoctorsVM>();
+            doctorViewModel.SetEmployee(zamestnanec);
+            var doctorWindow = new DoctorsWindow(doctorViewModel);
+            doctorWindow.Show();
         }
 
         public void OpenAddPositionWindow(Action<POZICE> onPositionAdded)

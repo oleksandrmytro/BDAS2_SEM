@@ -13,27 +13,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace BDAS2_SEM.View
+namespace BDAS2_SEM.View.AdminViews
 {
     /// <summary>
-    /// Interaction logic for NewEmployeeWindow.xaml
+    /// Interaction logic for NewUsersView.xaml
     /// </summary>
-    public partial class NewEmployeeWindow : Window
+    public partial class NewUsersView : UserControl
     {
-        public NewEmployeeWindow()
+        public NewUsersView(NewUsersVM viewModel)
         {
             InitializeComponent();
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-
-            if (DataContext is NewEmployeeVM vm)
-            {
-                // Indicate that the window was closed without saving
-                vm.InvokeOnClosed(false);
-            }
+            DataContext = viewModel;
         }
     }
 }

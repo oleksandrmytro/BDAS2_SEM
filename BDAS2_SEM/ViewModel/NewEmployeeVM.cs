@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using BDAS2_SEM.Repository;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -17,6 +18,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IZamestnanecRepository _zamestnanecRepository;
         private readonly IAdresaRepository _adresaRepository;
         private readonly IPoziceRepository _poziceRepository;
+        private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly UZIVATEL_DATA _userData;
         private readonly IWindowService _windowService;
         private readonly Action<bool> _onClosed;
@@ -47,6 +49,7 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecRepository = serviceProvider.GetRequiredService<IZamestnanecRepository>();
             _adresaRepository = serviceProvider.GetRequiredService<IAdresaRepository>();
             _poziceRepository = serviceProvider.GetRequiredService<IPoziceRepository>();
+            _uzivatelDataRepository = serviceProvider.GetRequiredService<IUzivatelDataRepository>();
 
             SaveCommand = new RelayCommand(Save);
             AddAddressCommand = new RelayCommand(AddAddress);
@@ -91,7 +94,12 @@ namespace BDAS2_SEM.ViewModel
                 UserDataId = _userData.Id
             };
 
-            await _zamestnanecRepository.AddZamestnanec(zamestnanec);
+            // Add Zamestnanec and get the new ID
+            int newZamestnanecId = await _zamestnanecRepository.AddZamestnanec(zamestnanec);
+
+            // Update UZIVATEL_DATA with the new Zamestnanec ID
+            _userData.zamestnanecId = newZamestnanecId;
+            await _uzivatelDataRepository.UpdateUserData(_userData);
 
             _onClosed?.Invoke(true);
 
@@ -99,7 +107,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 foreach (Window window in Application.Current.Windows)
                 {
-                    if (window is BDAS2_SEM.View.NewEmployeeWindow)
+                    if (window is BDAS2_SEM.View.AdminViews.NewEmployeeWindow)
                     {
                         window.Close();
                         break;

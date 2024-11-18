@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BDAS2_SEM.Model.Enum;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -11,6 +12,7 @@ namespace BDAS2_SEM.Model
         private DateTime cas;
         private int mistnost;
         private int pacientId;
+        private Status status;
 
         public int IdNavsteva
         {
@@ -72,6 +74,19 @@ namespace BDAS2_SEM.Model
                 if (pacientId != value)
                 {
                     pacientId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Status Status
+        {
+            get { return status; }
+            set
+            {
+                if (status != value)
+                {
+                    status = value;
                     OnPropertyChanged();
                 }
             }

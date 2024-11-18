@@ -1,12 +1,10 @@
 ﻿using BDAS2_SEM.Model;
+using BDAS2_SEM.Model.Enum; // Include the Status enum
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
@@ -29,6 +27,7 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_cas", navsteva.Cas, DbType.DateTime);
                 parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
+                parameters.Add("p_status_id_status", (int)navsteva.Status, DbType.Int32); // Add status parameter
                 parameters.Add("p_id_navsteva", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 await db.ExecuteAsync("INSERT_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
@@ -47,6 +46,7 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_cas", navsteva.Cas, DbType.DateTime);
                 parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
+                parameters.Add("p_status_id_status", (int)navsteva.Status, DbType.Int32); // Add status parameter
 
                 await db.ExecuteAsync("UPDATE_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
             }
@@ -56,7 +56,14 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                var query = "SELECT * FROM NAVSTEVA WHERE ID_NAVSTEVA = :id";
+                var query = @"SELECT 
+                                ID_NAVSTEVA AS IdNavsteva,
+                                DATUM AS Datum,
+                                CAS AS Cas,
+                                MISTNOST AS Mistnost,
+                                PACIENT_ID_PACIENT AS PacientId,
+                                STATUS_ID_STATUS AS Status
+                              FROM NAVSTEVA WHERE ID_NAVSTEVA = :id";
                 return await db.QueryFirstOrDefaultAsync<NAVSTEVA>(query, new { id });
             }
         }
@@ -65,7 +72,15 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                return await db.QueryAsync<NAVSTEVA>("SELECT * FROM NAVSTEVA");
+                var query = @"SELECT 
+                                ID_NAVSTEVA AS IdNavsteva,
+                                DATUM AS Datum,
+                                CAS AS Cas,
+                                MISTNOST AS Mistnost,
+                                PACIENT_ID_PACIENT AS PacientId,
+                                STATUS_ID_STATUS AS Status
+                              FROM NAVSTEVA";
+                return await db.QueryAsync<NAVSTEVA>(query);
             }
         }
 
@@ -77,6 +92,26 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_id_navsteva", id, DbType.Int32);
 
                 await db.ExecuteAsync("DELETE_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        // If you have a method to get appointments by doctor ID
+        public async Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorId(int doctorId)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var query = @"
+            SELECT 
+                N.ID_NAVSTEVA AS IdNavsteva,
+                N.DATUM AS Datum,
+                N.CAS AS Cas,
+                N.MISTNOST AS Mistnost,
+                N.PACIENT_ID_PACIENT AS PacientIdPacient,
+                N.STATUS_ID_STATUS AS StatusIdStatus
+            FROM NAVSTEVA N
+            JOIN ZAMESTNANEC_NEVSTEVA ZN ON N.ID_NAVSTEVA = ZN.NAVSTEVA_ID_NAVSTEVA
+            WHERE ZN.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId";
+                return await db.QueryAsync<NAVSTEVA>(query, new { doctorId });
             }
         }
     }

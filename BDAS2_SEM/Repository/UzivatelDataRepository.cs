@@ -28,8 +28,10 @@ namespace BDAS2_SEM.Repository
                 string sql = @"
                     SELECT 
                         ID_UZIVATEL_DATA AS Id, 
-                        EMAIL AS Email, 
-                        ROLE_ID_ROLE AS RoleUzivatel 
+                        EMAIL AS Email,
+                        HESLO AS Heslo,
+                        ROLE_ID_ROLE AS RoleUzivatel,
+                        ZAMESTNANEC_ID_C AS ZamestnanecId
                     FROM 
                         UZIVATEL_DATA 
                     WHERE 
@@ -173,6 +175,33 @@ namespace BDAS2_SEM.Repository
                         LOWER(EMAIL) = LOWER(:Email)";
 
                 return await db.QueryFirstOrDefaultAsync<UZIVATEL_DATA>(sql, new { Email = email.Trim() });
+            }
+        }
+
+        public async Task UpdateUserData(UZIVATEL_DATA userData)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+                    UPDATE UZIVATEL_DATA 
+                    SET 
+                        EMAIL = :Email, 
+                        HESLO = :Heslo, 
+                        PACIENT_ID_C = :PacientId, 
+                        ZAMESTNANEC_ID_C = :ZamestnanecId, 
+                        ROLE_ID_ROLE = :RoleUzivatel 
+                    WHERE 
+                        ID_UZIVATEL_DATA = :Id";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("Email", userData.Email, DbType.String);
+                parameters.Add("Heslo", userData.Heslo, DbType.String);
+                parameters.Add("PacientId", userData.pacientId, DbType.Int32);
+                parameters.Add("ZamestnanecId", userData.zamestnanecId, DbType.Int32);
+                parameters.Add("RoleUzivatel", (int)userData.RoleUzivatel, DbType.Int32);
+                parameters.Add("Id", userData.Id, DbType.Int32);
+
+                await db.ExecuteAsync(sql, parameters);
             }
         }
 

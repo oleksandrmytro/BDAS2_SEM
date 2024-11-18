@@ -14,5 +14,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<NAVSTEVA> GetNavstevaById(int id);
         Task<IEnumerable<NAVSTEVA>> GetAllNavstevy();
         Task DeleteNavsteva(int id);
+        Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorId(int doctorId);
     }
 }

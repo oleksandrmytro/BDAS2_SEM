@@ -1,5 +1,5 @@
 ﻿<!-- View/NewUsersView.xaml -->
-<UserControl x:Class="BDAS2_SEM.View.NewUsersView"
+<UserControl x:Class="BDAS2_SEM.View.AdminViews.NewUsersView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:BDAS2_SEM.ViewModel"

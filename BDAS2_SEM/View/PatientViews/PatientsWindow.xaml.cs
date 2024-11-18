@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using BDAS2_SEM.ViewModel;
 
-namespace BDAS2_SEM.View
+namespace BDAS2_SEM.View.PatientViews
 {
     /// <summary>
     /// Interaction logic for PatientsWindow.xaml

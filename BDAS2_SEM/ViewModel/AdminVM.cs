@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using BDAS2_SEM.View.AdminViews;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -17,9 +18,9 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ObservableCollection<TabItemViewModel> Tabs { get; set; }
-        private TabItemViewModel _selectedTab;
-        public TabItemViewModel SelectedTab
+        public ObservableCollection<TabItemVM> Tabs { get; set; }
+        private TabItemVM _selectedTab;
+        public TabItemVM SelectedTab
         {
             get => _selectedTab;
             set
@@ -37,9 +38,9 @@ namespace BDAS2_SEM.ViewModel
 
         private void InitializeTabs()
         {
-            Tabs = new ObservableCollection<TabItemViewModel>
+            Tabs = new ObservableCollection<TabItemVM>
             {
-                new TabItemViewModel {
+                new TabItemVM {
                     Name = "New Users",
                     Content = _serviceProvider.GetRequiredService<NewUsersView>()
                 },
@@ -55,9 +56,4 @@ namespace BDAS2_SEM.ViewModel
         }
     }
 
-    public class TabItemViewModel
-    {
-        public string Name { get; set; }
-        public object Content { get; set; }
-    }
 }

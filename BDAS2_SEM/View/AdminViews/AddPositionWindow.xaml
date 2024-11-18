@@ -1,4 +1,4 @@
-﻿<Window x:Class="BDAS2_SEM.View.AddPositionWindow"
+﻿<Window x:Class="BDAS2_SEM.View.AdminViews.AddPositionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Add Position" Height="200" Width="350"

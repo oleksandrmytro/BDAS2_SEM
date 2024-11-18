@@ -26,9 +26,9 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     INSERT INTO PACIENT 
-                        (Jmeno, Prijmeni, RodneCislo, Telefon, DatumNarozeni, Pohlavi, AdresaId, UserDataId) 
+                        (ID_PACIENT, JMENO, PRIJMENI, RODNE_CISLO, TELEFON, DATUM_NAROZENI, POHLAVI, ADRESA_ID_ADRESA, UZIVATEL_DATA_ID_UZIVATEL_DATA) 
                     VALUES 
-                        (:Jmeno, :Prijmeni, :RodneCislo, :Telefon, :DatumNarozeni, :Pohlavi, :AdresaId, :UserDataId) 
+                        (PACIENT_SEQ.NEXTVAL, :Jmeno, :Prijmeni, :RodneCislo, :Telefon, :DatumNarozeni, :Pohlavi, :AdresaId, :UserDataId) 
                     RETURNING ID_PACIENT INTO :IdPacient";
 
                 var parameters = new DynamicParameters();
