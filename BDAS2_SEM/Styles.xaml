@@ -7,14 +7,18 @@
         <Setter Property="Background" Value="#007ACC"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Padding" Value="20,10"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontFamily" Value="Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border Background="{TemplateBinding Background}"
-                            CornerRadius="5">
+                            CornerRadius="10">
                         <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center"/>
                     </Border>
@@ -39,48 +43,71 @@
         <TextBlock Text="{Binding Name}" />
     </DataTemplate>
 
-    <!-- Style for ListBoxItem as Tab -->
+    <!-- Оновлений стиль для ListBoxItem для відображення як бічні вкладки в стилі Shards Dashboard -->
     <Style x:Key="TabListBoxItemStyle" TargetType="ListBoxItem">
-        <Setter Property="Background" Value="#e0e0e0"/>
-        <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Padding" Value="10,5"/>
-        <Setter Property="Margin" Value="2"/>
+        <!-- Основні властивості стилю -->
+        <Setter Property="Background" Value="#f8f9fa"/>
+        <!-- Світліший фон для всієї панелі -->
+        <Setter Property="Foreground" Value="#3d5170"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Height" Value="50"/>
+        <!-- Збільшено висоту вкладок -->
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <!-- Видалено відступи між вкладками, щоб вони були плотно один до одного -->
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontFamily" Value="Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="Border"
+                    <Grid>
+                        <Border x:Name="SelectionBorder"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="3,3,0,0"
-                            Padding="5">
-                        <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          ContentSource="Content" />
-                    </Border>
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="0">
+                            <Grid>
+                                <Border x:Name="SideBorder"
+                                    Width="5"
+                                    Background="Transparent"
+                                    HorizontalAlignment="Left"/>
+                                <ContentPresenter x:Name="ContentPresenter"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Margin="10,0,0,0"
+                                              ContentSource="Content" />
+                            </Grid>
+                        </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <!-- Триггер для вибраної вкладки -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="White"/>
-                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter TargetName="SideBorder" Property="Background" Value="#007bff"/>
+                            <Setter Property="Foreground" Value="#007bff"/>
+                            <Setter TargetName="SelectionBorder" Property="Background" Value="#e9ecef"/>
+                            <!-- Світліший фон для вибраної вкладки -->
                             <Setter Property="FontWeight" Value="Bold"/>
-                            <Setter TargetName="Border" Property="BorderBrush" Value="#007ACC"/>
-                            <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,2"/>
+                            <!-- Жирний шрифт для вибраної вкладки -->
                         </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#d0d0d0"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="Gray"/>
-                        </Trigger>
+
+                        <!-- Триггер для наведення на невибрану вкладку -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsSelected" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="SideBorder" Property="Background" Value="#007bff"/>
+                            <Setter Property="Foreground" Value="#007bff"/>
+                            <Setter TargetName="SelectionBorder" Property="Background" Value="#f0f3f5"/>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <!-- Add other styles here as needed -->
+    <!-- Інші стилі за потребою -->
 
 </ResourceDictionary>
