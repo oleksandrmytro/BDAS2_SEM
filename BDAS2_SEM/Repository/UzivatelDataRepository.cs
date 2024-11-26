@@ -47,22 +47,34 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-            INSERT INTO UZIVATEL_DATA 
-                (ID_UZIVATEL_DATA, EMAIL, HESLO, PACIENT_ID_C, ZAMESTNANEC_ID_C, ROLE_ID_ROLE) 
-            VALUES 
-                (uzivatel_data_seq.NEXTVAL, :Email, :Heslo, NULL, NULL, 1) 
-            RETURNING ID_UZIVATEL_DATA INTO :Id";
+                string procedureName = "manage_uzivatel_data";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Email", email, DbType.String);
-                parameters.Add("Heslo", heslo, DbType.String);
-                parameters.Add("Id", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_action", "INSERT", DbType.String);
+                parameters.Add("p_id_uzivatel_data", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_email", email, DbType.String);
+                parameters.Add("p_heslo", heslo, DbType.String);
+                parameters.Add("p_pacient_id_c", dbType: DbType.Int32, value: null);
+                parameters.Add("p_zamestnanec_id_c", dbType: DbType.Int32, value: null);
+                parameters.Add("p_role_id_role", 1, DbType.Int32);
 
                 try
                 {
-                    await db.ExecuteAsync(sql, parameters);
-                    return parameters.Get<int>("Id");
+                    // Викликаємо збережену процедуру
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                    // Отримуємо значення вихідного параметра
+                    var userId = parameters.Get<int?>("p_id_uzivatel_data");
+
+                    // Перевірка значення
+                    if (userId.HasValue)
+                    {
+                        return userId.Value;
+                    }
+                    else
+                    {
+                        throw new Exception("The procedure did not return a valid user ID.");
+                    }
                 }
                 catch (Oracle.ManagedDataAccess.Client.OracleException ex) when (ex.Number == 1)
                 {
@@ -71,39 +83,7 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task UpdateUserEmail(int id, string newEmail)
-        {
-            using (var db = new OracleConnection(connectionString))
-            {
-                string sql = @"
-                    UPDATE UZIVATEL_DATA 
-                    SET EMAIL = :NewEmail 
-                    WHERE ID = :Id";
 
-                var parameters = new DynamicParameters();
-                parameters.Add("NewEmail", newEmail, DbType.String);
-                parameters.Add("Id", id, DbType.Int32);
-
-                await db.ExecuteAsync(sql, parameters);
-            }
-        }
-
-        public async Task UpdateUserPassword(int id, string newPassword)
-        {
-            using (var db = new OracleConnection(connectionString))
-            {
-                string sql = @"
-                    UPDATE UZIVATEL_DATA 
-                    SET HESLO = :NewPassword 
-                    WHERE ID = :Id";
-
-                var parameters = new DynamicParameters();
-                parameters.Add("NewPassword", newPassword, DbType.String);
-                parameters.Add("Id", id, DbType.Int32);
-
-                await db.ExecuteAsync(sql, parameters);
-            }
-        }
         public async Task<IEnumerable<UZIVATEL_DATA>> GetUsersWithUndefinedRole()
         {
             using (var db = new OracleConnection(connectionString))
@@ -122,23 +102,6 @@ namespace BDAS2_SEM.Repository
                 var parameters = new { UndefinedRole = (int)Role.NEOVERENY };
                 var users = await db.QueryAsync<UZIVATEL_DATA>(sql, parameters);
                 return users;
-            }
-        }
-
-        public async Task UpdateUserRole(int userId, Role newRole)
-        {
-            using (var db = new OracleConnection(connectionString))
-            {
-                string sql = @"
-            UPDATE UZIVATEL_DATA 
-            SET ROLE_ID_ROLE = :RoleId 
-            WHERE ID_UZIVATEL_DATA = :UserId";
-
-                var parameters = new DynamicParameters();
-                parameters.Add("RoleId", (int)newRole, DbType.Int32);
-                parameters.Add("UserId", userId, DbType.Int32);
-
-                await db.ExecuteAsync(sql, parameters);
             }
         }
 
@@ -182,28 +145,19 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    UPDATE UZIVATEL_DATA 
-                    SET 
-                        EMAIL = :Email, 
-                        HESLO = :Heslo, 
-                        PACIENT_ID_C = :PacientId, 
-                        ZAMESTNANEC_ID_C = :ZamestnanecId, 
-                        ROLE_ID_ROLE = :RoleUzivatel 
-                    WHERE 
-                        ID_UZIVATEL_DATA = :Id";
+                string procedureName = "manage_uzivatel_data";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Email", userData.Email, DbType.String);
-                parameters.Add("Heslo", userData.Heslo, DbType.String);
-                parameters.Add("PacientId", userData.pacientId, DbType.Int32);
-                parameters.Add("ZamestnanecId", userData.zamestnanecId, DbType.Int32);
-                parameters.Add("RoleUzivatel", (int)userData.RoleUzivatel, DbType.Int32);
-                parameters.Add("Id", userData.Id, DbType.Int32);
+                parameters.Add("p_action", "UPDATE", DbType.String);
+                parameters.Add("p_id_uzivatel_data", userData.Id, DbType.Int32);
+                parameters.Add("p_email", userData.Email, DbType.String);
+                parameters.Add("p_heslo", userData.Heslo, DbType.String);
+                parameters.Add("p_pacient_id_c", userData.pacientId, DbType.Int32);
+                parameters.Add("p_zamestnanec_id_c", userData.zamestnanecId, DbType.Int32);
+                parameters.Add("p_role_id_role", (int?)userData.RoleUzivatel, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
         }
-
     }
 }

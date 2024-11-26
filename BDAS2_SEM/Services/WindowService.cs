@@ -48,7 +48,7 @@ namespace BDAS2_SEM.Services
             var window = new NewPatientWindow();
             var viewModel = new NewPatientVM(userData, this, _serviceProvider, onClosed);
             window.DataContext = viewModel;
-            window.Show();
+            window.ShowDialog();
         }
 
         public void CloseWindow(Action closeAction)

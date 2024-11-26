@@ -24,27 +24,31 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    INSERT INTO PACIENT 
-                        (ID_PACIENT, JMENO, PRIJMENI, RODNE_CISLO, TELEFON, DATUM_NAROZENI, POHLAVI, ADRESA_ID_ADRESA, UZIVATEL_DATA_ID_UZIVATEL_DATA) 
-                    VALUES 
-                        (PACIENT_SEQ.NEXTVAL, :Jmeno, :Prijmeni, :RodneCislo, :Telefon, :DatumNarozeni, :Pohlavi, :AdresaId, :UserDataId) 
-                    RETURNING ID_PACIENT INTO :IdPacient";
+                string procedureName = "manage_pacient";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Jmeno", pacient.Jmeno, DbType.String);
-                parameters.Add("Prijmeni", pacient.Prijmeni, DbType.String);
-                parameters.Add("RodneCislo", pacient.RodneCislo, DbType.Int32);
-                parameters.Add("Telefon", pacient.Telefon, DbType.Int64);
-                parameters.Add("DatumNarozeni", pacient.DatumNarozeni, DbType.Date);
-                parameters.Add("Pohlavi", pacient.Pohlavi, DbType.String);
-                parameters.Add("AdresaId", pacient.AdresaId, DbType.Int32);
-                parameters.Add("UserDataId", pacient.UserDataId, DbType.Int32);
-                parameters.Add("IdPacient", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_action", "INSERT", DbType.String);
+                parameters.Add("p_id_pacient", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_jmeno", pacient.Jmeno, DbType.String);
+                parameters.Add("p_prijmeni", pacient.Prijmeni, DbType.String);
+                parameters.Add("p_rodne_cislo", pacient.RodneCislo, DbType.Int32);
+                parameters.Add("p_telefon", pacient.Telefon, DbType.Int64);
+                parameters.Add("p_datum_narozeni", pacient.DatumNarozeni, DbType.Date);
+                parameters.Add("p_pohlavi", pacient.Pohlavi, DbType.String);
+                parameters.Add("p_adresa_id_adresa", pacient.AdresaId, DbType.Int32);
+                parameters.Add("p_uzivatel_data_id", pacient.UserDataId, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                return parameters.Get<int>("IdPacient");
+                var newPacientId = parameters.Get<int?>("p_id_pacient");
+                if (newPacientId.HasValue)
+                {
+                    return newPacientId.Value;
+                }
+                else
+                {
+                    throw new Exception("The procedure did not return a valid patient ID.");
+                }
             }
         }
 
@@ -52,34 +56,25 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    UPDATE PACIENT 
-                    SET 
-                        Jmeno = :Jmeno, 
-                        Prijmeni = :Prijmeni, 
-                        RodneCislo = :RodneCislo, 
-                        Telefon = :Telefon, 
-                        DatumNarozeni = :DatumNarozeni, 
-                        Pohlavi = :Pohlavi, 
-                        AdresaId = :AdresaId, 
-                        UserDataId = :UserDataId 
-                    WHERE 
-                        ID_PACIENT = :IdPacient";
+                string procedureName = "manage_pacient";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Jmeno", pacient.Jmeno, DbType.String);
-                parameters.Add("Prijmeni", pacient.Prijmeni, DbType.String);
-                parameters.Add("RodneCislo", pacient.RodneCislo, DbType.Int32);
-                parameters.Add("Telefon", pacient.Telefon, DbType.Int64);
-                parameters.Add("DatumNarozeni", pacient.DatumNarozeni, DbType.Date);
-                parameters.Add("Pohlavi", pacient.Pohlavi, DbType.String);
-                parameters.Add("AdresaId", pacient.AdresaId, DbType.Int32);
-                parameters.Add("UserDataId", pacient.UserDataId, DbType.Int32);
-                parameters.Add("IdPacient", pacient.IdPacient, DbType.Int32);
+                parameters.Add("p_action", "UPDATE", DbType.String);
+                parameters.Add("p_id_pacient", pacient.IdPacient, DbType.Int32);
+                parameters.Add("p_jmeno", pacient.Jmeno, DbType.String);
+                parameters.Add("p_prijmeni", pacient.Prijmeni, DbType.String);
+                parameters.Add("p_rodne_cislo", pacient.RodneCislo, DbType.Int32);
+                parameters.Add("p_telefon", pacient.Telefon, DbType.Int64);
+                parameters.Add("p_datum_narozeni", pacient.DatumNarozeni, DbType.Date);
+                parameters.Add("p_pohlavi", pacient.Pohlavi, DbType.String);
+                parameters.Add("p_adresa_id_adresa", pacient.AdresaId, DbType.Int32);
+                parameters.Add("p_uzivatel_data_id", pacient.UserDataId, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                // Виклик збереженої процедури
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
 
         public async Task<PACIENT> GetPacientById(int id)
         {

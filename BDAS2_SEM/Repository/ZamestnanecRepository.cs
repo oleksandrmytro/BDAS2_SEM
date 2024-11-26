@@ -24,28 +24,33 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    INSERT INTO ZAMESTNANEC 
-                        (ID_ZAMESTNANEC, Jmeno, Prijmeni, Telefon, ZAMESTNANEC_ID_ZAMESTNANEC, ADRESA_ID_ADRESA, POZICE_ID_POZICE, UZIVATEL_DATA_ID_UZIVATEL_DATA) 
-                    VALUES 
-                        (ZAMESTNANEC_SEQ.NEXTVAL, :Jmeno, :Prijmeni, :Telefon, :NadrazenyZamestnanecId, :AdresaId, :PoziceId, :UserDataId) 
-                    RETURNING ID_ZAMESTNANEC INTO :IdZamestnanec";
+                string procedureName = "manage_zamestnanec";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Jmeno", zamestnanec.Jmeno, DbType.String);
-                parameters.Add("Prijmeni", zamestnanec.Prijmeni, DbType.String);
-                parameters.Add("Telefon", zamestnanec.Telefon, DbType.Int64);
-                parameters.Add("NadrazenyZamestnanecId", zamestnanec.NadrazenyZamestnanecId, DbType.Int32);
-                parameters.Add("AdresaId", zamestnanec.AdresaId, DbType.Int32);
-                parameters.Add("PoziceId", zamestnanec.PoziceId, DbType.Int32);
-                parameters.Add("UserDataId", zamestnanec.UserDataId, DbType.Int32);
-                parameters.Add("IdZamestnanec", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_action", "INSERT", DbType.String);
+                parameters.Add("p_id_zamestnanec", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_jmeno", zamestnanec.Jmeno, DbType.String);
+                parameters.Add("p_prijmeni", zamestnanec.Prijmeni, DbType.String);
+                parameters.Add("p_telefon", zamestnanec.Telefon, DbType.Int64);
+                parameters.Add("p_zamestnanec_id", zamestnanec.NadrazenyZamestnanecId, DbType.Int32);
+                parameters.Add("p_adresa_id", zamestnanec.AdresaId, DbType.Int32);
+                parameters.Add("p_pozice_id", zamestnanec.PoziceId, DbType.Int32);
+                parameters.Add("p_uzivatel_data_id", zamestnanec.UserDataId, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                return parameters.Get<int>("IdZamestnanec");
+                var newZamestnanecId = parameters.Get<int?>("p_id_zamestnanec");
+                if (newZamestnanecId.HasValue)
+                {
+                    return newZamestnanecId.Value;
+                }
+                else
+                {
+                    throw new Exception("The procedure did not return a valid employee ID.");
+                }
             }
         }
+
 
         public async Task UpdateZamestnanec(ZAMESTNANEC zamestnanec)
         {

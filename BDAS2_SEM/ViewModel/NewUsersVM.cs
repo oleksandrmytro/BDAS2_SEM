@@ -60,9 +60,8 @@ namespace BDAS2_SEM.ViewModel
                         {
                             if (isSaved)
                             {
-                                // Assuming NewEmployeeVM updates user.zamestnanecId and calls UpdateUserData
-                                await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
-                                //await _uzivatelDataRepository.UpdateUserData(user);
+                                //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+                                await _uzivatelDataRepository.UpdateUserData(user);
 
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
@@ -82,7 +81,8 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else
                     {
-                        await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+                        //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+                        await _uzivatelDataRepository.UpdateUserData(user);
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
