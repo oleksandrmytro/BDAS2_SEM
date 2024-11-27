@@ -9,6 +9,7 @@ namespace BDAS2_SEM.Model.Enum
     public enum Status
     {
         Accepted = 1,
-        Cancelled = 2
+        Cancelled = 2,
+        Pending = 3 
     }
 }

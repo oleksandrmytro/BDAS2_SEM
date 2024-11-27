@@ -16,16 +16,18 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly INavstevaRepository _navstevaRepository;
         private readonly IWindowService _windowService;
+        private readonly IPatientContextService _patientContextService;
 
         public ObservableCollection<NAVSTEVA> PastAppointments { get; set; }
         public ObservableCollection<NAVSTEVA> FutureAppointments { get; set; }
 
         public ICommand BookAppointmentCommand { get; }
 
-        public PAppointmentsVM(INavstevaRepository navstevaRepository, IWindowService windowService)
+        public PAppointmentsVM(INavstevaRepository navstevaRepository, IWindowService windowService, IPatientContextService patientContextService)
         {
             _navstevaRepository = navstevaRepository;
             _windowService = windowService;
+            _patientContextService = patientContextService;
 
             BookAppointmentCommand = new RelayCommand(BookAppointment);
             LoadAppointments();
@@ -33,6 +35,7 @@ namespace BDAS2_SEM.ViewModel
 
         private async void LoadAppointments()
         {
+            var pacientId = _patientContextService.CurrentPatient.IdPacient;
             var allAppointments = await _navstevaRepository.GetAllNavstevy();
             var now = DateTime.Now;
 
@@ -41,7 +44,7 @@ namespace BDAS2_SEM.ViewModel
 
             foreach (var appointment in allAppointments)
             {
-                var appointmentDateTime = appointment.Datum; // Вже містить дату і час
+                var appointmentDateTime = appointment.Datum;
                 if (appointmentDateTime < now)
                 {
                     PastAppointments.Add(appointment);

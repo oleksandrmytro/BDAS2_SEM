@@ -69,6 +69,7 @@ namespace BDAS2_SEM
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IWindowService, WindowService>();
+            services.AddSingleton<IPatientContextService, PatientContextService>();
             // Add other services if needed
 
             // Register ViewModels

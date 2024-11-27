@@ -16,5 +16,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<IEnumerable<NAVSTEVA>> GetFutureNavstevy();
         Task DeleteNavsteva(int id);
         Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorId(int doctorId);
+        Task<bool> ExistsNavstevaForDoctorAndPatientAsync(int doctorId, int patientId);
     }
 }

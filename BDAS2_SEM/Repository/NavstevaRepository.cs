@@ -23,16 +23,18 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("p_datum", navsteva.Datum, DbType.Date);
-                parameters.Add("p_cas", navsteva.Cas, DbType.DateTime);
-                parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
-                parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
-                parameters.Add("p_status_id_status", (int)navsteva.Status, DbType.Int32); // Add status parameter
+
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
                 parameters.Add("p_id_navsteva", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_datum", navsteva.Datum, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_status_id", (int)navsteva.Status, DbType.Int32, ParameterDirection.Input);
 
-                await db.ExecuteAsync("INSERT_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
+                await db.ExecuteAsync("manage_navsteva", parameters, commandType: CommandType.StoredProcedure);
 
-                return parameters.Get<int>("p_id_navsteva");
+                int newId = parameters.Get<int>("p_id_navsteva");
+                return newId;
             }
         }
 
@@ -43,7 +45,6 @@ namespace BDAS2_SEM.Repository
                 var parameters = new DynamicParameters();
                 parameters.Add("p_id_navsteva", navsteva.IdNavsteva, DbType.Int32);
                 parameters.Add("p_datum", navsteva.Datum, DbType.Date);
-                parameters.Add("p_cas", navsteva.Cas, DbType.DateTime);
                 parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
                 parameters.Add("p_status_id_status", (int)navsteva.Status, DbType.Int32); // Add status parameter
@@ -128,6 +129,21 @@ namespace BDAS2_SEM.Repository
             JOIN ZAMESTNANEC_NEVSTEVA ZN ON N.ID_NAVSTEVA = ZN.NAVSTEVA_ID_NAVSTEVA
             WHERE ZN.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId";
                 return await db.QueryAsync<NAVSTEVA>(query, new { doctorId });
+            }
+        }
+
+        public async Task<bool> ExistsNavstevaForDoctorAndPatientAsync(int doctorId, int patientId)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+                    SELECT COUNT(*) FROM NAVSTEVA N
+                    INNER JOIN ZAMESTNANEC_NAVSTEVA ZN ON N.ID_NAVSTEVA = ZN.NAVSTEVA_ID_NAVSTEVA
+                    WHERE ZN.ZAMESTNANEC_ID = :DoctorId
+                    AND N.PACIENT_ID_PACIENT = :PatientId";
+
+                int count = await db.ExecuteScalarAsync<int>(sql, new { DoctorId = doctorId, PatientId = patientId });
+                return count > 0;
             }
         }
     }

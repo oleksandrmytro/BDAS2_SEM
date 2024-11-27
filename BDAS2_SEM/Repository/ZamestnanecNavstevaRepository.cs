@@ -57,7 +57,7 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    INSERT INTO ZAMESTNANEC_NAVSTEVA (ZAMESTNANEC_ID, NAVSTEVA_ID) 
+                    INSERT INTO ZAMESTNANEC_NAVSTEVA (ZAMESTNANEC_ID_ZAMESTNANEC, NAVSTEVA_ID_NAVSTEVA) 
                     VALUES (:ZamestnanecId, :NavstevaId)";
 
                 var parameters = new DynamicParameters();

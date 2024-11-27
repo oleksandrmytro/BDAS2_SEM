@@ -8,9 +8,8 @@ namespace BDAS2_SEM.Model
     public class NAVSTEVA : INotifyPropertyChanged
     {
         private int idNavsteva;
-        private DateTime datum;
-        private DateTime cas;
-        private int mistnost;
+        private DateTime? datum;
+        private int? mistnost;
         private int pacientId;
         private Status status;
 
@@ -27,7 +26,7 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public DateTime Datum
+        public DateTime? Datum
         {
             get { return datum; }
             set
@@ -40,20 +39,7 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public DateTime Cas
-        {
-            get { return cas; }
-            set
-            {
-                if (cas != value)
-                {
-                    cas = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int Mistnost
+        public int? Mistnost
         {
             get { return mistnost; }
             set

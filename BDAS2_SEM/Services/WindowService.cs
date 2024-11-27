@@ -15,10 +15,12 @@ namespace BDAS2_SEM.Services
     public class WindowService : IWindowService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPatientContextService _patientContextService;
 
-        public WindowService(IServiceProvider serviceProvider)
+        public WindowService(IServiceProvider serviceProvider, IPatientContextService patientContextService)
         {
             _serviceProvider = serviceProvider;
+            _patientContextService = patientContextService;
         }
 
         public void OpenDoctorsListWindow()
@@ -90,12 +92,15 @@ namespace BDAS2_SEM.Services
 
         public void OpenPatientWindow(PACIENT pacient)
         {
+            var patientContextService = _serviceProvider.GetRequiredService<IPatientContextService>();
+            patientContextService.CurrentPatient = pacient;
+
             var patientWindow = _serviceProvider.GetRequiredService<PatientsWindow>();
             var viewModel = _serviceProvider.GetRequiredService<PatientsVM>();
-            // Вы можете инициализировать ViewModel с данными пациента, если нужно
             patientWindow.DataContext = viewModel;
             patientWindow.Show();
         }
+
 
         private void CloseAuthWindow()
         {

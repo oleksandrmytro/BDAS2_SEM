@@ -3,32 +3,111 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:BDAS2_SEM.View.PatientViews"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel>
-            <Button Content="Записаться" Command="{Binding BookAppointmentCommand}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <TextBlock Text="Прошедшие встречи" FontWeight="Bold" Margin="10,20,10,10"/>
-            <ListView ItemsSource="{Binding PastAppointments}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Datum}" />
-                        <GridViewColumn Header="Время" DisplayMemberBinding="{Binding Cas}" />
-                        <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            <TextBlock Text="Будущие встречи" FontWeight="Bold" Margin="10,20,10,10"/>
+
+    <UserControl.Resources>
+        <!-- Styles for ListView and ListViewItems -->
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="#f9f9f9"/>
+            <Setter Property="BorderBrush" Value="#e0e0e0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#F0F4F8" Margin="10">
+        <StackPanel Margin="10">
+            <!-- Button to Book Appointment -->
+            <Button Content="Book Appointment" Command="{Binding BookAppointmentCommand}" 
+                    Style="{StaticResource ModernButtonStyle}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" 
+                    Margin="0,10,0,20"
+                    Width="200"
+                    Padding="10,5"/>
+
+            <!-- Header for Future Appointments -->
+            <TextBlock Text="Future Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,5"/>
+            <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+
+            <!-- Future Appointments ListView -->
             <ListView ItemsSource="{Binding FutureAppointments}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Datum}" />
-                        <GridViewColumn Header="Время" DisplayMemberBinding="{Binding Cas}" />
-                        <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" />
-                    </GridView>
-                </ListView.View>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
+
+            <!-- Header for Past Appointments -->
+            <TextBlock Text="Past Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,20,0,5"/>
+            <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+
+            <!-- Scrollable Past Appointments ListView -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
+                <ListView ItemsSource="{Binding PastAppointments}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
         </StackPanel>
     </Grid>
 </UserControl>

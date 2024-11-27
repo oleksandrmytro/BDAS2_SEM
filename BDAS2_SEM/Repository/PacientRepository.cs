@@ -136,9 +136,23 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = "SELECT * FROM PACIENT WHERE UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId";
+                string sql = @"
+            SELECT 
+                ID_PACIENT AS IdPacient,
+                JMENO AS Jmeno,
+                PRIJMENI AS Prijmeni,
+                POHLAVI AS Pohlavi,
+                DATUM_NAROZENI AS DatumNarozeni,
+                RODNE_CISLO AS RodneCislo,
+                TELEFON AS Telefon,
+                UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId,
+                ADRESA_ID_ADRESA AS AdresaId
+            FROM PACIENT 
+            WHERE UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId";
+
                 return await db.QueryFirstOrDefaultAsync<PACIENT>(sql, new { UserDataId = userDataId });
             }
         }
+
     }
 }

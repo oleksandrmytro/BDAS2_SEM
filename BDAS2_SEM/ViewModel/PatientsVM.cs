@@ -1,4 +1,5 @@
 ﻿using BDAS2_SEM.Model;
+using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.View.PatientViews;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ namespace BDAS2_SEM.ViewModel
     public class PatientsVM : INotifyPropertyChanged
     {
         private readonly IServiceProvider _serviceProvider;
-        private PACIENT _pacient;
+        private readonly IPatientContextService _patientContextService;
 
         public ObservableCollection<TabItemVM> Tabs { get; set; }
         private TabItemVM _selectedTab;
@@ -24,9 +25,10 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        public PatientsVM(IServiceProvider serviceProvider)
+        public PatientsVM(IServiceProvider serviceProvider, IPatientContextService patientContextService)
         {
             _serviceProvider = serviceProvider;
+            _patientContextService = patientContextService;
             InitializeTabs();
         }
 
