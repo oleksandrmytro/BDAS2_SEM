@@ -15,6 +15,7 @@
             <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
             <converters:BoolToEyeConverter x:Key="BoolToEyeConverter"/>
             <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+            <converters:FieldsFilledConverter x:Key="FieldsFilledConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

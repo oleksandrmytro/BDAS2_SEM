@@ -1,26 +1,47 @@
-﻿using System.ComponentModel;
+﻿using BDAS2_SEM.Model;
+using BDAS2_SEM.View.PatientViews;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace BDAS2_SEM.ViewModel
 {
     public class PatientsVM : INotifyPropertyChanged
     {
-        private string welcomeMessage = "Welcome to the Patient Dashboard!";
+        private readonly IServiceProvider _serviceProvider;
+        private PACIENT _pacient;
 
-        public string WelcomeMessage
+        public ObservableCollection<TabItemVM> Tabs { get; set; }
+        private TabItemVM _selectedTab;
+        public TabItemVM SelectedTab
         {
-            get => welcomeMessage;
+            get => _selectedTab;
             set
             {
-                if (welcomeMessage != value)
-                {
-                    welcomeMessage = value;
-                    OnPropertyChanged();
-                }
+                _selectedTab = value;
+                OnPropertyChanged();
             }
         }
 
-        // Додайте додаткові властивості та команди за потреби
+        public PatientsVM(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+            InitializeTabs();
+        }
+
+        private void InitializeTabs()
+        {
+            Tabs = new ObservableCollection<TabItemVM>
+            {
+                new TabItemVM {
+                    Name = "Appointments",
+                    Content = _serviceProvider.GetRequiredService<PAppointmentsView>()
+                },
+            };
+            OnPropertyChanged(nameof(Tabs));
+            SelectedTab = Tabs.FirstOrDefault();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

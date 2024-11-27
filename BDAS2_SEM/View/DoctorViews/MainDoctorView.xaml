@@ -95,31 +95,32 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="1.5*"/>
-                                <ColumnDefinition Width="1.5*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="47*"/>
+                                <ColumnDefinition Width="57*"/>
+                                <ColumnDefinition Width="94*"/>
+                                <ColumnDefinition Width="26*"/>
+                                <ColumnDefinition Width="113*"/>
+                                <ColumnDefinition Width="106*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <!-- Data Row 1 -->
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Ali" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Kerry" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Russian Federation" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="4" Text="Gdańsk" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="0" Grid.Column="5" Text="107-0339" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Text="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            <TextBlock Grid.Column="1" Text="Ali" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Kerry" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Russian Federation" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="56,0,0,0"/>
+                            <TextBlock Grid.Column="5" Text="Gdańsk" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="107-0339" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                             <!-- Data Row 2 -->
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="2" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            <TextBlock Grid.Row="1" Text="2" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Row="1" Grid.Column="1" Text="Clark" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Row="1" Grid.Column="2" Text="Angela" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="1" Grid.Column="3" Text="Estonia" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="1" Grid.Column="4" Text="Borghetto di Vara" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="1" Grid.Column="5" Text="1-660-850-1647" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="Estonia" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="31,0,0,0"/>
+                            <TextBlock Grid.Row="1" Grid.Column="5" Text="Borghetto di Vara" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Grid.Column="6" Text="1-660-850-1647" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                             <!-- Add more rows as necessary in a similar way -->
                         </Grid>

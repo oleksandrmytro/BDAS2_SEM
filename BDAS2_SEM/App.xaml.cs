@@ -78,6 +78,8 @@ namespace BDAS2_SEM
             services.AddTransient<PatientsVM>();
             services.AddTransient<AdminVM>();
             services.AddTransient<AppointmentsVM>();
+            services.AddTransient<PAppointmentsVM>();
+            services.AddTransient<DoctorsListVM>();
             services.AddTransient<NewUsersVM>();
             services.AddTransient<AddAddressVM>();
             services.AddTransient<AddPositionVM>();
@@ -96,7 +98,9 @@ namespace BDAS2_SEM
             services.AddSingleton<NewEmployeeWindow>();
             services.AddSingleton<AddAddressWindow>();
             services.AddSingleton<NewPatientWindow>();
-            services.AddSingleton<AppointmentsView>();
+            services.AddTransient<AppointmentsView>();
+            services.AddTransient<PAppointmentsView>();
+            services.AddTransient<DoctorsListView>();
             // Register other Views if needed
 
         }

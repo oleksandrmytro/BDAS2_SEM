@@ -21,6 +21,14 @@ namespace BDAS2_SEM.Services
             _serviceProvider = serviceProvider;
         }
 
+        public void OpenDoctorsListWindow()
+        {
+            var doctorsListView = _serviceProvider.GetRequiredService<DoctorsListView>();
+            var doctorsListVM = _serviceProvider.GetRequiredService<DoctorsListVM>();
+            doctorsListView.DataContext = doctorsListVM;
+            doctorsListView.ShowDialog();
+        }
+
         public void OpenAdminWindow()
         {
             var adminWindow = _serviceProvider.GetRequiredService<AdminWindow>();
@@ -84,7 +92,7 @@ namespace BDAS2_SEM.Services
         {
             var patientWindow = _serviceProvider.GetRequiredService<PatientsWindow>();
             var viewModel = _serviceProvider.GetRequiredService<PatientsVM>();
-            // Ви можете ініціалізувати ViewModel з даними пацієнта, якщо потрібно
+            // Вы можете инициализировать ViewModel с данными пациента, если нужно
             patientWindow.DataContext = viewModel;
             patientWindow.Show();
         }

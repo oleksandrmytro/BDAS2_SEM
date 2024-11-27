@@ -60,7 +60,21 @@
             </StackPanel>
 
             <!-- Save Button -->
-            <Button Content="Save" Command="{Binding SaveCommand}" Margin="0,20,0,0" Height="30"/>
+            <Button Content="Save"
+                    Command="{Binding SaveCommand}"
+                    Margin="0,20,0,0" Height="30">
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource FieldsFilledConverter}">
+                        <Binding Path="Jmeno" />
+                        <Binding Path="Prijmeni" />
+                        <Binding Path="RodneCislo" />
+                        <Binding Path="Telefon" />
+                        <Binding Path="DatumNarozeni" />
+                        <Binding Path="Pohlavi" />
+                        <Binding Path="AdresaId" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

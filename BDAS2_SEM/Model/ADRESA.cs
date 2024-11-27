@@ -21,6 +21,7 @@ namespace BDAS2_SEM.Model
                 {
                     id_adresa = value;
                     OnPropertyChanged();
+
                 }
             }
         }

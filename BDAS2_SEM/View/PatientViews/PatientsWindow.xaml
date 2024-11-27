@@ -1,11 +1,29 @@
-﻿<Window x:Class="BDAS2_SEM.View.PatientViews.PatientsWindow"
+﻿<!-- Main Window Code -->
+<Window x:Class="BDAS2_SEM.View.PatientViews.PatientsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Patient Panel" Height="400" Width="600">
+        xmlns:viewModel="clr-namespace:BDAS2_SEM.ViewModel"
+        Title="Patient Dashboard" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <!--<Window.DataContext>
+        <viewModel:DoctorsVM />
+    </Window.DataContext>-->
     <Grid>
-        <TextBlock Text="Welcome, Patient!" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" 
-                   FontSize="24"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Side Navigation Panel -->
+        <ListBox Grid.Column="0" 
+                 SelectedItem="{Binding SelectedTab}" 
+                 ItemsSource="{Binding Tabs}"
+                 BorderThickness="0"
+                 Background="#f8f9fa"
+                 ItemContainerStyle="{StaticResource TabListBoxItemStyle}"
+                 ItemTemplate="{StaticResource TabHeaderTemplate}" />
+
+        <!-- Main Content -->
+        <ContentControl Grid.Column="1" Content="{Binding SelectedTab.Content}" Margin="10"/>
     </Grid>
-</Window> 
+</Window>

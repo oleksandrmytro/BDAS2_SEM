@@ -18,5 +18,6 @@ namespace BDAS2_SEM.Services.Interfaces
         void OpenPatientWindow(PACIENT pacient);
         void OpenDoctorWindow(ZAMESTNANEC zamestnanec);
         void CloseWindow(Action closeAction);
+        void OpenDoctorsListWindow();
     }
 }

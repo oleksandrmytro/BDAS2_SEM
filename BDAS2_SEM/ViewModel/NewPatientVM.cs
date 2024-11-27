@@ -19,16 +19,106 @@ public class NewPatientVM : INotifyPropertyChanged
     private readonly IWindowService _windowService;
     private readonly Action<bool> _onClosed;
 
+    public bool CanSave
+    {
+        get
+        {
+            return !string.IsNullOrWhiteSpace(Jmeno) &&
+                   !string.IsNullOrWhiteSpace(Prijmeni) &&
+                   RodneCislo > 0 &&
+                   Telefon > 0 &&
+                   DatumNarozeni != DateTime.MinValue &&
+                   !string.IsNullOrWhiteSpace(Pohlavi) &&
+                   AdresaId > 0;
+        }
+    }
+
     public ObservableCollection<ADRESA> Addresses { get; set; }
 
-    // Властивості пацієнта
-    public string Jmeno { get; set; }
-    public string Prijmeni { get; set; }
-    public int RodneCislo { get; set; }
-    public long Telefon { get; set; }
-    public DateTime DatumNarozeni { get; set; }
-    public string Pohlavi { get; set; }
-    public int AdresaId { get; set; }
+    // Властивості пацієнта з модифікованими сеттерами
+    private string _jmeno;
+    public string Jmeno
+    {
+        get => _jmeno;
+        set
+        {
+            _jmeno = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private string _prijmeni;
+    public string Prijmeni
+    {
+        get => _prijmeni;
+        set
+        {
+            _prijmeni = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private int _rodneCislo;
+    public int RodneCislo
+    {
+        get => _rodneCislo;
+        set
+        {
+            _rodneCislo = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private long _telefon;
+    public long Telefon
+    {
+        get => _telefon;
+        set
+        {
+            _telefon = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private DateTime _datumNarozeni = DateTime.MinValue;
+    public DateTime DatumNarozeni
+    {
+        get => _datumNarozeni;
+        set
+        {
+            _datumNarozeni = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private string _pohlavi;
+    public string Pohlavi
+    {
+        get => _pohlavi;
+        set
+        {
+            _pohlavi = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
+
+    private int _adresaId;
+    public int AdresaId
+    {
+        get => _adresaId;
+        set
+        {
+            _adresaId = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanSave));
+        }
+    }
 
     // Команди
     public ICommand SaveCommand { get; }
@@ -100,6 +190,7 @@ public class NewPatientVM : INotifyPropertyChanged
         OnPropertyChanged(nameof(AdresaId));
     }
 
+    // Реалізація INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {

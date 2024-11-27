@@ -75,12 +75,28 @@ namespace BDAS2_SEM.Repository
                 var query = @"SELECT 
                                 ID_NAVSTEVA AS IdNavsteva,
                                 DATUM AS Datum,
-                                CAS AS Cas,
                                 MISTNOST AS Mistnost,
                                 PACIENT_ID_PACIENT AS PacientId,
                                 STATUS_ID_STATUS AS Status
                               FROM NAVSTEVA";
                 return await db.QueryAsync<NAVSTEVA>(query);
+            }
+        }
+
+        public async Task<IEnumerable<NAVSTEVA>> GetFutureNavstevy()
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var query = @"SELECT 
+                        ID_NAVSTEVA AS IdNavsteva,
+                        DATUM AS Datum,
+                        CAS AS Cas,
+                        MISTNOST AS Mistnost,
+                        PACIENT_ID_PACIENT AS PacientId,
+                        STATUS_ID_STATUS AS Status
+                      FROM NAVSTEVA
+                      WHERE DATUM >= :currentDate";
+                return await db.QueryAsync<NAVSTEVA>(query, new { currentDate = DateTime.Now });
             }
         }
 
