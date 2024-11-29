@@ -62,7 +62,7 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID_ORDINACE AS IdOrdinace, 
+                        ID_ORDINACE AS c, 
                         NAZEV AS Nazev 
                     FROM ORDINACE 
                     WHERE ID_ORDINACE = :Id";

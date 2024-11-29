@@ -13,6 +13,7 @@ namespace BDAS2_SEM.Model
         private int adresaId;
         private int poziceId;
         private int userDataId;
+        private string oddeleni; // Новое свойство
 
         public int IdZamestnanec
         {
@@ -100,6 +101,19 @@ namespace BDAS2_SEM.Model
                 if (poziceId != value)
                 {
                     poziceId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string Oddeleni
+        {
+            get { return oddeleni; }
+            set
+            {
+                if (oddeleni != value)
+                {
+                    oddeleni = value;
                     OnPropertyChanged();
                 }
             }

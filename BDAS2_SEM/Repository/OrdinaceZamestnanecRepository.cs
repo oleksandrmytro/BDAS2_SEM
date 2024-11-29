@@ -2,11 +2,8 @@
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
@@ -25,7 +22,7 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    INSERT INTO ORDINACE_ZAMESTNANEC (ID_ORDINACE, ID_ZAMESTNANEC) 
+                    INSERT INTO ORDINACE_ZAMESTNANEC (ORDINACE_ID_ORDINACE, ZAMESTNANEC_ID_ZAMESTNANEC) 
                     VALUES (:OrdinaceId, :ZamestnanecId)";
 
                 var parameters = new DynamicParameters();
@@ -42,10 +39,10 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID_ORDINACE AS OrdinaceId, 
-                        ID_ZAMESTNANEC AS ZamestnanecId 
+                        ORDINACE_ID_ORDINACE AS OrdinaceId, 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId 
                     FROM ORDINACE_ZAMESTNANEC 
-                    WHERE ID_ORDINACE = :OrdinaceId AND ID_ZAMESTNANEC = :ZamestnanecId";
+                    WHERE ORDINACE_ID_ORDINACE = :OrdinaceId AND ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId";
 
                 return await db.QueryFirstOrDefaultAsync<ORDINACE_ZAMESTNANEC>(sql, new { OrdinaceId = ordinaceId, ZamestnanecId = zamestnanecId });
             }
@@ -57,8 +54,8 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID_ORDINACE AS OrdinaceId, 
-                        ID_ZAMESTNANEC AS ZamestnanecId 
+                        ORDINACE_ID_ORDINACE AS OrdinaceId, 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId 
                     FROM ORDINACE_ZAMESTNANEC";
 
                 return await db.QueryAsync<ORDINACE_ZAMESTNANEC>(sql);
@@ -71,7 +68,7 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     DELETE FROM ORDINACE_ZAMESTNANEC 
-                    WHERE ID_ORDINACE = :OrdinaceId AND ID_ZAMESTNANEC = :ZamestnanecId";
+                    WHERE ORDINACE_ID_ORDINACE = :OrdinaceId AND ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId";
 
                 await db.ExecuteAsync(sql, new { OrdinaceId = ordinaceId, ZamestnanecId = zamestnanecId });
             }

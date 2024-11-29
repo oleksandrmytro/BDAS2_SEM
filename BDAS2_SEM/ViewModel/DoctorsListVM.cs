@@ -4,6 +4,7 @@ using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +19,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPatientContextService _patientContextService;
         private readonly INavstevaRepository _navstevaRepository;
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
+        private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
+        private readonly IOrdinaceRepository _ordinaceRepository;
 
         public ObservableCollection<ZAMESTNANEC> Doctors { get; set; }
         public ICommand CreateAppointmentCommand { get; }
@@ -26,12 +29,16 @@ namespace BDAS2_SEM.ViewModel
             IZamestnanecRepository zamestnanecRepository,
             IPatientContextService patientContextService,
             INavstevaRepository navstevaRepository,
-            IZamestnanecNavstevaRepository zamestnanecNavstevaRepository)
+            IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
+            IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
+            IOrdinaceRepository ordinaceRepository)
         {
             _zamestnanecRepository = zamestnanecRepository;
             _patientContextService = patientContextService;
             _navstevaRepository = navstevaRepository;
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
+            _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
+            _ordinaceRepository = ordinaceRepository;
 
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
             LoadDoctors();
@@ -40,6 +47,23 @@ namespace BDAS2_SEM.ViewModel
         private async void LoadDoctors()
         {
             var doctors = await _zamestnanecRepository.GetAllZamestnanci();
+            var ordinaceZamestnanci = await _ordinaceZamestnanecRepository.GetAllOrdinaceZamestnanec();
+            var ordinaceList = await _ordinaceRepository.GetAllOrdinace();
+
+            foreach (var doctor in doctors)
+            {
+                var ordinaceZamestnanec = ordinaceZamestnanci.Where(o => o.ZamestnanecId == doctor.IdZamestnanec);
+                var ordinaceNames = ordinaceZamestnanec
+                    .Select(o => ordinaceList.FirstOrDefault(ord => ord.IdOrdinace == o.OrdinaceId)?.Nazev)
+                    .Where(name => !string.IsNullOrEmpty(name))
+                    .ToList();
+
+                if (ordinaceNames.Any())
+                {
+                    doctor.Oddeleni = string.Join(", ", ordinaceNames);
+                }
+            }
+
             Doctors = new ObservableCollection<ZAMESTNANEC>(doctors);
             OnPropertyChanged(nameof(Doctors));
         }

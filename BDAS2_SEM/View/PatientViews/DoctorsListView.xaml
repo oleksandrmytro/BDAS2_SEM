@@ -36,15 +36,18 @@
             <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="179*"/>
+                        <ColumnDefinition Width="37*"/>
+                        <ColumnDefinition Width="142*"/>
+                        <ColumnDefinition Width="179*"/>
+                        <ColumnDefinition Width="179*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="First Name" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Column="2" Text="Phone" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Column="3" Text="Action" FontWeight="Bold" FontSize="14"/>
+                    <TextBlock Text="Last Name" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="179,0,0,0"/>
+                    <TextBlock Grid.Column="2" Text="Phone" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="142,0,0,0"/>
+                    <TextBlock Grid.Column="4" Text="Department" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="5" Text="Action" FontWeight="Bold" FontSize="14"/>
                 </Grid>
             </Border>
 
@@ -57,14 +60,16 @@
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding Jmeno}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="1" Text="{Binding Prijmeni}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="2" Text="{Binding Telefon}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Oddeleni}" VerticalAlignment="Center" FontSize="14"/>
 
-                            <Button Grid.Column="3" Content="Book" 
+                            <Button Grid.Column="4" Content="Book" 
                                     Style="{StaticResource ModernButtonStyle}"
                                     Command="{Binding DataContext.CreateAppointmentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" 
                                     CommandParameter="{Binding}" 
