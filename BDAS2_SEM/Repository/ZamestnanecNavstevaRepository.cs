@@ -2,11 +2,8 @@
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
@@ -26,8 +23,8 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ZAMESTNANEC_ID AS ZamestnanecId, 
-                        NAVSTEVA_ID AS NavstevaId 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId, 
+                        NAVSTEVA_ID_NAVSTEVA AS NavstevaId 
                     FROM 
                         ZAMESTNANEC_NAVSTEVA";
 
@@ -41,14 +38,29 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ZAMESTNANEC_ID AS ZamestnanecId, 
-                        NAVSTEVA_ID AS NavstevaId 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId, 
+                        NAVSTEVA_ID_NAVSTEVA AS NavstevaId 
                     FROM 
                         ZAMESTNANEC_NAVSTEVA 
                     WHERE 
-                        ZAMESTNANEC_ID = :ZamestnanecId AND NAVSTEVA_ID = :NavstevaId";
+                        ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId AND NAVSTEVA_ID_NAVSTEVA = :NavstevaId";
 
                 return await db.QueryFirstOrDefaultAsync<ZAMESTNANEC_NAVSTEVA>(sql, new { ZamestnanecId = zamestnanecId, NavstevaId = navstevaId });
+            }
+        }
+
+        public async Task<ZAMESTNANEC_NAVSTEVA> GetZamestnanecNavstevaByNavstevaId(int navstevaId)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+                    SELECT 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId, 
+                        NAVSTEVA_ID_NAVSTEVA AS NavstevaId 
+                    FROM ZAMESTNANEC_NAVSTEVA 
+                    WHERE NAVSTEVA_ID_NAVSTEVA = :NavstevaId";
+
+                return await db.QueryFirstOrDefaultAsync<ZAMESTNANEC_NAVSTEVA>(sql, new { NavstevaId = navstevaId });
             }
         }
 
@@ -74,8 +86,8 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     UPDATE ZAMESTNANEC_NAVSTEVA 
-                    SET NAVSTEVA_ID = :NewNavstevaId 
-                    WHERE ZAMESTNANEC_ID = :ZamestnanecId AND NAVSTEVA_ID = :NavstevaId";
+                    SET NAVSTEVA_ID_NAVSTEVA = :NewNavstevaId 
+                    WHERE ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId AND NAVSTEVA_ID_NAVSTEVA = :NavstevaId";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("NewNavstevaId", zamestnanecNavsteva.NavstevaId, DbType.Int32);
@@ -92,7 +104,7 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     DELETE FROM ZAMESTNANEC_NAVSTEVA 
-                    WHERE ZAMESTNANEC_ID = :ZamestnanecId AND NAVSTEVA_ID = :NavstevaId";
+                    WHERE ZAMEСТNANEC_ID_ZAMEСТНАНЕЦ = :ZamестнанецId AND НАВСТЕВА_ID_НАВСТЕВА = :НавстеваId";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("ZamestnanecId", zamestnanecId, DbType.Int32);

@@ -34,80 +34,140 @@
     </UserControl.Resources>
 
     <Grid Background="#F0F4F8" Margin="10">
-        <StackPanel Margin="10">
-            <!-- Button to Book Appointment -->
-            <Button Content="Book Appointment" Command="{Binding BookAppointmentCommand}" 
-                    Style="{StaticResource ModernButtonStyle}"
-                    HorizontalAlignment="Center" VerticalAlignment="Center" 
-                    Margin="0,10,0,20"
-                    Width="200"
-                    Padding="10,5"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <!-- Header for Future Appointments -->
-            <TextBlock Text="Future Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,5"/>
-            <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
+        <!-- Button to Book Appointment -->
+        <Button Content="Book Appointment" Command="{Binding BookAppointmentCommand}" 
+                Style="{StaticResource ModernButtonStyle}"
+                HorizontalAlignment="Center" VerticalAlignment="Center" 
+                Margin="0,10,0,20"
+                Width="200"
+                Padding="10,5"
+                Grid.Row="0" Grid.ColumnSpan="2"/>
+
+        <!-- Future Appointments -->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Future Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,5" Grid.Row="0"/>
+            <Border Background="#007ACC" Padding="10" Margin="0,0,0,5" CornerRadius="5" Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
                 </Grid>
             </Border>
-
-            <!-- Future Appointments ListView -->
-            <ListView ItemsSource="{Binding FutureAppointments}">
+            <ListView ItemsSource="{Binding FutureAppointments}" Grid.Row="2">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DoktorJmeno}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+        </Grid>
 
-            <!-- Header for Past Appointments -->
-            <TextBlock Text="Past Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,20,0,5"/>
-            <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
+        <!-- Unconfirmed Appointments -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Unconfirmed Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,5" Grid.Row="0"/>
+            <Border Background="#007ACC" Padding="10" Margin="0,0,0,5" CornerRadius="5" Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
-                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
                 </Grid>
             </Border>
+            <ListView ItemsSource="{Binding UnconfirmedAppointments}" Grid.Row="2">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
 
-            <!-- Scrollable Past Appointments ListView -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
-                <ListView ItemsSource="{Binding PastAppointments}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DoktorJmeno}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
 
-                                <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
-                                <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </ScrollViewer>
-        </StackPanel>
+        <!-- Past Appointments -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Past Appointments" FontWeight="Bold" FontSize="16" Foreground="#333" Margin="0,10,0,5" Grid.Row="0"/>
+            <Border Background="#007ACC" Padding="10" Margin="0,0,0,5" CornerRadius="5" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+            <ListView ItemsSource="{Binding PastAppointments}" Grid.Row="2">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Datum}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DoktorJmeno}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>
