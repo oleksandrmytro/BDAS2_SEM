@@ -1,7 +1,9 @@
 ﻿using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum; // Include the Status enum
+using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,12 +15,14 @@ namespace BDAS2_SEM.ViewModel
     public class AppointmentsVM : INotifyPropertyChanged
     {
         private readonly INavstevaRepository _navstevaRepository;
+        private readonly IWindowService _windowService;
         private ZAMESTNANEC _doctor;
 
-        public ObservableCollection<NAVSTEVA> Appointments { get; set; }
+        public ObservableCollection<dynamic> Appointments { get; set; }
 
         public ICommand AcceptAppointmentCommand { get; }
         public ICommand CancelAppointmentCommand { get; }
+        public ICommand AssignAppointmentCommand { get; }
 
         private string _noAppointmentsMessage;
         public string NoAppointmentsMessage
@@ -34,13 +38,15 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        public AppointmentsVM(INavstevaRepository navstevaRepository)
+        public AppointmentsVM(IServiceProvider serviceProvider, IWindowService windowService)
         {
-            _navstevaRepository = navstevaRepository;
-            Appointments = new ObservableCollection<NAVSTEVA>();
+            _navstevaRepository = serviceProvider.GetRequiredService<INavstevaRepository>();
+            _windowService = windowService;
+            Appointments = new ObservableCollection<dynamic>();
 
             AcceptAppointmentCommand = new RelayCommand(AcceptAppointment);
             CancelAppointmentCommand = new RelayCommand(CancelAppointment);
+            AssignAppointmentCommand = new RelayCommand(AssignAppointment);
         }
 
         public void SetDoctor(ZAMESTNANEC doctor)
@@ -51,27 +57,34 @@ namespace BDAS2_SEM.ViewModel
 
         private async void LoadAppointments()
         {
-            //var navstevy = await _navstevaRepository.GetAppointmentsByDoctorId(_doctor.IdZamestnanec);
-            //Appointments.Clear();
-            //if (navstevy != null && navstevy.Any())
-            //{
-            //    foreach (var navsteva in navstevy)
-            //    {
-            //        Appointments.Add(navsteva);
-            //    }
-            //    NoAppointmentsMessage = string.Empty; // Clear any previous message
-            //}
-            //else
-            //{
-            //    NoAppointmentsMessage = "Лікар не має запланованих прийомів."; // "The doctor has no scheduled appointments."
-            //}
+            var appointments = await _navstevaRepository.GetAppointmentsByDoctorId(_doctor.IdZamestnanec);
+            Appointments.Clear();
+            if (appointments != null)
+            {
+                foreach (var appointment in appointments)
+                {
+                    Appointments.Add(appointment);
+                }
+                NoAppointmentsMessage = string.Empty;
+            }
+            else
+            {
+                NoAppointmentsMessage = "Лікар не має запланованих зустрічей.";
+            }
         }
 
         private async void AcceptAppointment(object parameter)
         {
-            if (parameter is NAVSTEVA navsteva)
+            if (parameter != null)
             {
-                navsteva.Status = Status.Accepted;
+                dynamic appointment = parameter;
+                NAVSTEVA navsteva = new NAVSTEVA
+                {
+                    IdNavsteva = appointment.IDNAVSTEVA,
+                    PacientId = appointment.PACIENTIDPACIENT,
+                    Status = Status.Accepted
+                };
+
                 await _navstevaRepository.UpdateNavsteva(navsteva);
                 OnPropertyChanged(nameof(Appointments));
             }
@@ -79,11 +92,41 @@ namespace BDAS2_SEM.ViewModel
 
         private async void CancelAppointment(object parameter)
         {
-            if (parameter is NAVSTEVA navsteva)
+            if (parameter != null)
             {
-                navsteva.Status = Status.Cancelled;
+                dynamic appointment = parameter;
+                NAVSTEVA navsteva = new NAVSTEVA
+                {
+                    IdNavsteva = appointment.IDNAVSTEVA,
+                    PacientId = appointment.PACIENTIDPACIENT,
+                    Status = Status.Cancelled
+                };
+
                 await _navstevaRepository.UpdateNavsteva(navsteva);
-                OnPropertyChanged(nameof(Appointments));
+                Appointments.Remove(appointment);
+            }
+        }
+
+        private void AssignAppointment(object parameter)
+        {
+            if (parameter != null)
+            {
+                dynamic appointment = parameter;
+                NAVSTEVA navsteva = new NAVSTEVA
+                {
+                    IdNavsteva = (int)appointment.IDNAVSTEVA,
+                    PacientId = (int)appointment.PACIENTID,
+                    Status = (Status)(int)appointment.STATUS
+                };
+
+                _windowService.OpenAssignAppointmentWindow(navsteva, async (updatedAppointment) =>
+                {
+                    if (updatedAppointment != null)
+                    {
+                        await _navstevaRepository.UpdateNavsteva(updatedAppointment);
+                        Appointments.Remove(appointment);
+                    }
+                });
             }
         }
 

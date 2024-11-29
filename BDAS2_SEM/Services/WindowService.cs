@@ -66,6 +66,21 @@ namespace BDAS2_SEM.Services
             closeAction?.Invoke();
         }
 
+        public void OpenAssignAppointmentWindow(NAVSTEVA navsteva, Action<NAVSTEVA> onClose)
+        {
+            var viewModel = new AssignAppointmentVM(navsteva);
+            var window = new AssignAppointmentView
+            {
+                DataContext = viewModel
+            };
+            viewModel.CloseAction = (updatedNavsteva) =>
+            {
+                onClose(updatedNavsteva);
+                window.Close();
+            };
+            window.ShowDialog();
+        }
+
         public void OpenAddAddressWindow(Action<ADRESA> onAddressAdded)
         {
             var addAddressWindow = new AddAddressWindow();

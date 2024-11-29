@@ -16,6 +16,7 @@
             <converters:BoolToEyeConverter x:Key="BoolToEyeConverter"/>
             <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <converters:FieldsFilledConverter x:Key="FieldsFilledConverter"/>
+            <converters:StatusToBooleanConverter x:Key="StatusToBooleanConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

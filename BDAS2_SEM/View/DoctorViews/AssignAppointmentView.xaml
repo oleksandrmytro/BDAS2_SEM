@@ -1,0 +1,42 @@
+﻿<!-- View/DoctorViews/AssignAppointmentView.xaml -->
+<Window x:Class="BDAS2_SEM.View.DoctorViews.AssignAppointmentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Assign Appointment" Height="220" Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Date -->
+            <RowDefinition Height="Auto"/>
+            <!-- Time -->
+            <RowDefinition Height="Auto"/>
+            <!-- Room -->
+            <RowDefinition Height="*"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <!-- Labels -->
+            <ColumnDefinition Width="*"/>
+            <!-- Inputs -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Date Picker -->
+        <TextBlock Text="Date:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <DatePicker SelectedDate="{Binding SelectedDate}" Grid.Row="0" Grid.Column="1" Margin="5,5,0,5" />
+
+        <!-- Time ComboBox -->
+        <TextBlock Text="Time:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <ComboBox ItemsSource="{Binding AvailableTimes}" SelectedItem="{Binding SelectedTime}" Grid.Row="1" Grid.Column="1" Margin="5,5,0,5" />
+
+        <!-- Room ComboBox -->
+        <TextBlock Text="Room:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,5"/>
+        <ComboBox ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" Grid.Row="2" Grid.Column="1" Margin="5,5,0,5"/>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Save" Command="{Binding SaveCommand}" Width="80" Margin="5,0"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="80" Margin="5,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

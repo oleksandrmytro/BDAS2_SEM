@@ -43,13 +43,15 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 var parameters = new DynamicParameters();
+
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
                 parameters.Add("p_id_navsteva", navsteva.IdNavsteva, DbType.Int32);
                 parameters.Add("p_datum", navsteva.Datum, DbType.Date);
                 parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
-                parameters.Add("p_status_id_status", (int)navsteva.Status, DbType.Int32); // Add status parameter
+                parameters.Add("p_status_id", (int)navsteva.Status, DbType.Int32); // Add status parameter
 
-                await db.ExecuteAsync("UPDATE_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
+                await db.ExecuteAsync("manage_navsteva", parameters, commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -112,25 +114,32 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        // If you have a method to get appointments by doctor ID
-        public async Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorId(int doctorId)
+        // NavstevaRepository.cs
+        public async Task<IEnumerable<dynamic>> GetAppointmentsByDoctorId(int doctorId)
         {
             using (var db = new OracleConnection(connectionString))
             {
                 var query = @"
             SELECT 
-                N.ID_NAVSTEVA AS IdNavsteva,
-                N.DATUM AS Datum,
-                N.CAS AS Cas,
-                N.MISTNOST AS Mistnost,
-                N.PACIENT_ID_PACIENT AS PacientIdPacient,
-                N.STATUS_ID_STATUS AS StatusIdStatus
-            FROM NAVSTEVA N
-            JOIN ZAMESTNANEC_NEVSTEVA ZN ON N.ID_NAVSTEVA = ZN.NAVSTEVA_ID_NAVSTEVA
-            WHERE ZN.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId";
-                return await db.QueryAsync<NAVSTEVA>(query, new { doctorId });
+                n.ID_NAVSTEVA AS IdNavsteva,
+                n.PACIENT_ID_PACIENT AS PacientId,
+                n.STATUS_ID_STATUS AS Status,
+                p.JMENO AS PacientJmeno,
+                p.PRIJMENI AS PacientPrijmeni
+            FROM NAVSTEVA n
+            JOIN PACIENT p ON n.PACIENT_ID_PACIENT = p.ID_PACIENT
+            WHERE n.STATUS_ID_STATUS = :pendingStatus
+            AND n.ID_NAVSTEVA IN (
+                SELECT NAVSTEVA_ID_NAVSTEVA FROM ZAMESTNANEC_NAVSTEVA WHERE ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
+            )
+        ";
+
+                var parameters = new { doctorId, pendingStatus = (int)Status.Pending };
+                var result = await db.QueryAsync(query, parameters);
+                return result;
             }
         }
+
 
         public async Task<bool> ExistsNavstevaForDoctorAndPatientAsync(int doctorId, int patientId)
         {
