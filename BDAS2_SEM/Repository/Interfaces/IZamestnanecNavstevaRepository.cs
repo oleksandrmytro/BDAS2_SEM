@@ -13,6 +13,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<ZAMESTNANEC_NAVSTEVA> GetZamestnanecNavstevaById(int zamestnanecId, int navstevaId);
         Task InsertZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva);
         Task UpdateZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva);
+        Task<ZAMESTNANEC_NAVSTEVA> GetZamestnanecNavstevaByNavstevaId(int navstevaId); // Новый метод
         Task DeleteZamestnanecNavsteva(int zamestnanecId, int navstevaId);
     }
 }

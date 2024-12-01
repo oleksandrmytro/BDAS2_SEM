@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace BDAS2_SEM.Model
 {
-    public class PACIENT : INotifyPropertyChanged
+    public class PACIENT : INotifyPropertyChanged, ICloneable
     {
         private int idPacient;
         private string jmeno;
@@ -133,11 +133,39 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is PACIENT other)
+            {
+                return IdPacient == other.IdPacient &&
+                       Jmeno == other.Jmeno &&
+                       Prijmeni == other.Prijmeni &&
+                       RodneCislo == other.RodneCislo &&
+                       Telefon == other.Telefon &&
+                       DatumNarozeni == other.DatumNarozeni &&
+                       Pohlavi == other.Pohlavi &&
+                       AdresaId == other.AdresaId &&
+                       UserDataId == other.UserDataId;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = HashCode.Combine(IdPacient, Jmeno, Prijmeni, RodneCislo, Telefon);
+            hash = HashCode.Combine(hash, DatumNarozeni, Pohlavi, AdresaId, UserDataId);
+            return hash;
         }
     }
 }
