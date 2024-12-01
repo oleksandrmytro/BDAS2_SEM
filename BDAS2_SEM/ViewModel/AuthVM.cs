@@ -278,7 +278,7 @@ namespace BDAS2_SEM.ViewModel
                 propertyName == nameof(ConfirmPassword) ||
                 propertyName == nameof(IsRegistering))
             {
-                SubmitCommand.RaiseCanExecuteChanged();
+                
             }
         }
     }

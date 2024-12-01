@@ -81,6 +81,29 @@ namespace BDAS2_SEM.Services
             window.ShowDialog();
         }
 
+        public void OpenAssignDiagnosisWindow(NAVSTEVA navsteva,int idZamestnanec, Func<NAVSTEVA, Task> callback)
+        {
+            // Створюємо екземпляр ViewModel для вікна призначення діагнозу
+            var assignDiagnosisVM = new AssignDiagnosisVM(
+                _serviceProvider.GetRequiredService<INavstevaRepository>(),
+                _serviceProvider.GetRequiredService<IDiagnozaRepository>(),
+                _serviceProvider.GetRequiredService<ILekRepository>(),
+                _serviceProvider.GetRequiredService<ILekDiagnozaRepository>(),
+                _serviceProvider.GetRequiredService<INavstevaDiagnozaRepository>(),
+                _serviceProvider.GetRequiredService<IOperaceRepository>(),
+                _serviceProvider.GetRequiredService<IOperaceZamestnanecRepository>(),
+                navsteva,
+                callback, idZamestnanec);
+
+            // Створюємо екземпляр вікна призначення діагнозу з повним простором імен
+            var window = new AssignDiagnosisWindow
+            {
+                DataContext = assignDiagnosisVM
+            };
+
+            window.ShowDialog();
+        }
+
         public void OpenAddAddressWindow(Action<ADRESA> onAddressAdded)
         {
             var addAddressWindow = new AddAddressWindow();
@@ -128,5 +151,18 @@ namespace BDAS2_SEM.Services
                 }
             }
         }
+
+        public void UpdateAppointmentWindow(NAVSTEVA appointment, Func<NAVSTEVA, Task> callback, int doctorId)
+        {
+            var window = _serviceProvider.GetRequiredService<UpdateAppointmentWindow>();
+            var viewModel = new UpdateAppointmentVM(_serviceProvider.GetRequiredService<INavstevaRepository>(), _serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>());
+
+            viewModel.Initialize(appointment, callback, doctorId);
+
+            window.DataContext = viewModel;
+            window.ShowDialog();
+        }
+
+
     }
 }

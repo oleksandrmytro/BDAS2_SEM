@@ -114,8 +114,7 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        // NavstevaRepository.cs
-        public async Task<IEnumerable<dynamic>> GetAppointmentsByDoctorId(int doctorId)
+        public async Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorId(int doctorId)
         {
             using (var db = new OracleConnection(connectionString))
             {
@@ -124,21 +123,20 @@ namespace BDAS2_SEM.Repository
                 n.ID_NAVSTEVA AS IdNavsteva,
                 n.PACIENT_ID_PACIENT AS PacientId,
                 n.STATUS_ID_STATUS AS Status,
-                p.JMENO AS PacientJmeno,
-                p.PRIJMENI AS PacientPrijmeni
+                n.DATUM AS Datum,
+                n.MISTNOST AS Mistnost
             FROM NAVSTEVA n
-            JOIN PACIENT p ON n.PACIENT_ID_PACIENT = p.ID_PACIENT
-            WHERE n.STATUS_ID_STATUS = :pendingStatus
-            AND n.ID_NAVSTEVA IN (
-                SELECT NAVSTEVA_ID_NAVSTEVA FROM ZAMESTNANEC_NAVSTEVA WHERE ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
-            )
+            JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
+            WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
         ";
 
-                var parameters = new { doctorId, pendingStatus = (int)Status.Pending };
-                var result = await db.QueryAsync(query, parameters);
+                var parameters = new { doctorId };
+                var result = await db.QueryAsync<NAVSTEVA>(query, parameters);
                 return result;
             }
         }
+
+
 
 
         public async Task<bool> ExistsNavstevaForDoctorAndPatientAsync(int doctorId, int patientId)
@@ -155,5 +153,108 @@ namespace BDAS2_SEM.Repository
                 return count > 0;
             }
         }
+
+        public async Task<IEnumerable<NAVSTEVA>> GetAppointmentsByDoctorIdDateAndRoom(int doctorId, DateTime date, int room)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var query = @"
+                    SELECT n.*
+                    FROM NAVSTEVA n
+                    JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
+                    WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
+                    AND TRUNC(n.DATUM) = :selectedDate
+                    AND n.MISTNOST = :room
+                    AND n.STATUS_ID_STATUS IN (:accepted)
+                ";
+
+                var parameters = new
+                {
+                    doctorId,
+                    selectedDate = date.Date,
+                    room,
+                    accepted = (int)Status.Accepted
+                };
+
+                var result = await db.QueryAsync<NAVSTEVA>(query, parameters);
+                return result;
+            }
+        }
+
+
+        public async Task<bool> IsTimeSlotAvailable(int doctorId, DateTime dateTime, int room, int? excludeAppointmentId = null)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var query = @"
+                    SELECT COUNT(*)
+                    FROM NAVSTEVA n
+                    JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
+                    WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
+                    AND n.DATUM = :dateTime
+                    AND n.MISTNOST = :room
+                    AND n.STATUS_ID_STATUS IN (:accepted)
+                    AND (:excludeId IS NULL OR n.ID_NAVSTEVA != :excludeId)
+                ";
+
+                var parameters = new
+                {
+                    doctorId,
+                    dateTime,
+                    room,
+                    accepted = (int)Status.Accepted,
+                    excludeId = excludeAppointmentId
+                };
+
+                var count = await db.ExecuteScalarAsync<int>(query, parameters);
+                return count == 0;
+            }
+        }
+        public async Task<List<(int Room, string TimeSlot)>> GetAvailableRoomsAndTimes(int ordinaceId, DateTime date)
+        {
+            var results = new List<(int Room, string TimeSlot)>();
+
+            using (var db = new OracleConnection(connectionString))
+            using (var cmd = db.CreateCommand())
+            {
+                cmd.CommandText = "GetAvailableRoomsAndTimes";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("p_ordinace_id", OracleDbType.Int32).Value = ordinaceId;
+                cmd.Parameters.Add("p_date", OracleDbType.Date).Value = date;
+                cmd.Parameters.Add("p_available_rooms_times", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+                await db.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int room = reader.GetInt32(0);
+                        string timeSlot = reader.GetString(1);
+                        results.Add((room, timeSlot));
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        public async Task<(string FirstName, string LastName)> GetPatientNameByAppointmentId(int appointmentId)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var query = @"
+            SELECT 
+                p.JMENO AS FirstName,
+                p.PRIJMENI AS LastName
+            FROM NAVSTEVA n
+            JOIN PACIENT p ON n.PACIENT_ID_PACIENT = p.ID_PACIENT
+            WHERE n.ID_NAVSTEVA = :appointmentId";
+                var result = await db.QueryFirstOrDefaultAsync<(string FirstName, string LastName)>(query, new { appointmentId });
+                return result;
+            }
+        }
+
     }
 }

@@ -88,6 +88,9 @@ namespace BDAS2_SEM
             services.AddTransient<NewPatientVM>();
             services.AddTransient<TabItemVM>();
             services.AddTransient<AssignAppointmentVM>();
+            services.AddTransient<UpdateAppointmentVM>();
+            services.AddTransient<DDiagnosesVM>();
+            services.AddTransient<AssignDiagnosisVM>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -104,6 +107,9 @@ namespace BDAS2_SEM
             services.AddTransient<PAppointmentsView>();
             services.AddTransient<DoctorsListView>();
             services.AddTransient<AssignAppointmentView>();
+            services.AddTransient<UpdateAppointmentWindow>();
+            services.AddTransient<AssignDiagnosisWindow>();
+            services.AddTransient<DDiagnosesView>();
             // Register other Views if needed
 
         }

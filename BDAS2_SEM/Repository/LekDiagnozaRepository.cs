@@ -2,94 +2,104 @@
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
-public class LekDiagnozaRepository : ILekDiagnozaRepository
+namespace BDAS2_SEM.Repository
 {
-    private readonly string connectionString;
-
-    public LekDiagnozaRepository(string connectionString)
+    public class LekDiagnozaRepository : ILekDiagnozaRepository
     {
-        this.connectionString = connectionString;
-    }
+        private readonly string _connectionString;
 
-    public async Task AddLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
-    {
-        using (var db = new OracleConnection(this.connectionString))
+        public LekDiagnozaRepository(string connectionString)
         {
-            string sql = @"
-                    INSERT INTO LEK_DIAGNOZA (LEK_ID, DIAGNOZA_ID) 
-                    VALUES (:LekId, :DiagnozaId)";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("LekId", lekDiagnoza.LekId, DbType.Int32);
-            parameters.Add("DiagnozaId", lekDiagnoza.DiagnozaId, DbType.Int32);
-
-            await db.ExecuteAsync(sql, parameters);
+            _connectionString = connectionString;
         }
-    }
 
-    public async Task UpdateLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
-    {
-        using (var db = new OracleConnection(this.connectionString))
+        // Метод для додавання зв'язку між ліком та діагнозом
+        public async Task AddLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
         {
-            string sql = @"
-                    UPDATE LEK_DIAGNOZA 
-                    SET LEK_ID = :LekId, DIAGNOZA_ID = :DiagnozaId 
-                    WHERE LEK_ID = :OldLekId AND DIAGNOZA_ID = :OldDiagnozaId";
+            using (var db = new OracleConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_diagnoza", lekDiagnoza.DiagnozaId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_id_lek", lekDiagnoza.LekId, DbType.Int32, ParameterDirection.Input);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("LekId", lekDiagnoza.LekId, DbType.Int32);
-            parameters.Add("DiagnozaId", lekDiagnoza.DiagnozaId, DbType.Int32);
-            parameters.Add("OldLekId", lekDiagnoza.LekId, DbType.Int32); // Adjust if you have original values
-            parameters.Add("OldDiagnozaId", lekDiagnoza.DiagnozaId, DbType.Int32); // Adjust if you have original values
-
-            await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(
+                    "manage_lek_diagnoza_fk",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
         }
-    }
 
-    public async Task<LEK_DIAGNOZA> GetLekDiagnoza(int diagnozaId, int lekId)
-    {
-        using (var db = new OracleConnection(this.connectionString))
+        // Метод для оновлення зв'язку між ліком та діагнозом
+        public async Task UpdateLekDiagnoza(LEK_DIAGNOZA lekDiagnoza)
         {
-            string sql = @"
+            using (var db = new OracleConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_diagnoza", lekDiagnoza.DiagnozaId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_id_lek", lekDiagnoza.LekId, DbType.Int32, ParameterDirection.Input);
+
+                await db.ExecuteAsync(
+                    "manage_lek_diagnoza_fk",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
+
+        // Метод для отримання конкретного зв'язку між ліком та діагнозом
+        public async Task<LEK_DIAGNOZA> GetLekDiagnoza(int diagnozaId, int lekId)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
                     SELECT LEK_ID AS LekId, 
                            DIAGNOZA_ID AS DiagnozaId 
                     FROM LEK_DIAGNOZA 
                     WHERE DIAGNOZA_ID = :DiagnozaId AND LEK_ID = :LekId";
 
-            return await db.QueryFirstOrDefaultAsync<LEK_DIAGNOZA>(sql, new { DiagnozaId = diagnozaId, LekId = lekId });
+                return await db.QueryFirstOrDefaultAsync<LEK_DIAGNOZA>(sql, new { DiagnozaId = diagnozaId, LekId = lekId });
+            }
         }
-    }
 
-    public async Task<IEnumerable<LEK_DIAGNOZA>> GetAllLekDiagnoza()
-    {
-        using (var db = new OracleConnection(this.connectionString))
+        // Метод для отримання всіх зв'язків між ліками та діагнозами
+        public async Task<IEnumerable<LEK_DIAGNOZA>> GetAllLekDiagnoza()
         {
-            string sql = @"
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
                     SELECT LEK_ID AS LekId, 
                            DIAGNOZA_ID AS DiagnozaId 
                     FROM LEK_DIAGNOZA";
 
-            return await db.QueryAsync<LEK_DIAGNOZA>(sql);
+                return await db.QueryAsync<LEK_DIAGNOZA>(sql);
+            }
         }
-    }
 
-    public async Task DeleteLekDiagnoza(int diagnozaId, int lekId)
-    {
-        using (var db = new OracleConnection(this.connectionString))
+        // Метод для видалення зв'язку між ліком та діагнозом
+        public async Task DeleteLekDiagnoza(int diagnozaId, int lekId)
         {
-            string sql = @"
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
                     DELETE FROM LEK_DIAGNOZA 
                     WHERE DIAGNOZA_ID = :DiagnozaId AND LEK_ID = :LekId";
 
-            var parameters = new
-            {
-                DiagnozaId = diagnozaId,
-                LekId = lekId
-            };
+                var parameters = new
+                {
+                    DiagnozaId = diagnozaId,
+                    LekId = lekId
+                };
 
-            await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(sql, parameters);
+            }
         }
     }
 }

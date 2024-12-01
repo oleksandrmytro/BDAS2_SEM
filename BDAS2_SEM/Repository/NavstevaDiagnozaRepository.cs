@@ -25,7 +25,7 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    INSERT INTO NAVSTEVA_DIAGNOZA (NAVSTEVA_ID, DIAGNOZA_ID) 
+                    INSERT INTO NAVSTEVA_DIAGNOZA (NAVSTEVA_ID_NAVSTEVA, DIAGNOZA_ID_DIAGNOZA) 
                     VALUES (:NavstevaId, :DiagnozaId)";
 
                 var parameters = new DynamicParameters();
@@ -36,17 +36,17 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<NAVSTEVA_DIAGNOZA> GetNavstevaDiagnoza(int navstevaId, int diagnozaId)
+        public async Task<IEnumerable<DIAGNOZA>> GetDiagnozyByNavstevaIdAsync(int navstevaId)
         {
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    SELECT NAVSTEVA_ID AS NavstevaId, 
-                           DIAGNOZA_ID AS DiagnozaId 
-                    FROM NAVSTEVA_DIAGNOZA 
-                    WHERE NAVSTEVA_ID = :NavstevaId AND DIAGNOZA_ID = :DiagnozaId";
+                    SELECT d.ID_DIAGNOZA, d.NAZEV, d.POPIS
+                    FROM DIAGNOZA d
+                    JOIN NAVSTEVA_DIAGNOZA nd ON d.ID_DIAGNOZA = nd.DIAGNOZA_ID_DIAGNOZA
+                    WHERE nd.NAVSTEVA_ID_NAVSTEVA = :NavstevaId";
 
-                return await db.QueryFirstOrDefaultAsync<NAVSTEVA_DIAGNOZA>(sql, new { NavstevaId = navstevaId, DiagnozaId = diagnozaId });
+                return await db.QueryAsync<DIAGNOZA>(sql, new { NavstevaId = navstevaId });
             }
         }
 

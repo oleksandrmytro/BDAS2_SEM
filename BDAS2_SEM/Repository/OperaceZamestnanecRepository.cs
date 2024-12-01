@@ -2,81 +2,86 @@
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
 {
     public class OperaceZamestnanecRepository : IOperaceZamestnanecRepository
     {
-        private readonly string connectionString;
+        private readonly string _connectionString;
 
         public OperaceZamestnanecRepository(string connectionString)
         {
-            this.connectionString = connectionString;
+            _connectionString = connectionString;
         }
 
         public async Task AddOperaceZamestnanec(OPERACE_ZAMESTNANEC operaceZamestnanec)
         {
-            using (var db = new OracleConnection(connectionString))
+            using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    INSERT INTO OPERACE_ZAMESTNANEC (OPERACE_ID, ZAMESTNANEC_ID) 
-                    VALUES (:OperaceId, :ZamestnanecId)";
-
                 var parameters = new DynamicParameters();
-                parameters.Add("OperaceId", operaceZamestnanec.OperaceId, DbType.Int32);
-                parameters.Add("ZamestnanecId", operaceZamestnanec.ZamestnanecId, DbType.Int32);
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_operace", operaceZamestnanec.OperaceId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_id_zamestnanec", operaceZamestnanec.ZamestnanecId, DbType.Int32, ParameterDirection.Input);
 
-                await db.ExecuteAsync("INSERT_OPERACE_ZAMESTNANEC", parameters, commandType: CommandType.StoredProcedure);
+                await db.ExecuteAsync("manage_operace_zamestnanec", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateOperaceZamestnanec(OPERACE_ZAMESTNANEC operaceZamestnanec)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_operace", operaceZamestnanec.OperaceId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_id_zamestnanec", operaceZamestnanec.ZamestnanecId, DbType.Int32, ParameterDirection.Input);
+
+                await db.ExecuteAsync("manage_operace_zamestnanec", parameters, commandType: CommandType.StoredProcedure);
             }
         }
 
         public async Task<OPERACE_ZAMESTNANEC> GetOperaceZamestnanec(int operaceId, int zamestnanecId)
         {
-            using (var db = new OracleConnection(connectionString))
+            using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    SELECT OPERACE_ID AS OperaceId, 
-                           ZAMESTNANEC_ID AS ZamestnanecId 
+                var query = @"
+                    SELECT 
+                        OPERACE_ID_OPERACE AS OperaceIdOperace, 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecIdZamestnanec 
                     FROM OPERACE_ZAMESTNANEC 
-                    WHERE OPERACE_ID = :OperaceId AND ZAMESTNANEC_ID = :ZamestnanecId";
+                    WHERE OPERACE_ID_OPERACE = :operaceId AND ZAMESTNANEC_ID_ZAMESTNANEC = :zamestnanecId";
 
-                return await db.QueryFirstOrDefaultAsync<OPERACE_ZAMESTNANEC>(sql, new { OperaceId = operaceId, ZamestnanecId = zamestnanecId });
+                return await db.QueryFirstOrDefaultAsync<OPERACE_ZAMESTNANEC>(query, new { operaceId, zamestnanecId });
             }
         }
 
         public async Task<IEnumerable<OPERACE_ZAMESTNANEC>> GetAllOperaceZamestnanec()
         {
-            using (var db = new OracleConnection(connectionString))
+            using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    SELECT OPERACE_ID AS OperaceId, 
-                           ZAMESTNANEC_ID AS ZamestnanecId 
+                var query = @"
+                    SELECT 
+                        OPERACE_ID_OPERACE AS OperaceIdOperace, 
+                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecIdZamestnanec 
                     FROM OPERACE_ZAMESTNANEC";
 
-                return await db.QueryAsync<OPERACE_ZAMESTNANEC>(sql);
+                return await db.QueryAsync<OPERACE_ZAMESTNANEC>(query);
             }
         }
 
         public async Task DeleteOperaceZamestnanec(int operaceId, int zamestnanecId)
         {
-            using (var db = new OracleConnection(connectionString))
+            using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    DELETE FROM OPERACE_ZAMESTNANEC 
-                    WHERE OPERACE_ID = :OperaceId AND ZAMESTNANEC_ID = :ZamestnanecId";
+                var parameters = new DynamicParameters();
+                parameters.Add("p_action", "DELETE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_operace", operaceId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_id_zamestnanec", zamestnanecId, DbType.Int32, ParameterDirection.Input);
 
-                var parameters = new
-                {
-                    OperaceId = operaceId,
-                    ZamestnanecId = zamestnanecId
-                };
-
+                // Assuming you have a stored procedure for deletion similar to manage_operace_zamestnanec
                 await db.ExecuteAsync("DELETE_OPERACE_ZAMESTNANEC", parameters, commandType: CommandType.StoredProcedure);
             }
         }

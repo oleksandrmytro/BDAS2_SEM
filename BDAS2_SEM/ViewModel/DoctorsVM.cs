@@ -87,6 +87,11 @@ namespace BDAS2_SEM.ViewModel
                     Name = "Appointments",
                     Content = _serviceProvider.GetRequiredService<AppointmentsView>()
                 },
+                new TabItemVM
+                {
+                    Name = "Diagnoses",
+                    Content = _serviceProvider.GetRequiredService<DDiagnosesView>()
+                }
                 // Add more tabs as needed
             };
             OnPropertyChanged(nameof(Tabs));
@@ -104,11 +109,19 @@ namespace BDAS2_SEM.ViewModel
 
             // Pass the doctor to AppointmentsVM
             var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
+            var disgnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
             if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
             {
                 if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
                 {
                     appointmentsVM.SetDoctor(_zamestnanec);
+                }
+            }
+            if (disgnosesTab != null && disgnosesTab.Content is DDiagnosesView disgnosesView)
+            {
+                if (disgnosesView.DataContext is DDiagnosesVM disgnosesVM)
+                {
+                    disgnosesVM.SetDoctor(_zamestnanec);
                 }
             }
         }

@@ -93,7 +93,7 @@ namespace BDAS2_SEM.Repository
                            NAZEV AS Nazev, 
                            MNOZSTVI AS Mnozstvi, 
                            CENA AS Cena, 
-                           TYP_LEK_ID AS TypLekId 
+                           TYP_LEK_ID_TYP_LEK AS TypLekId 
                     FROM LEK";
 
                 return await db.QueryAsync<LEK>(sql);

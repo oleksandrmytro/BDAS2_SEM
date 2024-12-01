@@ -17,6 +17,7 @@
             <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
             <converters:FieldsFilledConverter x:Key="FieldsFilledConverter"/>
             <converters:StatusToBooleanConverter x:Key="StatusToBooleanConverter"/>
+            <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

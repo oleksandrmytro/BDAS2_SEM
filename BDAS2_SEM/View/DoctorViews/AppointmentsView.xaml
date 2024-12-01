@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:BDAS2_SEM.View.DoctorViews"
              xmlns:vm="clr-namespace:BDAS2_SEM.ViewModel">
     <UserControl.Resources>
-        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
 
         <Style x:Key="ModernButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="5"/>
@@ -25,7 +25,6 @@
             </Setter>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
-
     </UserControl.Resources>
     <Grid Background="#F0F4F8">
         <Grid.RowDefinitions>
@@ -66,7 +65,7 @@
 
                     <Border Grid.Row="1" Grid.ColumnSpan="4" Background="White" CornerRadius="0,0,5,5" BorderBrush="#e1e5eb" BorderThickness="1,0,1,1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding Appointments}" AlternationCount="1000">
+                            <ItemsControl ItemsSource="{Binding AppointmentRequests}" AlternationCount="1000">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -91,56 +90,66 @@
                 </Grid>
             </StackPanel>
         </Border>
-        <Border Grid.Row="0" Grid.Column="1" Background="White" CornerRadius="10" Margin="10,10,10,10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
+        <Border Grid.Row="0" Grid.Column="1" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
             <StackPanel>
-                <TextBlock Text="Appointment Requests" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15"/>
-
+                <TextBlock Text="Future Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15"/>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <!-- Колонка для кнопки -->
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Row="0" Grid.ColumnSpan="4" Background="#007bff" CornerRadius="5,5,0,0">
+                    <!-- Header -->
+                    <Border Grid.Row="0" Grid.ColumnSpan="5" Background="#007bff" CornerRadius="5,5,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="2" Text="Action" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" Padding="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" Padding="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Datum" FontWeight="Bold" Foreground="White" Padding="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="Mistnost" FontWeight="Bold" Foreground="White" Padding="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="Update" FontWeight="Bold" Foreground="White" Padding="10" HorizontalAlignment="Center"/>
                         </Grid>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.ColumnSpan="4" Background="White" CornerRadius="0,0,5,5" BorderBrush="#e1e5eb" BorderThickness="1,0,1,1">
+                    <!-- Data Rows -->
+                    <Border Grid.Row="1" Grid.ColumnSpan="5" Background="White" CornerRadius="0,0,5,5" BorderBrush="#e1e5eb" BorderThickness="1,0,1,1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding Appointments}" AlternationCount="1000">
+                            <ItemsControl ItemsSource="{Binding FutureAppointments}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="Auto"/>
+                                                <!-- Колонка для кнопки -->
                                             </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Datum, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding Mistnost}" Padding="10" HorizontalAlignment="Center"/>
 
-                                            <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
-                                            <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
-                                            <Button Grid.Column="2" Content="Assign"
-                                            Command="{Binding DataContext.AssignAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            Style="{StaticResource ModernButtonStyle}"
-                                            Margin="5"/>
+                                            <!-- Кнопка оновлення -->
+                                            <Button Grid.Column="4" Content="↻" Command="{Binding DataContext.UpdateAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                            CommandParameter="{Binding}" 
+                                            Style="{StaticResource ModernButtonStyle}" 
+                                            Padding="5" Width="30" Height="30" ToolTip="Update Appointment"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -150,54 +159,62 @@
                 </Grid>
             </StackPanel>
         </Border>
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="White" CornerRadius="10" Margin="10,10,10,10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
-            <StackPanel>
-                <TextBlock Text="Appointment Requests" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
 
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
+            <StackPanel>
+                <TextBlock Text="Past Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
                 <Grid>
+                    <!-- Grid Definitions -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Header -->
                     <Border Grid.Row="0" Grid.ColumnSpan="4" Background="#007bff" CornerRadius="5,5,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="2" Text="Action" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            <TextBlock Grid.Column="2" Text="Datum" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            <TextBlock Grid.Column="3" Text="Mistnost" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                         </Grid>
                     </Border>
 
+                    <!-- Data Rows -->
                     <Border Grid.Row="1" Grid.ColumnSpan="4" Background="White" CornerRadius="0,0,5,5" BorderBrush="#e1e5eb" BorderThickness="1,0,1,1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding Appointments}" AlternationCount="1000">
+                            <ItemsControl ItemsSource="{Binding PastAppointments}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
                                             </Grid.ColumnDefinitions>
-
-                                            <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                            <Button Grid.Column="2" Content="Assign"
-                                    Command="{Binding DataContext.AssignAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}"
-                                    Style="{StaticResource ModernButtonStyle}"
-                                    Margin="5"/>
+                                            <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Padding="10" HorizontalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0:dd.MM.yyyy HH:mm}">
+                                                        <Binding Path="Datum"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="3" Text="{Binding Mistnost}" Padding="10" HorizontalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

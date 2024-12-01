@@ -33,18 +33,18 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<ORDINACE_ZAMESTNANEC> GetOrdinaceZamestnanec(int ordinaceId, int zamestnanecId)
+        public async Task<ORDINACE_ZAMESTNANEC> GetOrdinaceZamestnanecByZamestnanecId(int zamestnanecId)
         {
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    SELECT 
-                        ORDINACE_ID_ORDINACE AS OrdinaceId, 
-                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId 
-                    FROM ORDINACE_ZAMESTNANEC 
-                    WHERE ORDINACE_ID_ORDINACE = :OrdinaceId AND ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId";
+            SELECT 
+                ORDINACE_ID_ORDINACE AS OrdinaceId, 
+                ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId 
+            FROM ORDINACE_ZAMESTNANEC 
+            WHERE ZAMESTNANEC_ID_ZAMESTNANEC = :ZamestnanecId";
 
-                return await db.QueryFirstOrDefaultAsync<ORDINACE_ZAMESTNANEC>(sql, new { OrdinaceId = ordinaceId, ZamestnanecId = zamestnanecId });
+                return await db.QueryFirstOrDefaultAsync<ORDINACE_ZAMESTNANEC>(sql, new { ZamestnanecId = zamestnanecId });
             }
         }
 
