@@ -1,5 +1,4 @@
-﻿<!-- Main Window Code -->
-<Window x:Class="BDAS2_SEM.View.DoctorViews.DoctorsWindow"
+﻿<Window x:Class="BDAS2_SEM.View.DoctorViews.DoctorsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewModel="clr-namespace:BDAS2_SEM.ViewModel"

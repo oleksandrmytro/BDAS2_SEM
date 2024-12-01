@@ -40,6 +40,10 @@ namespace BDAS2_SEM.ViewModel
                     Name = "Appointments",
                     Content = _serviceProvider.GetRequiredService<PAppointmentsView>()
                 },
+                new TabItemVM {
+                    Name = "Settings", 
+                    Content = _serviceProvider.GetRequiredService<PSettingsView>()
+                },
             };
             OnPropertyChanged(nameof(Tabs));
             SelectedTab = Tabs.FirstOrDefault();
