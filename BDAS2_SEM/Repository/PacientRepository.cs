@@ -5,6 +5,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,8 +71,19 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_adresa_id_adresa", pacient.AdresaId, DbType.Int32);
                 parameters.Add("p_uzivatel_data_id", pacient.UserDataId, DbType.Int32);
 
-                // Виклик збереженої процедури
-                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                Debug.WriteLine("Executing stored procedure: " + procedureName);
+                Debug.WriteLine("Parameters: " + string.Join(", ", parameters.ParameterNames.Select(name => $"{name}={parameters.Get<object>(name)}")));
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                    Debug.WriteLine("Stored procedure executed successfully");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error executing stored procedure: " + ex.Message);
+                    throw;
+                }
             }
         }
 
@@ -81,20 +93,20 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    SELECT 
-                        ID_PACIENT AS IdPacient, 
-                        Jmeno, 
-                        Prijmeni, 
-                        RodneCislo, 
-                        Telefon, 
-                        DatumNarozeni, 
-                        Pohlavi, 
-                        AdresaId, 
-                        UserDataId 
-                    FROM 
-                        PACIENT 
-                    WHERE 
-                        ID_PACIENT = :Id";
+            SELECT 
+                ID_PACIENT AS IdPacient, 
+                JMENO AS Jmeno, 
+                PRIJMENI AS Prijmeni, 
+                RODNE_CISLO AS RodneCislo, 
+                TELEFON AS Telefon, 
+                DATUM_NAROZENI AS DatumNarozeni, 
+                POHLAVI AS Pohlavi, 
+                ADRESA_ID_ADRESA AS AdresaId, 
+                UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId 
+            FROM 
+                PACIENT 
+            WHERE 
+                ID_PACIENT = :Id";
 
                 return await db.QueryFirstOrDefaultAsync<PACIENT>(sql, new { Id = id });
             }
@@ -105,18 +117,18 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(connectionString))
             {
                 string sql = @"
-                    SELECT 
-                        ID_PACIENT AS IdPacient, 
-                        Jmeno, 
-                        Prijmeni, 
-                        RodneCislo, 
-                        Telefon, 
-                        DatumNarozeni, 
-                        Pohlavi, 
-                        AdresaId, 
-                        UserDataId 
-                    FROM 
-                        PACIENT";
+            SELECT 
+                ID_PACIENT AS IdPacient, 
+                JMENO AS Jmeno, 
+                PRIJMENI AS Prijmeni, 
+                RODNE_CISLO AS RodneCislo, 
+                TELEFON AS Telefon, 
+                DATUM_NAROZENI AS DatumNarozeni, 
+                POHLAVI AS Pohlavi, 
+                ADRESA_ID_ADRESA AS AdresaId, 
+                UZIVATEL_DATA_ID AS UserDataId 
+            FROM 
+                PACIENT";
 
                 return await db.QueryAsync<PACIENT>(sql);
             }

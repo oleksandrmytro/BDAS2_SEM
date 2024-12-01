@@ -23,6 +23,22 @@ namespace BDAS2_SEM.Services
             _patientContextService = patientContextService;
         }
 
+        public void OpenEditPatientWindow(PACIENT patient)
+        {
+            var editPatientWindow = new EditPatientWindow();
+            var pacientRepository = _serviceProvider.GetRequiredService<IPacientRepository>();
+            var adresaRepository = _serviceProvider.GetRequiredService<IAdresaRepository>();
+            var viewModel = new EditPatientVM(patient, pacientRepository, adresaRepository, this, (isSaved) =>
+            {
+                if (isSaved)
+                {
+                    // Действия после закрытия окна, если данные были сохранены
+                }
+            });
+            editPatientWindow.DataContext = viewModel;
+            editPatientWindow.ShowDialog();
+        }
+
         public void OpenDoctorsListWindow()
         {
             var doctorsListView = _serviceProvider.GetRequiredService<DoctorsListView>();
