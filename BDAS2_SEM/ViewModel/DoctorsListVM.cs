@@ -21,6 +21,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
         private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
         private readonly IOrdinaceRepository _ordinaceRepository;
+        private readonly IBlobTableRepository _blobRepository;
 
         public ObservableCollection<ZAMESTNANEC> Doctors { get; set; }
         public ICommand CreateAppointmentCommand { get; }
@@ -31,7 +32,8 @@ namespace BDAS2_SEM.ViewModel
             INavstevaRepository navstevaRepository,
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
             IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
-            IOrdinaceRepository ordinaceRepository)
+            IOrdinaceRepository ordinaceRepository,
+            IBlobTableRepository blobRepository)
         {
             _zamestnanecRepository = zamestnanecRepository;
             _patientContextService = patientContextService;
@@ -39,6 +41,7 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
             _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
             _ordinaceRepository = ordinaceRepository;
+            _blobRepository = blobRepository;
 
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
             LoadDoctors();
@@ -61,6 +64,12 @@ namespace BDAS2_SEM.ViewModel
                 if (ordinaceNames.Any())
                 {
                     doctor.Oddeleni = string.Join(", ", ordinaceNames);
+                }
+
+                var blob = await _blobRepository.GetBlobByZamestnanecId(doctor.IdZamestnanec);
+                if (blob != null)
+                {
+                    doctor.Avatar = blob.Obsah;
                 }
             }
 
