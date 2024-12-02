@@ -72,16 +72,16 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<KARTA>> GetAllKarty()
+        public async Task<IEnumerable<KARTA>> GetAllKarta()
         {
             using (var db = new OracleConnection(this.connectionString))
             {
-                string sql = @"
-                    SELECT ID_PLATBA AS IdPlatba, 
-                           CISLO_KARTY AS CisloKarty 
+                var sqlQuery = @"
+                    SELECT ID_PLATBA AS IdPlatba,
+                           CISLO_KARTY AS Cislo
                     FROM KARTA";
 
-                return await db.QueryAsync<KARTA>(sql);
+                return await db.QueryAsync<KARTA>(sqlQuery);
             }
         }
 

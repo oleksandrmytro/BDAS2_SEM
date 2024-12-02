@@ -48,17 +48,16 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<ORDINACE_ZAMESTNANEC>> GetAllOrdinaceZamestnanec()
+        public async Task<IEnumerable<ORDINACE_ZAMESTNANEC>> GetAllOrdinaceZamestnanecs()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT 
-                        ORDINACE_ID_ORDINACE AS OrdinaceId, 
-                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId 
+                var sqlQuery = @"
+                    SELECT ordinace_id_ordinace AS OrdinaceId,
+                           zamestnanec_id_zamestnanec AS ZamestnanecId
                     FROM ORDINACE_ZAMESTNANEC";
 
-                return await db.QueryAsync<ORDINACE_ZAMESTNANEC>(sql);
+                return await db.QueryAsync<ORDINACE_ZAMESTNANEC>(sqlQuery);
             }
         }
 

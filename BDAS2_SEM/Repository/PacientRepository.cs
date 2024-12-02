@@ -112,25 +112,23 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<PACIENT>> GetAllPacienti()
+        public async Task<IEnumerable<PACIENT>> GetAllPacients()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-            SELECT 
-                ID_PACIENT AS IdPacient, 
-                JMENO AS Jmeno, 
-                PRIJMENI AS Prijmeni, 
-                RODNE_CISLO AS RodneCislo, 
-                TELEFON AS Telefon, 
-                DATUM_NAROZENI AS DatumNarozeni, 
-                POHLAVI AS Pohlavi, 
-                ADRESA_ID_ADRESA AS AdresaId, 
-                UZIVATEL_DATA_ID AS UserDataId 
-            FROM 
-                PACIENT";
+                var sqlQuery = @"
+                    SELECT id_pacient AS IdPacient,
+                           jmeno AS Jmeno,
+                           prijmeni AS Prijmeni,
+                           rodne_cislo AS RodneCislo,
+                           telefon AS Telefon,
+                           datum_narozeni AS DatumNarozeni,
+                           pohlavi AS Pohlavi,
+                           ADRESA_ID_ADRESA AS AdresaId,
+                           UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId
+                    FROM PACIENT";
 
-                return await db.QueryAsync<PACIENT>(sql);
+                return await db.QueryAsync<PACIENT>(sqlQuery);
             }
         }
 

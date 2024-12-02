@@ -16,7 +16,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<UZIVATEL_DATA> GetUserByEmailAsync(string email);
         Task<IEnumerable<UZIVATEL_DATA>> GetUsersWithUndefinedRole();
         Task UpdateUserData(UZIVATEL_DATA userData);
-
+        Task<IEnumerable<UZIVATEL_DATA>> GetAllUzivatelDatas();
 
     }
 }

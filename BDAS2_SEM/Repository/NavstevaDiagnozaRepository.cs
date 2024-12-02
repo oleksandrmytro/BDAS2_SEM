@@ -50,16 +50,16 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<NAVSTEVA_DIAGNOZA>> GetAllNavstevaDiagnoza()
+        public async Task<IEnumerable<NAVSTEVA_DIAGNOZA>> GetAllNavstevaDiagnozas()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT NAVSTEVA_ID AS NavstevaId, 
-                           DIAGNOZA_ID AS DiagnozaId 
+                var sqlQuery = @"
+                    SELECT NAVSTEVA_ID_NAVSTEVA AS NavstevaId,
+                           DIAGNOZA_ID_DIAGNOZA AS DiagnozaId
                     FROM NAVSTEVA_DIAGNOZA";
 
-                return await db.QueryAsync<NAVSTEVA_DIAGNOZA>(sql);
+                return await db.QueryAsync<NAVSTEVA_DIAGNOZA>(sqlQuery);
             }
         }
 

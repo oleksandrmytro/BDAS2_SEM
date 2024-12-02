@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddPozice(POZICE pozice);
         Task UpdatePozice(POZICE pozice);
         Task<POZICE> GetPoziceById(int id);
-        Task<IEnumerable<POZICE>> GetAllPozice();
+        Task<IEnumerable<POZICE>> GetAllPozices();
         Task DeletePozice(int id);
     }
 }

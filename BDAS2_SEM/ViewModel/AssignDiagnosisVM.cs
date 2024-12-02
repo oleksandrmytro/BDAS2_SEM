@@ -236,7 +236,7 @@ namespace BDAS2_SEM.ViewModel
         {
             try
             {
-                var diagnozy = await _diagnozaRepository.GetAllDiagnozy();
+                var diagnozy = await _diagnozaRepository.GetAllDiagnoses();
                 Diagnozy.Clear();
                 foreach (var diagnoza in diagnozy)
                 {

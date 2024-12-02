@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddOperace(OPERACE operace);
         Task UpdateOperace(OPERACE operace);
         Task<OPERACE> GetOperaceById(int id);
-        Task<IEnumerable<OPERACE>> GetAllOperace();
+        Task<IEnumerable<OPERACE>> GetAllOperaces();
         Task DeleteOperace(int id);
     }
 }

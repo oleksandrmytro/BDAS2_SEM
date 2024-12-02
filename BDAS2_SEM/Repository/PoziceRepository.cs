@@ -73,18 +73,16 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<POZICE>> GetAllPozice()
+        public async Task<IEnumerable<POZICE>> GetAllPozices()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT 
-                        ID_POZICE AS IdPozice, 
-                        NAZEV AS Nazev 
-                    FROM 
-                        POZICE";
+                var sqlQuery = @"
+                    SELECT id_pozice AS IdPozice,
+                           nazev AS Nazev
+                    FROM POZICE";
 
-                return await db.QueryAsync<POZICE>(sql);
+                return await db.QueryAsync<POZICE>(sqlQuery);
             }
         }
 

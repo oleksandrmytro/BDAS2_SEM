@@ -15,6 +15,7 @@ namespace BDAS2_SEM.Model
         private DateTime datumModifikace;
         private string operaceProvedl;
         private string popisOperace;
+        private int zamestnanecId;
 
         public int IdBlob
         {
@@ -102,6 +103,16 @@ namespace BDAS2_SEM.Model
             set
             {
                 popisOperace = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int ZamestnanecId
+        {
+            get { return zamestnanecId; }
+            set
+            {
+                zamestnanecId = value;
                 OnPropertyChanged();
             }
         }

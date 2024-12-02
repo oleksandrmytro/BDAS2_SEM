@@ -97,5 +97,19 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(sql, new { Id = id });
             }
         }
+
+        public async Task<IEnumerable<HOTOVOST>> GetAllHotovost()
+        {
+            using (var db = new OracleConnection(this.connectionString))
+            {
+                var sqlQuery = @"
+                    SELECT id_platba AS IdPlatba,
+                           prijato AS Prijato,
+                           vraceno AS Vraceno
+                    FROM HOTOVOST";
+
+                return await db.QueryAsync<HOTOVOST>(sqlQuery);
+            }
+        }
     }
 }

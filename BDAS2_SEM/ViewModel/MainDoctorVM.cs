@@ -31,7 +31,7 @@ namespace BDAS2_SEM.ViewModel
 
         private async Task LoadPatientsAsync()
         {
-            var allPacienti = await _pacientRepository.GetAllPacienti();
+            var allPacienti = await _pacientRepository.GetAllPacients();
             Patients = new ObservableCollection<PACIENT>(allPacienti);
         }
 

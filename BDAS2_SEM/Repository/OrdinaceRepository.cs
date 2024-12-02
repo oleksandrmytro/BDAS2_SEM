@@ -62,7 +62,7 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID_ORDINACE AS c, 
+                        ID_ORDINACE AS IdOrdinace, 
                         NAZEV AS Nazev 
                     FROM ORDINACE 
                     WHERE ID_ORDINACE = :Id";
@@ -71,17 +71,16 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<ORDINACE>> GetAllOrdinace()
+        public async Task<IEnumerable<ORDINACE>> GetAllOrdinaces()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT 
-                        ID_ORDINACE AS IdOrdinace, 
-                        NAZEV AS Nazev 
+                var sqlQuery = @"
+                    SELECT id_ordinace AS idOrdinace,
+                           nazev AS Nazev
                     FROM ORDINACE";
 
-                return await db.QueryAsync<ORDINACE>(sql);
+                return await db.QueryAsync<ORDINACE>(sqlQuery);
             }
         }
 

@@ -159,5 +159,23 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task<IEnumerable<UZIVATEL_DATA>> GetAllUzivatelDatas()
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var sqlQuery = @"
+                    SELECT ID_UZIVATEL_DATA AS Id,
+                           email AS Email,
+                           heslo AS Heslo,
+                           pacient_id_c AS pacientId,
+                           zamestnanec_id_c AS zamestnanecId,
+                           ROLE_ID_ROLE AS RoleUzivatel
+                    FROM UZIVATEL_DATA";
+
+                return await db.QueryAsync<UZIVATEL_DATA>(sqlQuery);
+            }
+        }
+
     }
 }

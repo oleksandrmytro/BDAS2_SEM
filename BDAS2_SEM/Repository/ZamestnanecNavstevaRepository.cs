@@ -17,18 +17,16 @@ namespace BDAS2_SEM.Repository
             this.connectionString = connectionString;
         }
 
-        public async Task<IEnumerable<ZAMESTNANEC_NAVSTEVA>> GetAllZamestnanecNavsteva()
+        public async Task<IEnumerable<ZAMESTNANEC_NAVSTEVA>> GetAllZamestnanecNavstevas()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT 
-                        ZAMESTNANEC_ID_ZAMESTNANEC AS ZamestnanecId, 
-                        NAVSTEVA_ID_NAVSTEVA AS NavstevaId 
-                    FROM 
-                        ZAMESTNANEC_NAVSTEVA";
+                var sqlQuery = @"
+                    SELECT zamestnanec_id_zamestnanec AS ZamestnanecId,
+                           navsteva_id_navsteva AS NavstevaId
+                    FROM ZAMESTNANEC_NAVSTEVA";
 
-                return await db.QueryAsync<ZAMESTNANEC_NAVSTEVA>(sql);
+                return await db.QueryAsync<ZAMESTNANEC_NAVSTEVA>(sqlQuery);
             }
         }
 

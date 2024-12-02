@@ -47,8 +47,8 @@ namespace BDAS2_SEM.ViewModel
         private async void LoadDoctors()
         {
             var doctors = await _zamestnanecRepository.GetAllZamestnanci();
-            var ordinaceZamestnanci = await _ordinaceZamestnanecRepository.GetAllOrdinaceZamestnanec();
-            var ordinaceList = await _ordinaceRepository.GetAllOrdinace();
+            var ordinaceZamestnanci = await _ordinaceZamestnanecRepository.GetAllOrdinaceZamestnanecs();
+            var ordinaceList = await _ordinaceRepository.GetAllOrdinaces();
 
             foreach (var doctor in doctors)
             {
@@ -60,7 +60,6 @@ namespace BDAS2_SEM.ViewModel
 
                 if (ordinaceNames.Any())
                 {
-                    doctor.Oddeleni = string.Join(", ", ordinaceNames);
                 }
             }
 

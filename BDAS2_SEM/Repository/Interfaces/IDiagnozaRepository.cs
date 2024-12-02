@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddDiagnoza(DIAGNOZA diagnoza);
         Task UpdateDiagnoza(DIAGNOZA diagnoza);
         Task<DIAGNOZA> GetDiagnozaById(int id);
-        Task<IEnumerable<DIAGNOZA>> GetAllDiagnozy();
+        Task<IEnumerable<DIAGNOZA>> GetAllDiagnoses();
         Task DeleteDiagnoza(int id);
     }
 }

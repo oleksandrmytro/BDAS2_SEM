@@ -88,15 +88,15 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(this.connectionString))
             {
-                string sql = @"
-                    SELECT ID_LEK AS IdLek, 
-                           NAZEV AS Nazev, 
-                           MNOZSTVI AS Mnozstvi, 
-                           CENA AS Cena, 
-                           TYP_LEK_ID_TYP_LEK AS TypLekId 
+                var sqlQuery = @"
+                    SELECT id_lek AS IdLek,
+                           nazev AS Nazev,
+                           mnozstvi AS Mnozstvi,
+                           cena AS Cena,
+                           TYP_LEK_ID_TYP_LEK AS TypLekId
                     FROM LEK";
 
-                return await db.QueryAsync<LEK>(sql);
+                return await db.QueryAsync<LEK>(sqlQuery);
             }
         }
 

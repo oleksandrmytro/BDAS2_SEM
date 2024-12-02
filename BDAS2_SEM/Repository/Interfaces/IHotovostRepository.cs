@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddHotovost(HOTOVOST hotovost);
         Task UpdateHotovost(HOTOVOST hotovost);
         Task<HOTOVOST> GetHotovostById(int id);
-        Task<IEnumerable<HOTOVOST>> GetAllHotovosti();
+        Task<IEnumerable<HOTOVOST>> GetAllHotovost();
         Task DeleteHotovost(int id);
     }
 }

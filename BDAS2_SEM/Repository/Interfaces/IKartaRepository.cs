@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddKarta(KARTA karta);
         Task UpdateKarta(KARTA karta);
         Task<KARTA> GetKartaById(int id);
-        Task<IEnumerable<KARTA>> GetAllKarty();
+        Task<IEnumerable<KARTA>> GetAllKarta();
         Task DeleteKarta(int id);
     }
 }

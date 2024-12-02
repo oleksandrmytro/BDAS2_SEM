@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddPlatba(PLATBA platba);
         Task UpdatePlatba(PLATBA platba);
         Task<PLATBA> GetPlatbaById(int id);
-        Task<IEnumerable<PLATBA>> GetAllPlatby();
+        Task<IEnumerable<PLATBA>> GetAllPlatbas();
         Task DeletePlatba(int id);
     }
 }

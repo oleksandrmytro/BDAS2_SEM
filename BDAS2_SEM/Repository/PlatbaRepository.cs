@@ -89,21 +89,19 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<IEnumerable<PLATBA>> GetAllPlatby()
+        public async Task<IEnumerable<PLATBA>> GetAllPlatbas()
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    SELECT 
-                        ID_PLATBA AS IdPlatba, 
-                        CASTKA AS Castka, 
-                        DATUM AS Datum, 
-                        TYP_PLATBY AS TypPlatby, 
-                        NAVSTEVA_ID AS NavstevaId 
-                    FROM 
-                        PLATBA";
+                var sqlQuery = @"
+                    SELECT id_platba AS IdPlatba,
+                           castka AS Castka,
+                           datum AS Datum,
+                           typ_platby AS TypPlatby,
+                           navsteva_id_navsteva AS NavstevaId
+                    FROM PLATBA";
 
-                return await db.QueryAsync<PLATBA>(sql);
+                return await db.QueryAsync<PLATBA>(sqlQuery);
             }
         }
 

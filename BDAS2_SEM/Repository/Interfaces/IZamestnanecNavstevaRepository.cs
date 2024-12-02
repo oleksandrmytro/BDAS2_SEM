@@ -9,7 +9,7 @@ namespace BDAS2_SEM.Repository.Interfaces
 {
     public interface IZamestnanecNavstevaRepository
     {
-        Task<IEnumerable<ZAMESTNANEC_NAVSTEVA>> GetAllZamestnanecNavsteva();
+        Task<IEnumerable<ZAMESTNANEC_NAVSTEVA>> GetAllZamestnanecNavstevas();
         Task<ZAMESTNANEC_NAVSTEVA> GetZamestnanecNavstevaById(int zamestnanecId, int navstevaId);
         Task InsertZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva);
         Task UpdateZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva);

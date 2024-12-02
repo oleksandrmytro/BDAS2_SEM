@@ -31,6 +31,8 @@ namespace BDAS2_SEM
             // Register repositories
             services.AddSingleton<IAdresaRepository, AdresaRepository>(provider =>
                 new AdresaRepository(connectionString));
+            services.AddSingleton<IBlobTableRepository, BlobTableRepository>(provider =>
+                new BlobTableRepository(connectionString));
             services.AddSingleton<IDiagnozaRepository, DiagnozaRepository>(provider =>
                 new DiagnozaRepository(connectionString));
             services.AddSingleton<IHotovostRepository, HotovostRepository>(provider =>
@@ -93,6 +95,8 @@ namespace BDAS2_SEM
             services.AddTransient<UpdateAppointmentVM>();
             services.AddTransient<DDiagnosesVM>();
             services.AddTransient<AssignDiagnosisVM>();
+            services.AddTransient<SimulateVM>();
+            services.AddTransient<AllTablesVM>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -114,6 +118,8 @@ namespace BDAS2_SEM
             services.AddTransient<UpdateAppointmentWindow>();
             services.AddTransient<AssignDiagnosisWindow>();
             services.AddTransient<DDiagnosesView>();
+            services.AddTransient<SimulateView>();
+            services.AddTransient<AllTablesView>();
             // Register other Views if needed
 
         }

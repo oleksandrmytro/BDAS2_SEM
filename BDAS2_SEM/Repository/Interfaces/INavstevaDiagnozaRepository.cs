@@ -11,7 +11,7 @@ namespace BDAS2_SEM.Repository.Interfaces
     {
         Task AddNavstevaDiagnoza(NAVSTEVA_DIAGNOZA navstevaDiagnoza);
         Task<IEnumerable<DIAGNOZA>> GetDiagnozyByNavstevaIdAsync(int navstevaId);
-        Task<IEnumerable<NAVSTEVA_DIAGNOZA>> GetAllNavstevaDiagnoza();
+        Task<IEnumerable<NAVSTEVA_DIAGNOZA>> GetAllNavstevaDiagnozas();
         Task DeleteNavstevaDiagnoza(int navstevaId, int diagnozaId);
     }
 }

@@ -3,6 +3,7 @@ using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
+using System.Reflection.Metadata;
 
 namespace BDAS2_SEM.Repository
 {
@@ -24,26 +25,28 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<int> AddBlobContent(BLOB_TABLE content)
+        public async Task<int> AddBlobContent(BLOB_TABLE blob)
         {
-            using (var connection = new OracleConnection(_connectionString))
+            using (var db = new OracleConnection(_connectionString))
             {
                 string sql = @"
-                    INSERT INTO blob (nazev_souboru, typ_souboru, pripona_souboru, obsah, datum_nahrani, operace_provedl, popis_operace)
-                    VALUES (:NazevSouboru, :TypSouboru, :PriponaSouboru, :Obsah, :DatumNahrani, :OperaceProvedl, :PopisOperace)
-                    RETURNING id_blob INTO :IdBlob";
+                    INSERT INTO BLOB_TABLE (ID_BLOB, NAZEV_SOUBORU, TYP_SOUBORU, PRIPONA_SOUBORU, OBSAH, DATUM_NAHRANI, DATUM_MODIFIKACE, OPERACE_PROVEDL, POPIS_OPERACE, ZAMESTNANEC_ID)
+                    VALUES (BLOB_SEQ.NEXTVAL, :NazevSouboru, :TypSouboru, :PriponaSouboru, :Obsah, :DatumNahrani, :DatumModifikace, :OperaceProvedl, :PopisOperace, :ZamestnanecId)
+                    RETURNING ID_BLOB INTO :IdBlob";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("NazevSouboru", content.NazevSouboru);
-                parameters.Add("TypSouboru", content.TypSouboru);
-                parameters.Add("PriponaSouboru", content.PriponaSouboru);
-                parameters.Add("Obsah", content.Obsah, DbType.Binary);
-                parameters.Add("DatumNahrani", content.DatumNahrani);
-                parameters.Add("OperaceProvedl", content.OperaceProvedl);
-                parameters.Add("PopisOperace", content.PopisOperace);
+                parameters.Add("NazevSouboru", blob.NazevSouboru, DbType.String);
+                parameters.Add("TypSouboru", blob.TypSouboru, DbType.String);
+                parameters.Add("PriponaSouboru", blob.PriponaSouboru, DbType.String);
+                parameters.Add("Obsah", blob.Obsah, DbType.Binary);
+                parameters.Add("DatumNahrani", blob.DatumNahrani, DbType.Date);
+                parameters.Add("DatumModifikace", blob.DatumModifikace, DbType.Date);
+                parameters.Add("OperaceProvedl", blob.OperaceProvedl, DbType.String);
+                parameters.Add("PopisOperace", blob.PopisOperace, DbType.String);
+                parameters.Add("ZamestnanecId", blob.ZamestnanecId, DbType.Int32);
                 parameters.Add("IdBlob", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await connection.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(sql, parameters);
                 return parameters.Get<int>("IdBlob");
             }
         }
@@ -60,7 +63,9 @@ namespace BDAS2_SEM.Repository
                         obsah = :Obsah,
                         datum_modifikace = :DatumModifikace,
                         operace_provedl = :OperaceProvedl,
-                        popis_operace = :PopisOperace
+                        popis_operace = :PopisOperace,
+                        zamestnanecId = :ZamestnanecId
+
                     WHERE id_blob = :IdBlob";
 
                 var parameters = new DynamicParameters();
@@ -71,6 +76,7 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("DatumModifikace", content.DatumModifikace);
                 parameters.Add("OperaceProvedl", content.OperaceProvedl);
                 parameters.Add("PopisOperace", content.PopisOperace);
+                parameters.Add("ZamestnanecId", content.ZamestnanecId, DbType.Int32);
                 parameters.Add("IdBlob", content.IdBlob);
 
                 await connection.ExecuteAsync(sql, parameters);
@@ -83,6 +89,27 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = "DELETE FROM blob WHERE id_blob = :IdBlob";
                 await connection.ExecuteAsync(sql, new { IdBlob = id });
+            }
+        }
+
+        public async Task<IEnumerable<BLOB_TABLE>> GetAllBlobTables()
+        {
+            using (var db = new OracleConnection(this._connectionString))
+            {
+                var sqlQuery = @"
+                    SELECT id_blob AS IdBlob,
+                           nazev_souboru AS NazevSouboru,
+                           typ_souboru AS TypSouboru,
+                           pripona_souboru AS PriponaSouboru,
+                           obsah AS Obsah,
+                           datum_nahrani AS DatumNahrani,
+                           datum_modifikace AS DatumModifikace,
+                           operace_provedl AS OperaceProvedl,
+                           popis_operace AS PopisOperace,
+                           zamestnanec_id AS ZamestnanecId
+                    FROM BLOB_TABLE";
+
+                return await db.QueryAsync<BLOB_TABLE>(sqlQuery);
             }
         }
     }

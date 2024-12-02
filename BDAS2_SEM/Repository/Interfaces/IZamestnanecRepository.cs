@@ -14,5 +14,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<ZAMESTNANEC> GetZamestnanecById(int id);
         Task<IEnumerable<ZAMESTNANEC>> GetAllZamestnanci();
         Task DeleteZamestnanec(int id);
+        Task<ZAMESTNANEC> GetZamestnanecByUserDataId(int userDataId);
     }
 }

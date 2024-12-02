@@ -12,7 +12,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddOrdinace(ORDINACE ordinace);
         Task UpdateOrdinace(ORDINACE ordinace);
         Task<ORDINACE> GetOrdinaceById(int id);
-        Task<IEnumerable<ORDINACE>> GetAllOrdinace();
+        Task<IEnumerable<ORDINACE>> GetAllOrdinaces();
         Task DeleteOrdinace(int id);
     }
 }

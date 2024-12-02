@@ -97,5 +97,19 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(sql, new { Id = id });
             }
         }
+
+        public async Task<IEnumerable<DIAGNOZA>> GetAllDiagnoses()
+        {
+            using (var db = new OracleConnection(this._connectionString))
+            {
+                var sqlQuery = @"
+                    SELECT id_diagnoza AS IdDiagnoza,
+                           nazev AS Nazev,
+                           popis AS Popis
+                    FROM DIAGNOZA";
+
+                return await db.QueryAsync<DIAGNOZA>(sqlQuery);
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace BDAS2_SEM.Repository.Interfaces
     {
         Task AddOrdinaceZamestnanec(ORDINACE_ZAMESTNANEC ordinaceZamestnanec);
         Task<ORDINACE_ZAMESTNANEC> GetOrdinaceZamestnanecByZamestnanecId(int zamestnanecId);
-        Task<IEnumerable<ORDINACE_ZAMESTNANEC>> GetAllOrdinaceZamestnanec();
+        Task<IEnumerable<ORDINACE_ZAMESTNANEC>> GetAllOrdinaceZamestnanecs();
         Task DeleteOrdinaceZamestnanec(int ordinaceId, int zamestnanecId);
     }
 }

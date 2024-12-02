@@ -49,7 +49,7 @@ namespace BDAS2_SEM.ViewModel
             }
 
             var pacientId = currentPatient.IdPacient;
-            var allAppointments = await _navstevaRepository.GetAllNavstevy();
+            var allAppointments = await _navstevaRepository.GetAllNavstevas();
             var now = DateTime.Now;
 
             PastAppointments = new ObservableCollection<NAVSTEVA>();

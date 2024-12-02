@@ -256,5 +256,21 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task<IEnumerable<NAVSTEVA>> GetAllNavstevas()
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var sqlQuery = @"
+                    SELECT id_navsteva AS IdNavsteva,
+                           datum AS Datum,
+                           mistnost AS Mistnost,
+                           pacient_id_pacient AS PacientId,
+                           status_id_status AS Status
+                    FROM NAVSTEVA";
+
+                return await db.QueryAsync<NAVSTEVA>(sqlQuery);
+            }
+        }
+
     }
 }

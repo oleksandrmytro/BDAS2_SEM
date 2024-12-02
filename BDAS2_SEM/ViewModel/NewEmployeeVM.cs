@@ -76,7 +76,7 @@ namespace BDAS2_SEM.ViewModel
 
         private async void LoadPositions()
         {
-            var positions = await _poziceRepository.GetAllPozice();
+            var positions = await _poziceRepository.GetAllPozices();
             Positions = new ObservableCollection<POZICE>(positions);
             OnPropertyChanged(nameof(Positions));
         }

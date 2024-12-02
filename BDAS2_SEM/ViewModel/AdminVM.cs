@@ -44,6 +44,16 @@ namespace BDAS2_SEM.ViewModel
                     Name = "New Users",
                     Content = _serviceProvider.GetRequiredService<NewUsersView>()
                 },
+                new TabItemVM
+                {
+                    Name = "Simulate",
+                    Content = _serviceProvider.GetRequiredService<SimulateView>()
+                },
+                new TabItemVM
+                {
+                    Name = "All tables",
+                    Content = _serviceProvider.GetRequiredService<AllTablesView>()
+                }
             };
             OnPropertyChanged(nameof(Tabs));
             SelectedTab = Tabs.FirstOrDefault();
