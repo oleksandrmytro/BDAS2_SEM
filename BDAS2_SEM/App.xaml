@@ -18,6 +18,7 @@
             <converters:FieldsFilledConverter x:Key="FieldsFilledConverter"/>
             <converters:StatusToBooleanConverter x:Key="StatusToBooleanConverter"/>
             <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

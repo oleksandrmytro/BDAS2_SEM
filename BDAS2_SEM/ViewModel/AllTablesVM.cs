@@ -5,13 +5,18 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.View.AdminViews;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BDAS2_SEM.ViewModel
 {
     public class AllTablesVM : INotifyPropertyChanged
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IAdresaRepository _adresaRepository;
         private readonly IBlobTableRepository _blobTableRepository;
         private readonly IDiagnozaRepository _diagnozaRepository;
@@ -31,6 +36,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
         private readonly IZamestnanecRepository _zamestnanecRepository;
+
+        public ICommand EditCommand { get; }
 
         // Renamed properties to PascalCase to match XAML bindings
         public ObservableCollection<ADRESA> Adresa { get; set; } = new ObservableCollection<ADRESA>();
@@ -75,6 +82,7 @@ namespace BDAS2_SEM.ViewModel
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
             IZamestnanecRepository zamestnanecRepository)
         {
+            _serviceProvider = serviceProvider;
             _adresaRepository = adresaRepository;
             _blobTableRepository = blobTableRepository;
             _diagnozaRepository = diagnozaRepository;
@@ -95,8 +103,22 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
             _zamestnanecRepository = zamestnanecRepository;
 
+            EditCommand = new RelayCommand(EditItem);
             // Initiate data loading asynchronously
             LoadDataAsync();
+        }
+
+        private void EditItem(object parameter)
+        {
+            if (parameter == null) return;
+
+            // Open the EditWindow with the selected item
+            var window = new EditWindow(parameter, _serviceProvider);
+            if (window.ShowDialog() == true)
+            {
+                // Refresh data after successful edit
+                LoadDataAsync();
+            }
         }
 
         private async void LoadDataAsync()

@@ -103,8 +103,7 @@ namespace BDAS2_SEM.ViewModel
                 var filteredDoctors = _allDoctors.Where(d =>
                     (d.Jmeno != null && d.Jmeno.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                     (d.Prijmeni != null && d.Prijmeni.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Oddeleni != null && d.Oddeleni.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
                 Doctors = new ObservableCollection<ZAMESTNANEC>(filteredDoctors);
