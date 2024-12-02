@@ -15,7 +15,7 @@ namespace BDAS2_SEM.Model
         private DateTime datumModifikace;
         private string operaceProvedl;
         private string popisOperace;
-        private int zamestnanecId;
+        public int zamestnanecId { get; set; } // Новый атрибут
 
         public int IdBlob
         {

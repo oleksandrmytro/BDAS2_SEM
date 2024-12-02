@@ -1,5 +1,4 @@
-﻿// ViewModel/DoctorsVM.cs
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -12,7 +11,8 @@ using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.View.DoctorViews;
-using Microsoft.Extensions.DependencyInjection; // Ensure you have a RelayCommand or similar command implementation
+using Microsoft.Extensions.DependencyInjection;
+using BDAS2_SEM.Repository.Interfaces;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -20,6 +20,7 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly IServiceProvider _serviceProvider;
         private ZAMESTNANEC _zamestnanec;
+        private readonly IBlobTableRepository _blobRepository;
 
         // Collection of tabs to display in the navigation panel
         public ObservableCollection<TabItemVM> Tabs { get; set; }
@@ -66,6 +67,7 @@ namespace BDAS2_SEM.ViewModel
         public DoctorsVM(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            _blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
             InitializeTabs();
 
             // Initialize commands
@@ -91,11 +93,27 @@ namespace BDAS2_SEM.ViewModel
                 {
                     Name = "Diagnoses",
                     Content = _serviceProvider.GetRequiredService<DDiagnosesView>()
+                },
+                // Settings Tab
+                new TabItemVM
+                {
+                    Name = "Settings",
+                    Content = CreateSettingsView()
                 }
-                // Add more tabs as needed
             };
             OnPropertyChanged(nameof(Tabs));
             SelectedTab = Tabs.FirstOrDefault();
+        }
+
+        // Create the settings view and pass the necessary dependencies
+        private DSettingsView CreateSettingsView()
+        {
+            var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
+            var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
+            var windowService = _serviceProvider.GetRequiredService<IWindowService>();
+
+            var settingsVM = new DSettingsVM(_zamestnanec, zamestnanecRepository, blobRepository, windowService, UpdateAvatar);
+            return new DSettingsView(settingsVM);
         }
 
         // Set the employee (doctor) information
@@ -105,11 +123,11 @@ namespace BDAS2_SEM.ViewModel
             EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
 
             // Load the employee image
-            //EmployeeImage = LoadEmployeeImage(_zamestnanec.ImagePath);
+            LoadEmployeeImage(_zamestnanec.IdZamestnanec);
 
             // Pass the doctor to AppointmentsVM
             var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
-            var disgnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
+            var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
             if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
             {
                 if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
@@ -117,34 +135,61 @@ namespace BDAS2_SEM.ViewModel
                     appointmentsVM.SetDoctor(_zamestnanec);
                 }
             }
-            if (disgnosesTab != null && disgnosesTab.Content is DDiagnosesView disgnosesView)
+            if (diagnosesTab != null && diagnosesTab.Content is DDiagnosesView diagnosesView)
             {
-                if (disgnosesView.DataContext is DDiagnosesVM disgnosesVM)
+                if (diagnosesView.DataContext is DDiagnosesVM diagnosesVM)
                 {
-                    disgnosesVM.SetDoctor(_zamestnanec);
+                    diagnosesVM.SetDoctor(_zamestnanec);
+                }
+            }
+
+            // Update the settings view with the current doctor
+            var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
+            if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
+            {
+                if (settingsView.DataContext is DSettingsVM settingsVM)
+                {
+                    settingsVM.Doctor = _zamestnanec;
                 }
             }
         }
 
-        // Load the employee image from the specified path
-        private ImageSource LoadEmployeeImage(string imagePath)
+        // Load the employee image from the database
+        private async void LoadEmployeeImage(int zamestnanecId)
         {
-            try
+            var blob = await _blobRepository.GetBlobByZamestnanecId(zamestnanecId);
+            if (blob != null && blob.Obsah != null)
             {
-                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                using (var ms = new MemoryStream(blob.Obsah))
                 {
-                    return new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
-                }
-                else
-                {
-                    // Return a default image if no image path is provided or file doesn't exist
-                    return new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.StreamSource = ms;
+                    image.EndInit();
+                    image.Freeze();
+                    EmployeeImage = image;
                 }
             }
-            catch
+            else
             {
-                // Handle exceptions and return a default image
-                return new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
+                // Return a default image if no image is found
+                EmployeeImage = new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
+            }
+        }
+
+        // Update the avatar image
+        private void UpdateAvatar(byte[] imageData)
+        {
+            using (var ms = new MemoryStream(imageData))
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = ms;
+                image.EndInit();
+                image.Freeze();
+                EmployeeImage = image;
             }
         }
 

@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="BDAS2_SEM.View.DoctorViews.DSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BDAS2_SEM.View.DoctorViews"
+             xmlns:vm="clr-namespace:BDAS2_SEM.ViewModel"
+             x:Name="DSettingsUserControl">
+
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="{Binding Doctor.Jmeno}" FontSize="16" FontWeight="Bold" />
+            <TextBlock Text="{Binding Doctor.Prijmeni}" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Button Content="Add/Change Image"
+                    Command="{Binding AddOrChangeImageCommand}"
+                    Width="120" Height="30"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -67,6 +67,9 @@ namespace BDAS2_SEM
                 new ZamestnanecNavstevaRepository(connectionString));
             services.AddSingleton<IZamestnanecRepository, ZamestnanecRepository>(provider =>
                 new ZamestnanecRepository(connectionString));
+            // IBlobTableRepository
+            services.AddSingleton<IBlobTableRepository, BlobTableRepository>(provider =>
+                new BlobTableRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -95,6 +98,7 @@ namespace BDAS2_SEM
             services.AddTransient<UpdateAppointmentVM>();
             services.AddTransient<DDiagnosesVM>();
             services.AddTransient<AssignDiagnosisVM>();
+            services.AddTransient<DSettingsVM>();
             services.AddTransient<SimulateVM>();
             services.AddTransient<AllTablesVM>();
             // Register other ViewModels if needed
@@ -118,6 +122,7 @@ namespace BDAS2_SEM
             services.AddTransient<UpdateAppointmentWindow>();
             services.AddTransient<AssignDiagnosisWindow>();
             services.AddTransient<DDiagnosesView>();
+            services.AddTransient<DSettingsView>();
             services.AddTransient<SimulateView>();
             services.AddTransient<AllTablesView>();
             // Register other Views if needed

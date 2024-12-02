@@ -14,6 +14,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddBlobContent(BLOB_TABLE content);
         Task UpdateBlobContent(BLOB_TABLE content);
         Task DeleteBlobContent(int id);
+        Task<BLOB_TABLE> GetBlobByZamestnanecId(int zamestnanecId);
         Task<IEnumerable<BLOB_TABLE>> GetAllBlobTables();
     }
 }

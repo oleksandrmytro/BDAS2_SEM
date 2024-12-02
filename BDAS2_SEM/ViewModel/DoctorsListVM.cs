@@ -21,9 +21,24 @@ namespace BDAS2_SEM.ViewModel
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
         private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
         private readonly IOrdinaceRepository _ordinaceRepository;
+        private readonly IBlobTableRepository _blobRepository;
 
+        private ObservableCollection<ZAMESTNANEC> _allDoctors;
         public ObservableCollection<ZAMESTNANEC> Doctors { get; set; }
         public ICommand CreateAppointmentCommand { get; }
+        public ICommand SearchCommand { get; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterDoctors(null);
+            }
+        }
 
         public DoctorsListVM(
             IZamestnanecRepository zamestnanecRepository,
@@ -31,7 +46,8 @@ namespace BDAS2_SEM.ViewModel
             INavstevaRepository navstevaRepository,
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
             IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
-            IOrdinaceRepository ordinaceRepository)
+            IOrdinaceRepository ordinaceRepository,
+            IBlobTableRepository blobRepository)
         {
             _zamestnanecRepository = zamestnanecRepository;
             _patientContextService = patientContextService;
@@ -39,8 +55,10 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
             _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
             _ordinaceRepository = ordinaceRepository;
+            _blobRepository = blobRepository;
 
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
+            SearchCommand = new RelayCommand(FilterDoctors);
             LoadDoctors();
         }
 
@@ -61,9 +79,36 @@ namespace BDAS2_SEM.ViewModel
                 if (ordinaceNames.Any())
                 {
                 }
+
+                var blob = await _blobRepository.GetBlobByZamestnanecId(doctor.IdZamestnanec);
+                if (blob != null)
+                {
+                    doctor.Avatar = blob.Obsah;
+                }
             }
 
-            Doctors = new ObservableCollection<ZAMESTNANEC>(doctors);
+            _allDoctors = new ObservableCollection<ZAMESTNANEC>(doctors);
+            Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+            OnPropertyChanged(nameof(Doctors));
+        }
+
+        private void FilterDoctors(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+            }
+            else
+            {
+                var filteredDoctors = _allDoctors.Where(d =>
+                    (d.Jmeno != null && d.Jmeno.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Prijmeni != null && d.Prijmeni.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Oddeleni != null && d.Oddeleni.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+
+                Doctors = new ObservableCollection<ZAMESTNANEC>(filteredDoctors);
+            }
             OnPropertyChanged(nameof(Doctors));
         }
 

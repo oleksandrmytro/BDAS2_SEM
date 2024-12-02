@@ -51,27 +51,47 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task<BLOB_TABLE> GetBlobByZamestnanecId(int zamestnanecId)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
+        SELECT ID_BLOB AS IdBlob,
+               NAZEV_SOUBORU AS NazevSouboru,
+               TYP_SOUBORU AS TypSouboru,
+               PRIPONA_SOUBORU AS PriponaSouboru,
+               OBSAH AS Obsah,
+               DATUM_NAHRANI AS DatumNahrani,
+               DATUM_MODIFIKACE AS DatumModifikace,
+               OPERACE_PROVEDL AS OperaceProvedl,
+               POPIS_OPERACE AS PopisOperace,
+               ZAMESTNANEC_ID AS ZamestnanecId
+        FROM BLOB_TABLE
+        WHERE ZAMESTNANEC_ID = :ZamestnanecId";
+
+                return await db.QueryFirstOrDefaultAsync<BLOB_TABLE>(sql, new { ZamestnanecId = zamestnanecId });
+            }
+        }
+
         public async Task UpdateBlobContent(BLOB_TABLE content)
         {
             using (var connection = new OracleConnection(_connectionString))
             {
                 string sql = @"
-                    UPDATE blob
-                    SET nazev_souboru = :NazevSouboru,
-                        typ_souboru = :TypSouboru,
-                        pripona_souboru = :PriponaSouboru,
-                        obsah = :Obsah,
-                        datum_modifikace = :DatumModifikace,
-                        operace_provedl = :OperaceProvedl,
-                        popis_operace = :PopisOperace,
-                        zamestnanecId = :ZamestnanecId
-
-                    WHERE id_blob = :IdBlob";
+            UPDATE BLOB_TABLE
+            SET NAZEV_SOUBORU = :NazevSouboru,
+                TYP_SOUBORU = :TypSouboru,
+                PRIPONA_SOUBORU = :PriponaSouboru,
+                OBSAH = :Obsah,
+                DATUM_MODIFIKACE = :DatumModifikace,
+                OPERACE_PROVEDL = :OperaceProvedl,
+                POPIS_OPERACE = :PopisOperace
+            WHERE ID_BLOB = :IdBlob";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("NazevSouboru", content.NazevSouboru);
-                parameters.Add("TypSouboru", content.TypSouboru);
-                parameters.Add("PriponaSouboru", content.PriponaSouboru);
+                parameters.Add("NazevSouboru", content.NazevSouboru, DbType.String);
+                parameters.Add("TypSouboru", content.TypSouboru, DbType.String);
+                parameters.Add("PriponaSouboru", content.PriponaSouboru, DbType.String);
                 parameters.Add("Obsah", content.Obsah, DbType.Binary);
                 parameters.Add("DatumModifikace", content.DatumModifikace);
                 parameters.Add("OperaceProvedl", content.OperaceProvedl);
