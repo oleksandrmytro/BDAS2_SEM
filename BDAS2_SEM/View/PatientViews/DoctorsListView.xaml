@@ -35,6 +35,9 @@
 
     <Grid>
         <StackPanel Margin="10">
+            <!-- Search Box -->
+            <TextBox Width="200" Margin="0,0,0,10" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+
             <!-- Header Row -->
             <Border Background="#e0e0e0" Padding="10" Margin="0,0,0,5" CornerRadius="5">
                 <Grid>

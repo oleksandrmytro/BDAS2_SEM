@@ -23,8 +23,22 @@ namespace BDAS2_SEM.ViewModel
         private readonly IOrdinaceRepository _ordinaceRepository;
         private readonly IBlobTableRepository _blobRepository;
 
+        private ObservableCollection<ZAMESTNANEC> _allDoctors;
         public ObservableCollection<ZAMESTNANEC> Doctors { get; set; }
         public ICommand CreateAppointmentCommand { get; }
+        public ICommand SearchCommand { get; }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterDoctors(null);
+            }
+        }
 
         public DoctorsListVM(
             IZamestnanecRepository zamestnanecRepository,
@@ -44,6 +58,7 @@ namespace BDAS2_SEM.ViewModel
             _blobRepository = blobRepository;
 
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
+            SearchCommand = new RelayCommand(FilterDoctors);
             LoadDoctors();
         }
 
@@ -73,7 +88,28 @@ namespace BDAS2_SEM.ViewModel
                 }
             }
 
-            Doctors = new ObservableCollection<ZAMESTNANEC>(doctors);
+            _allDoctors = new ObservableCollection<ZAMESTNANEC>(doctors);
+            Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+            OnPropertyChanged(nameof(Doctors));
+        }
+
+        private void FilterDoctors(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+            }
+            else
+            {
+                var filteredDoctors = _allDoctors.Where(d =>
+                    (d.Jmeno != null && d.Jmeno.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Prijmeni != null && d.Prijmeni.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Oddeleni != null && d.Oddeleni.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+
+                Doctors = new ObservableCollection<ZAMESTNANEC>(filteredDoctors);
+            }
             OnPropertyChanged(nameof(Doctors));
         }
 
