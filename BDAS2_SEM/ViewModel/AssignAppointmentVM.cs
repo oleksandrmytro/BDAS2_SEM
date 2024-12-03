@@ -91,8 +91,8 @@ namespace BDAS2_SEM.ViewModel
                 {
                     DateTime appointmentDateTime = SelectedDate.Value.Date.Add(time);
                     _navsteva.Datum = appointmentDateTime;
-                    _navsteva.Mistnost = SelectedRoom;
-                    _navsteva.Status = Status.Accepted;
+                    _navsteva.MistnostId = SelectedRoom;
+                    _navsteva.StatusId = 1;
 
                     CloseAction?.Invoke(_navsteva);
                 }

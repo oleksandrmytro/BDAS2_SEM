@@ -3,8 +3,10 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
@@ -38,6 +40,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly IZamestnanecRepository _zamestnanecRepository;
 
         public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand InsertCommand { get; }
 
         // Renamed properties to PascalCase to match XAML bindings
         public ObservableCollection<ADRESA> Adresa { get; set; } = new ObservableCollection<ADRESA>();
@@ -104,19 +108,112 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecRepository = zamestnanecRepository;
 
             EditCommand = new RelayCommand(EditItem);
-            // Initiate data loading asynchronously
+            DeleteCommand = new RelayCommand(ExecuteDelete);
+            InsertCommand = new RelayCommand<Type>(ExecuteInsert);
             LoadDataAsync();
+        }
+
+        private void ExecuteInsert(Type modelType)
+        {
+            if (modelType == null) return;
+
+            object newItem = Activator.CreateInstance(modelType);
+
+            var window = new EditWindow(newItem, _serviceProvider);
+            if (window.ShowDialog() == true)
+            {
+                switch (newItem)
+                {
+                    case ADRESA adresa:
+                        Adresa.Add(adresa);
+                        break;
+
+                    case BLOB_TABLE blobTable:
+                        BlobTable.Add(blobTable);
+                        break;
+
+                    case DIAGNOZA diagnoza:
+                        Diagnosis.Add(diagnoza);
+                        break;
+
+                    case HOTOVOST hotovost:
+                        Hotovost.Add(hotovost);
+                        break;
+
+                    case KARTA karta:
+                        Karta.Add(karta);
+                        break;
+
+                    case LEK_DIAGNOZA lekDiagnoza:
+                        LekDiagnoza.Add(lekDiagnoza);
+                        break;
+
+                    case LEK lek:
+                        Lek.Add(lek);
+                        break;
+
+                    case NAVSTEVA_DIAGNOZA navstevaDiagnoza:
+                        NavstevaDiagnoza.Add(navstevaDiagnoza);
+                        break;
+
+                    case NAVSTEVA navsteva:
+                        Navsteva.Add(navsteva);
+                        break;
+
+                    case OPERACE operace:
+                        Operace.Add(operace);
+                        break;
+
+                    case OPERACE_ZAMESTNANEC operaceZamestnanec:
+                        OperaceZamestnanec.Add(operaceZamestnanec);
+                        break;
+
+                    case ORDINACE ordinace:
+                        Ordinace.Add(ordinace);
+                        break;
+
+                    case ORDINACE_ZAMESTNANEC ordinaceZamestnanec:
+                        OrdinaceZamestnanec.Add(ordinaceZamestnanec);
+                        break;
+
+                    case PACIENT pacient:
+                        Pacient.Add(pacient);
+                        break;
+
+                    case PLATBA platba:
+                        Platba.Add(platba);
+                        break;
+
+                    case POZICE pozice:
+                        Pozice.Add(pozice);
+                        break;
+
+                    case UZIVATEL_DATA uzivatelData:
+                        UzivatelData.Add(uzivatelData);
+                        break;
+
+                    case ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva:
+                        ZamestnanecNavsteva.Add(zamestnanecNavsteva);
+                        break;
+
+                    case ZAMESTNANEC zamestnanec:
+                        Zamestnanec.Add(zamestnanec);
+                        break;
+
+                    default:
+                        MessageBox.Show("Unsupported entity type.");
+                        break;
+                }
+            }
         }
 
         private void EditItem(object parameter)
         {
             if (parameter == null) return;
 
-            // Open the EditWindow with the selected item
             var window = new EditWindow(parameter, _serviceProvider);
             if (window.ShowDialog() == true)
             {
-                // Refresh data after successful edit
                 LoadDataAsync();
             }
         }
@@ -185,6 +282,88 @@ namespace BDAS2_SEM.ViewModel
             catch (Exception ex)
             {
                 // Handle exceptions (e.g., log the error, show a message to the user)
+            }
+        }
+
+        private async void ExecuteDelete(object item)
+        {
+            if (item == null) return;
+
+            var result = MessageBox.Show("Ви впевнені, що хочете видалити цей запис?", "Підтвердження", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                switch (item)
+                {
+                    case ADRESA adresa:
+                        await _adresaRepository.DeleteAdresa(adresa.IdAdresa);
+                        Adresa.Remove(adresa);
+                        break;
+
+                    case ZAMESTNANEC zamestnanec:
+                        await _zamestnanecRepository.DeleteZamestnanec(zamestnanec.IdZamestnanec);
+                        Zamestnanec.Remove(zamestnanec);
+                        break;
+                    case DIAGNOZA diagnoza:
+                        await _diagnozaRepository.DeleteDiagnoza(diagnoza.IdDiagnoza);
+                        break;
+                    case ORDINACE ordinace:
+                        await _ordinaceRepository.DeleteOrdinace(ordinace.IdOrdinace);
+                        break;
+                    case UZIVATEL_DATA uzivatelData:
+                        await _uzivatelDataRepository.DeleteUzivatelData(uzivatelData.Id);
+                        break;
+                    case PLATBA platba:
+                        await _platbaRepository.DeletePlatba(platba.IdPlatba);
+                        break;
+                    //case LOG 
+                    case PACIENT pacient:
+                        await _pacientRepository.DeletePacient(pacient.IdPacient);
+                        break;
+                    case POZICE pozice:
+                        await _poziceRepository.DeletePozice(pozice.IdPozice);
+                        break;
+                    //case STATUS
+                    //case TYP_LEK
+                    case LEK lek:
+                        await _lekRepository.DeleteLek(lek.IdLek);
+                        break;
+                    case OPERACE operace:
+                        await _operaceRepository.DeleteOperace(operace.IdOperace);
+                        break;
+                    case NAVSTEVA navsteva:
+                        await _navstevaRepository.DeleteNavsteva(navsteva.IdNavsteva);
+                        break;
+                    case OPERACE_ZAMESTNANEC operaceZamestnanec:
+                        await _operaceZamestnanecRepository.DeleteOperaceZamestnanec(operaceZamestnanec.OperaceId,
+                            operaceZamestnanec.ZamestnanecId);
+                        break;
+                    case BLOB_TABLE blobTable:
+                        await _blobTableRepository.DeleteBlobContent(blobTable.IdBlob);
+                        break;
+                    case ORDINACE_ZAMESTNANEC ordinaceZamestnanec:
+                        await _ordinaceZamestnanecRepository.DeleteOrdinaceZamestnanec(ordinaceZamestnanec.OrdinaceId,
+                            ordinaceZamestnanec.ZamestnanecId);
+                        break;
+                    case ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva:
+                        await _zamestnanecNavstevaRepository.DeleteZamestnanecNavsteva(
+                            zamestnanecNavsteva.ZamestnanecId, zamestnanecNavsteva.NavstevaId);
+                        break;
+                    case NAVSTEVA_DIAGNOZA navstevaDiagnoza:
+                        await _navstevaDiagnozaRepository.DeleteNavstevaDiagnoza(navstevaDiagnoza.NavstevaId,
+                            navstevaDiagnoza.DiagnozaId);
+                        break;
+                    default:
+                        MessageBox.Show("Unsupported entity type.");
+                        break;
+                }
+
+                MessageBox.Show("Запис успішно видалено.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting item: {ex.Message}");
             }
         }
 

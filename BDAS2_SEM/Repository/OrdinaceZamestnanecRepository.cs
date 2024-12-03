@@ -72,5 +72,22 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(sql, new { OrdinaceId = ordinaceId, ZamestnanecId = zamestnanecId });
             }
         }
+
+        public async Task UpdateOrdinaceZamestnanec(ORDINACE_ZAMESTNANEC ordinaceZamestnanec)
+        {
+                using (var db = new OracleConnection(connectionString))
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                    parameters.Add("p_id_ordinace", ordinaceZamestnanec.OrdinaceId, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("p_id_zamestnanec", ordinaceZamestnanec.ZamestnanecId, DbType.String, ParameterDirection.Input);
+
+                    await db.ExecuteAsync(
+                        "manage_ordinace_zamestnanec",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+                }
+        }
     }
 }

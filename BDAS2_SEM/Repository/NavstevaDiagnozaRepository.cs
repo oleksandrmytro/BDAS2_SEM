@@ -80,5 +80,22 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync(sql, parameters);
             }
         }
+
+        public async Task UpdateNavstevaDiagnoza(NAVSTEVA_DIAGNOZA navstevaDiagnoza)
+        {
+                using (var db = new OracleConnection(connectionString))
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                    parameters.Add("p_id_navsteva", navstevaDiagnoza.NavstevaId, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("p_id_diagnoza", navstevaDiagnoza.DiagnozaId, DbType.String, ParameterDirection.Input);
+
+                    await db.ExecuteAsync(
+                        "manage_navsteva_diagnoza",
+                        parameters,
+                        commandType: CommandType.StoredProcedure
+                    );
+                }
+        }
     }
 }

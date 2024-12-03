@@ -27,9 +27,9 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
                 parameters.Add("p_id_navsteva", dbType: DbType.Int32, direction: ParameterDirection.Output);
                 parameters.Add("p_datum", navsteva.Datum, DbType.DateTime, ParameterDirection.Input);
-                parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("p_status_id", (int)navsteva.Status, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_status_id", navsteva.StatusId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_mistnost_id", navsteva.MistnostId, DbType.Int32, ParameterDirection.Input);
 
                 await db.ExecuteAsync("manage_navsteva", parameters, commandType: CommandType.StoredProcedure);
 
@@ -47,9 +47,9 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
                 parameters.Add("p_id_navsteva", navsteva.IdNavsteva, DbType.Int32);
                 parameters.Add("p_datum", navsteva.Datum, DbType.Date);
-                parameters.Add("p_mistnost", navsteva.Mistnost, DbType.Int32);
                 parameters.Add("p_pacient_id", navsteva.PacientId, DbType.Int32);
-                parameters.Add("p_status_id", (int)navsteva.Status, DbType.Int32); // Add status parameter
+                parameters.Add("p_status_id", navsteva.StatusId, DbType.Int32); // Add status parameter
+                parameters.Add("p_mistnost_id", navsteva.MistnostId, DbType.Int32, ParameterDirection.Input);
 
                 await db.ExecuteAsync("manage_navsteva", parameters, commandType: CommandType.StoredProcedure);
             }
@@ -122,9 +122,9 @@ namespace BDAS2_SEM.Repository
             SELECT 
                 n.ID_NAVSTEVA AS IdNavsteva,
                 n.PACIENT_ID_PACIENT AS PacientId,
-                n.STATUS_ID_STATUS AS Status,
+                n.STATUS_ID_STATUS AS StatusId,
                 n.DATUM AS Datum,
-                n.MISTNOST AS Mistnost
+                n.MISTNOST_ID AS Mistnost
             FROM NAVSTEVA n
             JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
             WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
@@ -173,7 +173,7 @@ namespace BDAS2_SEM.Repository
                     doctorId,
                     selectedDate = date.Date,
                     room,
-                    accepted = (int)Status.Accepted
+                    accepted = 1
                 };
 
                 var result = await db.QueryAsync<NAVSTEVA>(query, parameters);
@@ -202,7 +202,7 @@ namespace BDAS2_SEM.Repository
                     doctorId,
                     dateTime,
                     room,
-                    accepted = (int)Status.Accepted,
+                    accepted = 1,
                     excludeId = excludeAppointmentId
                 };
 
@@ -263,9 +263,9 @@ namespace BDAS2_SEM.Repository
                 var sqlQuery = @"
                     SELECT id_navsteva AS IdNavsteva,
                            datum AS Datum,
-                           mistnost AS Mistnost,
                            pacient_id_pacient AS PacientId,
-                           status_id_status AS Status
+                           status_id_status AS Status,
+                           MISTNOST_ID As MistnostId
                     FROM NAVSTEVA";
 
                 return await db.QueryAsync<NAVSTEVA>(sqlQuery);

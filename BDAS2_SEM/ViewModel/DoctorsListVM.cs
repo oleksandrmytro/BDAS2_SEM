@@ -78,6 +78,7 @@ namespace BDAS2_SEM.ViewModel
 
                 if (ordinaceNames.Any())
                 {
+                    doctor.Oddeleni = string.Join(", ", ordinaceNames);
                 }
 
                 var blob = await _blobRepository.GetBlobByZamestnanecId(doctor.IdZamestnanec);
@@ -121,7 +122,7 @@ namespace BDAS2_SEM.ViewModel
                 var newAppointment = new NAVSTEVA
                 {
                     PacientId = pacientId,
-                    Status = Status.Pending
+                    StatusId = 3
                 };
 
                 var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
@@ -133,7 +134,7 @@ namespace BDAS2_SEM.ViewModel
                     NavstevaId = newAppointmentId
                 };
 
-                await _zamestnanecNavstevaRepository.InsertZamestnanecNavsteva(zamestnanecNavsteva);
+                await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
 
                 MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }

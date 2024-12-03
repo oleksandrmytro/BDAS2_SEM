@@ -53,6 +53,11 @@ namespace BDAS2_SEM.ViewModel
                 {
                     Name = "All tables",
                     Content = _serviceProvider.GetRequiredService<AllTablesView>()
+                },
+                new TabItemVM()
+                {
+                    Name = "System Catalog",
+                    Content = _serviceProvider.GetRequiredService<SystemCatalogView>()
                 }
             };
             OnPropertyChanged(nameof(Tabs));

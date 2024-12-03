@@ -18,5 +18,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task UpdateUserData(UZIVATEL_DATA userData);
         Task<IEnumerable<UZIVATEL_DATA>> GetAllUzivatelDatas();
 
+        Task DeleteUzivatelData(int id);
+
     }
 }

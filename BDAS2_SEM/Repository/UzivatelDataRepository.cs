@@ -177,5 +177,14 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task DeleteUzivatelData(int id)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var sqlQuery = "DELETE FROM UZIVATEL_DATA WHERE ID_UZIVATEL_DATA = :Id";
+                await db.ExecuteAsync(sqlQuery, new { Id = id });
+            }
+        }
+
     }
 }

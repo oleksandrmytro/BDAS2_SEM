@@ -83,7 +83,7 @@
             <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="HESLO:" />
-            <PasswordBox Password="{Binding Heslo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Text="{Binding Heslo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="PACIENT_ID_C:" />
             <TextBox Text="{Binding pacientId, UpdateSourceTrigger=PropertyChanged}" />
