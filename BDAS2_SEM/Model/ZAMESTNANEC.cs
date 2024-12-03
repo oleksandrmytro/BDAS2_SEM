@@ -131,6 +131,19 @@ namespace BDAS2_SEM.Model
             }
         }
 
+        public string Oddeleni
+        {
+            get => oddeleni;
+            set
+            {
+                if (oddeleni != value)
+                {
+                    oddeleni = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

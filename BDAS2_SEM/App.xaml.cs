@@ -70,6 +70,8 @@ namespace BDAS2_SEM
             // IBlobTableRepository
             services.AddSingleton<IBlobTableRepository, BlobTableRepository>(provider =>
                 new BlobTableRepository(connectionString));
+            services.AddSingleton<IMistnostRepository, MistnostRepository>(provider =>
+                new MistnostRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();

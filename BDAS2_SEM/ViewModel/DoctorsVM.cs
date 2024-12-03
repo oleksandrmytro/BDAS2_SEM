@@ -56,8 +56,12 @@ namespace BDAS2_SEM.ViewModel
             get => _employeeImage;
             set
             {
-                _employeeImage = value;
-                OnPropertyChanged();
+                if (_employeeImage != value)
+                {
+                    _employeeImage = value;
+                    OnPropertyChanged(nameof(EmployeeImage));
+                    Console.WriteLine("EmployeeImage property changed.");
+                }
             }
         }
 
@@ -119,63 +123,87 @@ namespace BDAS2_SEM.ViewModel
         // Set the employee (doctor) information
         public void SetEmployee(ZAMESTNANEC zamestnanec)
         {
-            _zamestnanec = zamestnanec;
-            EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
-
-            // Load the employee image
-            LoadEmployeeImage(_zamestnanec.IdZamestnanec);
-
-            // Pass the doctor to AppointmentsVM
-            var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
-            var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
-            if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
+            try
             {
-                if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
+                _zamestnanec = zamestnanec;
+                EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
+                Console.WriteLine($"Setting employee: {EmployeeName}");
+
+                // Load the employee image
+                LoadEmployeeImage(_zamestnanec.IdZamestnanec);
+
+                // Pass the doctor to AppointmentsVM
+                var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
+                var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
+                if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
                 {
-                    appointmentsVM.SetDoctor(_zamestnanec);
+                    if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
+                    {
+                        appointmentsVM.SetDoctor(_zamestnanec);
+                    }
+                }
+                if (diagnosesTab != null && diagnosesTab.Content is DDiagnosesView diagnosesView)
+                {
+                    if (diagnosesView.DataContext is DDiagnosesVM diagnosesVM)
+                    {
+                        diagnosesVM.SetDoctor(_zamestnanec);
+                    }
+                }
+
+                // Update the settings view with the current doctor
+                var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
+                if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
+                {
+                    if (settingsView.DataContext is DSettingsVM settingsVM)
+                    {
+                        settingsVM.Doctor = _zamestnanec;
+                    }
                 }
             }
-            if (diagnosesTab != null && diagnosesTab.Content is DDiagnosesView diagnosesView)
+            catch (Exception ex)
             {
-                if (diagnosesView.DataContext is DDiagnosesVM diagnosesVM)
-                {
-                    diagnosesVM.SetDoctor(_zamestnanec);
-                }
-            }
-
-            // Update the settings view with the current doctor
-            var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
-            if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
-            {
-                if (settingsView.DataContext is DSettingsVM settingsVM)
-                {
-                    settingsVM.Doctor = _zamestnanec;
-                }
+                Console.WriteLine($"Error setting employee: {ex.Message}");
             }
         }
 
         // Load the employee image from the database
         private async void LoadEmployeeImage(int zamestnanecId)
         {
-            var blob = await _blobRepository.GetBlobByZamestnanecId(zamestnanecId);
-            if (blob != null && blob.Obsah != null)
+            try
             {
-                using (var ms = new MemoryStream(blob.Obsah))
+                var blob = await _blobRepository.GetBlobByZamestnanecId(zamestnanecId);
+                if (blob != null && blob.Obsah != null)
                 {
-                    var image = new BitmapImage();
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.StreamSource = ms;
-                    image.EndInit();
-                    image.Freeze();
-                    EmployeeImage = image;
+                    using (var ms = new MemoryStream(blob.Obsah))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = ms;
+                        image.EndInit();
+                        image.Freeze();
+                        EmployeeImage = image;
+                        Console.WriteLine("Employee image loaded successfully.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Avatar not found, setting EmployeeImage to null.");
+                    EmployeeImage = null;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Return a default image if no image is found
-                EmployeeImage = new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
+                Console.WriteLine($"Error loading employee image: {ex}");
+                EmployeeImage = null;
             }
+        }
+
+        private DrawingImage CreateEmptyImage()
+        {
+            // Создаем пустое изображение
+            var drawingGroup = new DrawingGroup();
+            return new DrawingImage(drawingGroup);
         }
 
         // Update the avatar image

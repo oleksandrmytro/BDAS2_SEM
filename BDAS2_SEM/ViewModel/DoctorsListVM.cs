@@ -78,6 +78,7 @@ namespace BDAS2_SEM.ViewModel
 
                 if (ordinaceNames.Any())
                 {
+                    doctor.Oddeleni = string.Join(", ", ordinaceNames);
                 }
 
                 var blob = await _blobRepository.GetBlobByZamestnanecId(doctor.IdZamestnanec);
