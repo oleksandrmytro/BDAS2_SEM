@@ -66,6 +66,20 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task<PRIPONA> GetPriponaByTyp(string typ)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
+            SELECT ID_PRIPONA AS IdPripona,
+                   TYP AS Typ
+            FROM PRIPONA
+            WHERE TYP = :Typ";
+
+                return await db.QueryFirstOrDefaultAsync<PRIPONA>(sql, new { Typ = typ });
+            }
+        }
+
         public async Task<IEnumerable<PRIPONA>> GetAllPriponas()
         {
             using (var db = new OracleConnection(_connectionString))

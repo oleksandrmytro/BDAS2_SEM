@@ -9,6 +9,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<int> AddPripona(PRIPONA pripona);
         Task UpdatePripona(PRIPONA pripona);
         Task<PRIPONA> GetPriponaById(int id);
+        Task<PRIPONA> GetPriponaByTyp(string typ);
         Task<IEnumerable<PRIPONA>> GetAllPriponas();
         Task DeletePripona(int id);
     }

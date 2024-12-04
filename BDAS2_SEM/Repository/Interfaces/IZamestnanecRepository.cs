@@ -11,6 +11,7 @@ namespace BDAS2_SEM.Repository.Interfaces
     {
         Task<int> AddZamestnanec(ZAMESTNANEC zamestnanec);
         Task UpdateZamestnanec(ZAMESTNANEC zamestnanec);
+        Task UpdateEmployeeBlob(int idZamestnanec, int idBlob);
         Task<ZAMESTNANEC> GetZamestnanecById(int id);
         Task<IEnumerable<ZAMESTNANEC>> GetAllZamestnanci();
         Task DeleteZamestnanec(int id);

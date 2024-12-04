@@ -113,6 +113,9 @@ namespace BDAS2_SEM.Repository
                     SELECT 
                         ID_UZIVATEL_DATA AS Id, 
                         EMAIL AS Email, 
+                        heslo as Heslo,
+                        PACIENT_ID_C as pacientId,
+                        ZAMESTNANEC_ID_C as zamestnanecId,
                         ROLE_ID_ROLE AS RoleUzivatel 
                     FROM 
                         UZIVATEL_DATA 

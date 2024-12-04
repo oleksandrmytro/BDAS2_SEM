@@ -20,6 +20,7 @@ public class DoctorsVM : INotifyPropertyChanged
     private ZAMESTNANEC _zamestnanec;
     private readonly IBlobTableRepository _blobRepository;
     private readonly IZamestnanecRepository _zamestnanecRepository;
+    private readonly IPriponaRepository _priponaRepository;
 
     // Collection of tabs to display in the navigation panel
     public ObservableCollection<TabItemVM> Tabs { get; set; }
@@ -109,15 +110,16 @@ public class DoctorsVM : INotifyPropertyChanged
         SelectedTab = Tabs.FirstOrDefault();
     }
 
-        // Create the settings view and pass the necessary dependencies
+        // Create the settings view and pass the necessary dependencies 
         private DSettingsView CreateSettingsView()
         {
             var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
             var uzivatelRepository = _serviceProvider.GetRequiredService<IUzivatelDataRepository>();
             var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
+            var priponaRepository = _serviceProvider.GetRequiredService<IPriponaRepository>();
             var windowService = _serviceProvider.GetRequiredService<IWindowService>();
 
-            var settingsVM = new DSettingsVM(zamestnanecRepository, uzivatelRepository, blobRepository, windowService, UpdateAvatar);
+            var settingsVM = new DSettingsVM(zamestnanecRepository, uzivatelRepository, blobRepository, priponaRepository, windowService, null);
             return new DSettingsView(settingsVM);
         }
 

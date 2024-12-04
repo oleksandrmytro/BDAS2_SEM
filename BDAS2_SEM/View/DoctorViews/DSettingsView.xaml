@@ -2,9 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BDAS2_SEM.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
     <Grid Background="White" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,14 +18,28 @@
 
         <!-- Поля для відображення та редагування -->
         <StackPanel Grid.Row="0" Margin="0,20,0,20">
-            <!-- Ім'я та Прізвище -->
+            <!-- Ім'я -->
             <StackPanel Orientation="Horizontal" Margin="0,15" VerticalAlignment="Center">
-                <TextBlock Text="Name and Surname" Width="200" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding FullName}" Width="300" FontSize="16" Foreground="Gray" VerticalAlignment="Center"
-                           Visibility="{Binding IsEditingName, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
-                <TextBox Width="300" FontSize="16" Text="{Binding FullName, UpdateSourceTrigger=PropertyChanged}" 
-                         Visibility="{Binding IsEditingName, Converter={StaticResource BoolToVisibilityConverter}}" />
-                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditNameCommand}"/>
+                <TextBlock Text="First Name" Width="200" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding FirstName}" Width="300" FontSize="16" Foreground="Gray" VerticalAlignment="Center"
+                           Visibility="{Binding IsEditingFirstName, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                <TextBox Width="300" FontSize="16" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" 
+                         Visibility="{Binding IsEditingFirstName, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditFirstNameCommand}">
+                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
+                </Button>
+            </StackPanel>
+
+            <!-- Прізвище -->
+            <StackPanel Orientation="Horizontal" Margin="0,15" VerticalAlignment="Center">
+                <TextBlock Text="Last Name" Width="200" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding LastName}" Width="300" FontSize="16" Foreground="Gray" VerticalAlignment="Center"
+                           Visibility="{Binding IsEditingLastName, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                <TextBox Width="300" FontSize="16" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" 
+                         Visibility="{Binding IsEditingLastName, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding ToggleEditLastNameCommand}">
+                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
+                </Button>
             </StackPanel>
 
             <!-- Номер телефону -->
@@ -33,7 +49,9 @@
                            Visibility="{Binding IsEditingPhone, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
                 <TextBox Width="300" FontSize="16" Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingPhone, Converter={StaticResource BoolToVisibilityConverter}}" />
-                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditPhoneCommand}"/>
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditPhoneCommand}">
+                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
+                </Button>
             </StackPanel>
 
             <!-- Електронна пошта -->
@@ -43,7 +61,9 @@
                            Visibility="{Binding IsEditingEmail, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
                 <TextBox Width="300" FontSize="16" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingEmail, Converter={StaticResource BoolToVisibilityConverter}}" />
-                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditEmailCommand}"/>
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditEmailCommand}">
+                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
+                </Button>
             </StackPanel>
 
             <!-- Кнопка для завантаження фото -->

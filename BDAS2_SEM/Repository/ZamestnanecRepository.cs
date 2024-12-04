@@ -52,11 +52,11 @@ public class ZamestnanecRepository : IZamestnanecRepository
                         Jmeno = :Jmeno, 
                         Prijmeni = :Prijmeni, 
                         Telefon = :Telefon, 
-                        NadrazenyZamestnanecId = :NadrazenyZamestnanecId, 
-                        AdresaId = :AdresaId, 
-                        PoziceId = :PoziceId, 
-                        UserDataId = :UserDataId,
-                        BlobId = :BlobId
+                        ZAMESTNANEC_ID_ZAMESTNANEC = :NadrazenyZamestnanecId, 
+                        ADRESA_ID_ADRESA = :AdresaId, 
+                        POZICE_ID_POZICE = :PoziceId,  
+                        UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId,
+                        BLOB_ID = :BlobId
                     WHERE 
                         ID_ZAMESTNANEC = :IdZamestnanec";
 
@@ -72,6 +72,20 @@ public class ZamestnanecRepository : IZamestnanecRepository
             parameters.Add("IdZamestnanec", zamestnanec.IdZamestnanec, DbType.Int32);
 
             await db.ExecuteAsync(sql, parameters);
+        }
+    }
+
+    public async Task UpdateEmployeeBlob(int idZamestnanec, int idBlob)
+    {
+        using (var db = new OracleConnection(connectionString))
+        {
+            string procedureName = "update_employee_blob";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("p_id_zamestnanec", idZamestnanec, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("p_id_blob", idBlob, DbType.Int32, ParameterDirection.Input);
+
+            await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
         }
     }
 

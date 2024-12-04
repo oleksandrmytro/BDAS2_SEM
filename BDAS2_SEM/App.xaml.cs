@@ -43,6 +43,8 @@ namespace BDAS2_SEM
                 new LekDiagnozaRepository(connectionString));
             services.AddSingleton<ILekRepository, LekRepository>(provider =>
                 new LekRepository(connectionString));
+            services.AddSingleton<ILogRepository, LogRepository>(provider =>
+                new LogRepository(connectionString));
             services.AddSingleton<INavstevaDiagnozaRepository, NavstevaDiagnozaRepository>(provider =>
                 new NavstevaDiagnozaRepository(connectionString));
             services.AddSingleton<INavstevaRepository, NavstevaRepository>(provider =>
