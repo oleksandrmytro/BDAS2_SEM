@@ -149,6 +149,22 @@ namespace BDAS2_SEM.ViewModel
                 OnPropertyChanged(nameof(Email));
             }
         }
+                if (doctorData != null)
+                {
+                    Doctor = doctorData;
+
+                    // Загружаем изображение, если указано в blob_id
+                    if (Doctor.BlobId != 0)
+                    {
+                        var blob = await _blobRepository.GetBlobById(Doctor.BlobId);
+                        if (blob != null && blob.Obsah != null)
+                        {
+                            //_updateAvatarAction(blob.Obsah);
+                        }
+                    }
+                }
+            }
+        }
 
         private async void AddOrChangeImage(object parameter)
         {
@@ -164,6 +180,17 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+                // Сохраняем изображение в базе данных
+                BLOB_TABLE blob = new BLOB_TABLE
+                {
+                    NazevSouboru = Path.GetFileName(openFileDialog.FileName),
+                    TypSouboru = "Image",
+                    Obsah = imageData,
+                    DatumNahrani = DateTime.Now,
+                    DatumModifikace = DateTime.Now,
+                    OperaceProvedl = $"{_doctor.Jmeno} {_doctor.Prijmeni}",
+                    PopisOperace = "Добавление аватарки"
+                };
         private void ToggleEditName(object parameter)
         {
             IsEditingName = !IsEditingName;
@@ -171,6 +198,18 @@ namespace BDAS2_SEM.ViewModel
             IsEditingEmail = false;
         }
 
+                if (Doctor.BlobId != 0)
+                {
+                    // Обновляем существующую запись
+                    blob.IdBlob = Doctor.BlobId;
+                    await _blobRepository.UpdateBlob(blob);
+                }
+                else
+                {
+                    // Добавляем новую запись
+                    Doctor.BlobId = await _blobRepository.AddBlob(blob);
+                    await _zamestnanecRepository.UpdateZamestnanec(Doctor);
+                }
         private void ToggleEditPhone(object parameter)
         {
             IsEditingPhone = !IsEditingPhone;

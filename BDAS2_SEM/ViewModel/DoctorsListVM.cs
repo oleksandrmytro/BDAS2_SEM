@@ -76,15 +76,14 @@ namespace BDAS2_SEM.ViewModel
                     .Where(name => !string.IsNullOrEmpty(name))
                     .ToList();
 
-                if (ordinaceNames.Any())
+                // Загрузка аватарки
+                if (doctor.BlobId != 0)
                 {
-                    doctor.Oddeleni = string.Join(", ", ordinaceNames);
-                }
-
-                var blob = await _blobRepository.GetBlobByZamestnanecId(doctor.IdZamestnanec);
-                if (blob != null)
-                {
-                    doctor.Avatar = blob.Obsah;
+                    var blob = await _blobRepository.GetBlobById(doctor.BlobId);
+                    if (blob != null)
+                    {
+                        // Здесь можно обработать blob.Obsah, если это необходимо
+                    }
                 }
             }
 

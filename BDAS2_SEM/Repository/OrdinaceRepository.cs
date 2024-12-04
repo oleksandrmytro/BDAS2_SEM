@@ -39,6 +39,23 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task AddOrdinaceZamestnanec(ORDINACE_ZAMESTNANEC ordinaceZamestnanec)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                string sql = @"
+                    INSERT INTO ORDINACE_ZAMESTNANEC (ID_ORDINACE, ID_ZAMESTNANEC) 
+                    INSERT INTO ORDINACE_ZAMESTNANEC (ORDINACE_ID_ORDINACE, ZAMESTNANEC_ID_ZAMESTNANEC) 
+                    VALUES (:OrdinaceId, :ZamestnanecId)";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("OrdinaceId", ordinaceZamestnanec.OrdinaceId, DbType.Int32);
+                parameters.Add("ZamestnanecId", ordinaceZamestnanec.ZamestnanecId, DbType.Int32);
+
+                await db.ExecuteAsync(sql, parameters);
+            }
+        }
+
         public async Task UpdateOrdinace(ORDINACE ordinace)
         {
             using (var db = new OracleConnection(connectionString))

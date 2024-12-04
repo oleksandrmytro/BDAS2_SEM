@@ -76,8 +76,10 @@ namespace BDAS2_SEM
                 new BlobTableRepository(connectionString));
             services.AddSingleton<ISystemCatalogRepository, SystemCatalogRepository>(provider =>
                 new SystemCatalogRepository(connectionString));
-            services.AddSingleton<ILogRepository, LogRepository>(provider =>
-                new LogRepository(connectionString));
+            services.AddSingleton<IMistnostRepository, MistnostRepository>(provider =>
+                new MistnostRepository(connectionString));
+            services.AddSingleton<IPriponaRepository, PriponaRepository>(provider =>
+                new PriponaRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();

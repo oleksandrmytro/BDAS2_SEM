@@ -31,6 +31,7 @@ public class ZamestnanecRepository : IZamestnanecRepository
             parameters.Add("p_adresa_id", zamestnanec.AdresaId, DbType.Int32);
             parameters.Add("p_pozice_id", zamestnanec.PoziceId, DbType.Int32);
             parameters.Add("p_uzivatel_data_id", zamestnanec.UserDataId, DbType.Int32);
+            parameters.Add("p_blob_id", zamestnanec.BlobId, DbType.Int32);
 
             await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
@@ -40,7 +41,6 @@ public class ZamestnanecRepository : IZamestnanecRepository
             throw new Exception("The procedure did not return a valid employee ID.");
         }
     }
-
 
     public async Task UpdateZamestnanec(ZAMESTNANEC zamestnanec)
     {
@@ -55,7 +55,8 @@ public class ZamestnanecRepository : IZamestnanecRepository
                         NadrazenyZamestnanecId = :NadrazenyZamestnanecId, 
                         AdresaId = :AdresaId, 
                         PoziceId = :PoziceId, 
-                        UserDataId = :UserDataId 
+                        UserDataId = :UserDataId,
+                        BlobId = :BlobId
                     WHERE 
                         ID_ZAMESTNANEC = :IdZamestnanec";
 
@@ -67,6 +68,7 @@ public class ZamestnanecRepository : IZamestnanecRepository
             parameters.Add("AdresaId", zamestnanec.AdresaId, DbType.Int32);
             parameters.Add("PoziceId", zamestnanec.PoziceId, DbType.Int32);
             parameters.Add("UserDataId", zamestnanec.UserDataId, DbType.Int32);
+            parameters.Add("BlobId", zamestnanec.BlobId, DbType.Int32);
             parameters.Add("IdZamestnanec", zamestnanec.IdZamestnanec, DbType.Int32);
 
             await db.ExecuteAsync(sql, parameters);
@@ -86,7 +88,8 @@ public class ZamestnanecRepository : IZamestnanecRepository
                         ZAMESTNANEC_ID_ZAMESTNANEC AS NadrazenyZamestnanecId, 
                         ADRESA_ID_ADRESA AS AdresaId, 
                         POZICE_ID_POZICE AS PoziceId, 
-                        UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId 
+                        UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId,
+                        BLOB_ID AS BlobId
                     FROM 
                         ZAMESTNANEC 
                     WHERE 
@@ -109,7 +112,8 @@ public class ZamestnanecRepository : IZamestnanecRepository
                         ZAMESTNANEC_ID_ZAMESTNANEC AS NadrazenyZamestnanecId, 
                         ADRESA_ID_ADRESA AS AdresaId, 
                         POZICE_ID_POZICE AS PoziceId, 
-                        UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId
+                        UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId,
+                        BLOB_ID AS BlobId
                     FROM 
                         ZAMESTNANEC";
 
@@ -140,7 +144,8 @@ public class ZamestnanecRepository : IZamestnanecRepository
                 ZAMESTNANEC_ID_ZAMESTNANEC AS NadrazenyZamestnanecId, 
                 ADRESA_ID_ADRESA AS AdresaId, 
                 POZICE_ID_POZICE AS PoziceId, 
-                UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId 
+                UZIVATEL_DATA_ID_UZIVATEL_DATA AS UserDataId,
+                BLOB_ID AS BlobId
             FROM 
                 ZAMESTNANEC 
             WHERE UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId";
