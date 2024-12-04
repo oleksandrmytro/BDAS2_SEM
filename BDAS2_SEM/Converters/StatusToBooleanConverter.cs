@@ -10,12 +10,9 @@ namespace BDAS2_SEM.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Status status && parameter is string targetStatus)
+            if (value is STATUS status && parameter is string targetStatus)
             {
-                if (Enum.TryParse(targetStatus, out Status target))
-                {
-                    return status == target ? Visibility.Visible : Visibility.Collapsed;
-                }
+                return status == value ? Visibility.Visible : Visibility.Collapsed;
             }
             return Visibility.Collapsed;
         }

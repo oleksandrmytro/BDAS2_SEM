@@ -1,0 +1,343 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:BDAS2_SEM.Model">
+
+    <!-- DataTemplate for ADRESA -->
+    <DataTemplate DataType="{x:Type models:ADRESA}">
+        <StackPanel>
+            <Label Content="STAT:" />
+            <TextBox Text="{Binding Stat, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="MESTO:" />
+            <TextBox Text="{Binding Mesto, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ULICE:" />
+            <TextBox Text="{Binding Ulice, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PSC:" />
+            <TextBox Text="{Binding PSC, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="CISLO_POPISNE:" />
+            <TextBox Text="{Binding CisloPopisne, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for ZAMESTNANEC -->
+    <DataTemplate DataType="{x:Type models:ZAMESTNANEC}">
+        <StackPanel>
+            <Label Content="JMENO:" />
+            <TextBox Text="{Binding Jmeno, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PRIJMENI:" />
+            <TextBox Text="{Binding Prijmeni, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TELEFON:" />
+            <TextBox Text="{Binding Telefon, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ZAMESTNANEC_ID_ZAMESTNANEC:" />
+            <TextBox Text="{Binding NadrazenyZamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ADRESA_ID_ADRESA:" />
+            <TextBox Text="{Binding AdresaId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="POZICE_ID_POZICE:" />
+            <TextBox Text="{Binding PoziceId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="UZIVATEL_DATA_ID_UZIVATEL_DATA:" />
+            <TextBox Text="{Binding UserDataId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Diagnóza -->
+    <DataTemplate DataType="{x:Type models:DIAGNOZA}">
+        <StackPanel>
+            <Label Content="ID_DIAGNOZA:" />
+            <TextBox Text="{Binding IdDiagnoza, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="POPIS:" />
+            <TextBox Text="{Binding Popis, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Ordinace -->
+    <DataTemplate DataType="{x:Type models:ORDINACE}">
+        <StackPanel>
+            <Label Content="ID_ORDINACE:" />
+            <TextBox Text="{Binding IdOrdinace, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Uživatelská Data -->
+    <DataTemplate DataType="{x:Type models:UZIVATEL_DATA}">
+        <StackPanel>
+            <Label Content="ID_UZIVATEL_DATA:" />
+            <TextBox Text="{Binding Id, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="EMAIL:" />
+            <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="HESLO:" />
+            <TextBox Text="{Binding Heslo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PACIENT_ID_C:" />
+            <TextBox Text="{Binding pacientId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ZAMESTNANEC_ID_C:" />
+            <TextBox Text="{Binding zamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ROLE_ID_ROLE:" />
+            <TextBox Text="{Binding RoleUzivatel, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Platba -->
+    <DataTemplate DataType="{x:Type models:PLATBA}">
+        <StackPanel>
+            <Label Content="ID_PLATBA:" />
+            <TextBox Text="{Binding IdPlatba, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="CASTKA:" />
+            <TextBox Text="{Binding Castka, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM:" />
+            <DatePicker SelectedDate="{Binding Datum, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TYP_PLATBY:" />
+            <TextBox Text="{Binding TypPlatby, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAVSTEVA_ID_NAVSTEVA:" />
+            <TextBox Text="{Binding NavstevaId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Log -->
+    <!--<DataTemplate DataType="{x:Type models:LOG}">
+        <StackPanel>
+            <Label Content="ID_LOG:" />
+            <TextBox Text="{Binding ID_LOG, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TABLE_NAME:" />
+            <TextBox Text="{Binding TABLE_NAME, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="OPERATION_TYPE:" />
+            <TextBox Text="{Binding OPERATION_TYPE, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="OPERATION_DATE:" />
+            <DatePicker SelectedDate="{Binding OPERATION_DATE, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="OLD_VALUES:" />
+            <TextBox Text="{Binding OLD_VALUES, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NEW_VALUES:" />
+            <TextBox Text="{Binding NEW_VALUES, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>-->
+
+    <!-- DataTemplate for Pacient -->
+    <DataTemplate DataType="{x:Type models:PACIENT}">
+        <StackPanel>
+            <Label Content="ID_PACIENT:" />
+            <TextBox Text="{Binding IdPacient, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="JMENO:" />
+            <TextBox Text="{Binding Jmeno, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PRIJMENI:" />
+            <TextBox Text="{Binding Prijmeni, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="RODNE_CISLO:" />
+            <TextBox Text="{Binding RodneCislo, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TELEFON:" />
+            <TextBox Text="{Binding Telefon, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM_NAROZENI:" />
+            <DatePicker SelectedDate="{Binding DatumNarozeni, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="POHLAVI:" />
+            <TextBox Text="{Binding Pohlavi, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ADRESA_ID_ADRESA:" />
+            <TextBox Text="{Binding AdresaId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="UZIVATEL_DATA_ID_UZIVATEL_DATA:" />
+            <TextBox Text="{Binding UserDataId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Pozice -->
+    <DataTemplate DataType="{x:Type models:POZICE}">
+        <StackPanel>
+            <Label Content="ID_POZICE:" />
+            <TextBox Text="{Binding IdPozice, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Status -->
+    <!--<DataTemplate DataType="{x:Type models:Status}">
+        <StackPanel>
+            <Label Content="ID_STATUS:" />
+            <TextBox Text="{Binding IdStatus, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>-->
+
+    <!-- DataTemplate for TypLek -->
+    <!--<DataTemplate DataType="{x:Type models:TypLek}">
+        <StackPanel>
+            <Label Content="ID_TYP_LEK:" />
+            <TextBox Text="{Binding IdTypLek, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>-->
+
+    <!-- DataTemplate for Lek -->
+    <DataTemplate DataType="{x:Type models:LEK}">
+        <StackPanel>
+            <Label Content="ID_LEK:" />
+            <TextBox Text="{Binding IdLek, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="MNOZSTVI:" />
+            <TextBox Text="{Binding Mnozstvi, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="CENA:" />
+            <TextBox Text="{Binding Cena, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TYP_LEK_ID_TYP_LEK:" />
+            <TextBox Text="{Binding TypLekId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Operace -->
+    <DataTemplate DataType="{x:Type models:OPERACE}">
+        <StackPanel>
+            <Label Content="ID_OPERACE:" />
+            <TextBox Text="{Binding IdOperace, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM:" />
+            <DatePicker SelectedDate="{Binding Datum, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DIAGNOZA_ID_DIAGNOZA:" />
+            <TextBox Text="{Binding DiagnozaId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Navsteva -->
+    <DataTemplate DataType="{x:Type models:NAVSTEVA}">
+        <StackPanel>
+            <Label Content="ID_NAVSTEVA:" />
+            <TextBox Text="{Binding IdNavsteva, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM:" />
+            <DatePicker SelectedDate="{Binding Datum, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="MISTNOST:" />
+            <TextBox Text="{Binding Mistnost, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PACIENT_ID_PACIENT:" />
+            <TextBox Text="{Binding PacientId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="STATUS_ID_STATUS:" />
+            <TextBox Text="{Binding Status, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Operace_Zamestnanec -->
+    <DataTemplate DataType="{x:Type models:OPERACE_ZAMESTNANEC}">
+        <StackPanel>
+            <Label Content="OPERACE_ID_OPERACE:" />
+            <TextBox Text="{Binding OperaceId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ZAMESTNANEC_ID_ZAMESTNANEC:" />
+            <TextBox Text="{Binding ZamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Blob_Table -->
+    <DataTemplate DataType="{x:Type models:BLOB_TABLE}">
+        <StackPanel>
+            <Label Content="ID_BLOB:" />
+            <TextBox Text="{Binding IdBlob, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAZEV_SOUBORU:" />
+            <TextBox Text="{Binding NazevSouboru, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="TYP_SOUBORU:" />
+            <TextBox Text="{Binding TypSouboru, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="PRIPONA_SOUBORU:" />
+            <TextBox Text="{Binding PriponaSouboru, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="OBSAH:" />
+            <TextBox Text="{Binding Obsah, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM_NAHRANI:" />
+            <DatePicker SelectedDate="{Binding DatumNahrani, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DATUM_MODIFIKACE:" />
+            <DatePicker SelectedDate="{Binding DatumModifikace, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="OPERACE_PROVEDL:" />
+            <TextBox Text="{Binding OperaceProvedl, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="POPIS_OPERACE:" />
+            <TextBox Text="{Binding PopisOperace, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ZAMESTNANEC_ID:" />
+            <TextBox Text="{Binding ZamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Ordinace_Zamestnanec -->
+    <DataTemplate DataType="{x:Type models:ORDINACE_ZAMESTNANEC}">
+        <StackPanel>
+            <Label Content="ORDINACE_ID_ORDINACE:" />
+            <TextBox Text="{Binding OrdinaceId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ZAMESTNANEC_ID_ZAMESTNANEC:" />
+            <TextBox Text="{Binding ZamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Zamestnanec_Navsteva -->
+    <DataTemplate DataType="{x:Type models:ZAMESTNANEC_NAVSTEVA}">
+        <StackPanel>
+            <Label Content="ZAMESTNANEC_ID_ZAMESTNANEC:" />
+            <TextBox Text="{Binding ZamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="NAVSTEVA_ID_NAVSTEVA:" />
+            <TextBox Text="{Binding NavstevaId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate for Navsteva_Diagnoza -->
+    <DataTemplate DataType="{x:Type models:NAVSTEVA_DIAGNOZA}">
+        <StackPanel>
+            <Label Content="NAVSTEVA_ID_NAVSTEVA:" />
+            <TextBox Text="{Binding NavstevaId, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="DIAGNOZA_ID_DIAGNOZA:" />
+            <TextBox Text="{Binding DiagnozaId, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
+</ResourceDictionary>

@@ -207,9 +207,9 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    Status = (Status)(int)appointment.Status,
+                    StatusId = (int)appointment.Status,
                     Datum = appointment.Datum,
-                    Mistnost = appointment.Mistnost
+                    MistnostId = appointment.Mistnost
                 };
             }
             catch (Exception ex)

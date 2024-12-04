@@ -161,7 +161,6 @@ namespace BDAS2_SEM.ViewModel
                     if (user.RoleUzivatel == Role.ADMIN)
                     {
                         _windowService.OpenAdminWindow();
-                        CloseAdminWindow();
                     }
                     else if (user.RoleUzivatel == Role.ZAMESTNANEC)
                     {
@@ -169,7 +168,6 @@ namespace BDAS2_SEM.ViewModel
                         if (zamestnanec != null)
                         {
                             _windowService.OpenDoctorWindow(zamestnanec);
-                            CloseAdminWindow();
                         }
                     }
                     else if (user.RoleUzivatel == Role.PACIENT)
@@ -178,7 +176,6 @@ namespace BDAS2_SEM.ViewModel
                         if (pacient != null)
                         {
                             _windowService.OpenPatientWindow(pacient);
-                            CloseAdminWindow();
                         }
                     }
                     else

@@ -108,7 +108,7 @@ namespace BDAS2_SEM.ViewModel
 
             SelectedDate = _appointment.Datum?.Date;
             SelectedTime = _appointment.Datum?.ToString("HH:mm");
-            SelectedRoom = _appointment.Mistnost;
+            SelectedRoom = _appointment.MistnostId;
 
             await InitializeAvailableRoomsAndTimesAsync(); // Отримуємо доступні кімнати та часи
         }
@@ -226,7 +226,7 @@ namespace BDAS2_SEM.ViewModel
                         if (isAvailable)
                         {
                             _appointment.Datum = newAppointmentDateTime;
-                            _appointment.Mistnost = SelectedRoom.Value;
+                            _appointment.MistnostId = SelectedRoom.Value;
                             await _callback(_appointment);
                             CloseWindow();
                         }

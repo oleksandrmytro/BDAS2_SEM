@@ -51,9 +51,9 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    Status = (Status)(int)appointment.Status,
+                    StatusId = (int)appointment.Status,
                     Datum = appointment.Datum,
-                    Mistnost = appointment.Mistnost
+                    MistnostId = appointment.Mistnost
                 };
                 // Явне приведення лямбда-виразу до Func<NAVSTEVA, Task>
                 Func<NAVSTEVA, Task> callback = async (updatedAppointment) =>
@@ -103,9 +103,9 @@ namespace BDAS2_SEM.ViewModel
                 foreach (var appointment in appointments)
                 {
                     var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
-                    var status = (int)appointment.Status;
+                    var status = (int)appointment.StatusId;
 
-                    if (status.Equals((int)Status.Accepted) && appointment.Datum < DateTime.Now)
+                    if (status.Equals(1) && appointment.Datum < DateTime.Now)
                     {
                         // Завантажуємо діагнози для цього візиту
                         var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync((int)appointment.IdNavsteva);
@@ -123,8 +123,8 @@ namespace BDAS2_SEM.ViewModel
                             appointment.IdNavsteva,
                             appointment.PacientId,
                             appointment.Datum,
-                            appointment.Mistnost,
-                            appointment.Status,
+                            appointment.MistnostId,
+                            appointment.StatusId,
                             PACIENTJmeno = pacient.FirstName,
                             PACIENTPrijmeni = pacient.LastName,
                             Diagnozy = diagnozyList

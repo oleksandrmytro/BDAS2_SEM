@@ -70,6 +70,8 @@ namespace BDAS2_SEM
             // IBlobTableRepository
             services.AddSingleton<IBlobTableRepository, BlobTableRepository>(provider =>
                 new BlobTableRepository(connectionString));
+            services.AddSingleton<ISystemCatalogRepository, SystemCatalogRepository>(provider =>
+                new SystemCatalogRepository(connectionString));
             services.AddSingleton<IMistnostRepository, MistnostRepository>(provider =>
                 new MistnostRepository(connectionString));
 
@@ -103,6 +105,7 @@ namespace BDAS2_SEM
             services.AddTransient<DSettingsVM>();
             services.AddTransient<SimulateVM>();
             services.AddTransient<AllTablesVM>();
+            services.AddTransient<SystemCatalogVM>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -127,6 +130,7 @@ namespace BDAS2_SEM
             services.AddTransient<DSettingsView>();
             services.AddTransient<SimulateView>();
             services.AddTransient<AllTablesView>();
+            services.AddTransient<SystemCatalogView>();
             // Register other Views if needed
 
         }

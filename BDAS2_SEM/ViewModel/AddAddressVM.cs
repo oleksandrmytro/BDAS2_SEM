@@ -46,7 +46,7 @@ namespace BDAS2_SEM.ViewModel
                 CisloPopisne = this.CisloPopisne
             };
 
-            int id = await _adresaRepository.AddNewAdresa(newAddress);
+            int id = await _adresaRepository.AddAdresa(newAddress);
             newAddress.IdAdresa = id;
 
             _onAddressAdded?.Invoke(newAddress);

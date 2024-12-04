@@ -133,7 +133,7 @@ namespace BDAS2_SEM.Model
 
         public string Oddeleni
         {
-            get => oddeleni;
+            get { return oddeleni; }
             set
             {
                 if (oddeleni != value)

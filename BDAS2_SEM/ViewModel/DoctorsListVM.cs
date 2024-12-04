@@ -104,8 +104,7 @@ namespace BDAS2_SEM.ViewModel
                 var filteredDoctors = _allDoctors.Where(d =>
                     (d.Jmeno != null && d.Jmeno.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                     (d.Prijmeni != null && d.Prijmeni.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Oddeleni != null && d.Oddeleni.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
                 Doctors = new ObservableCollection<ZAMESTNANEC>(filteredDoctors);
@@ -123,7 +122,7 @@ namespace BDAS2_SEM.ViewModel
                 var newAppointment = new NAVSTEVA
                 {
                     PacientId = pacientId,
-                    Status = Status.Pending
+                    StatusId = 3
                 };
 
                 var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
@@ -135,7 +134,7 @@ namespace BDAS2_SEM.ViewModel
                     NavstevaId = newAppointmentId
                 };
 
-                await _zamestnanecNavstevaRepository.InsertZamestnanecNavsteva(zamestnanecNavsteva);
+                await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
 
                 MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }

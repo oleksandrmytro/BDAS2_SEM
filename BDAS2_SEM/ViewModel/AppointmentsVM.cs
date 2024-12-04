@@ -72,7 +72,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 foreach (var appointment in appointments)
                 {
-                    int status = (int)appointment.Status;
+                    int status = (int)appointment.StatusId;
 
                     // Отримуємо ім'я та прізвище пацієнта за ID візиту
                     var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
@@ -83,18 +83,18 @@ namespace BDAS2_SEM.ViewModel
                         appointment.IdNavsteva,
                         appointment.PacientId,
                         appointment.Datum,
-                        appointment.Mistnost,
-                        appointment.Status,
+                        appointment.MistnostId,
+                        appointment.StatusId,
                         PACIENTJMENO = pacient.FirstName,
                         PACIENTPRIJMENI = pacient.LastName
                     };
 
                     // Перевіряємо статус та дату візиту
-                    if (status == (int)Status.Pending)
+                    if (status == 3)
                     {
                         AppointmentRequests.Add(appointmentWithPatient);
                     }
-                    else if (status == (int)Status.Accepted)
+                    else if (status == 1)
                     {
                         DateTime? appointmentDate = appointment.Datum;
 
@@ -132,9 +132,9 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    Status = (Status)(int)appointment.Status,
+                    StatusId = (int)appointment.Status,
                     Datum = appointment.Datum,
-                    Mistnost = appointment.Mistnost
+                    MistnostId = appointment.Mistnost
                 };
 
                 await _navstevaRepository.UpdateNavsteva(navsteva);
@@ -151,7 +151,7 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = appointment.IDNAVSTEVA,
                     PacientId = appointment.PACIENTID,
-                    Status = Status.Cancelled
+                    StatusId = 2
                 };
 
                 await _navstevaRepository.UpdateNavsteva(navsteva);
@@ -168,9 +168,9 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    Status = (Status)(int)appointment.Status, 
+                    StatusId = (int)appointment.StatusId, 
                     Datum = appointment.Datum,
-                    Mistnost = appointment.Mistnost
+                    MistnostId = appointment.MistnostId
                 };
 
                 _windowService.OpenAssignAppointmentWindow(navsteva, async (updatedAppointment) =>
@@ -193,9 +193,9 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    Status = (Status)(int)appointment.Status,
+                    StatusId = (int)appointment.Status,
                     Datum = appointment.Datum,
-                    Mistnost = appointment.Mistnost != null ? Convert.ToInt32(appointment.Mistnost) : (int?)null
+                    MistnostId = appointment.Mistnost != null ? Convert.ToInt32(appointment.Mistnost) : (int?)null
                 };
 
                 _windowService.UpdateAppointmentWindow(navsteva, async (updatedAppointment) =>

@@ -9,11 +9,11 @@ namespace BDAS2_SEM.Model
     {
         private int idNavsteva;
         private DateTime? datum;
+        private int? mistnostId;
         private int pacientId;
-        private Status status;
+        private int statusId;
         private string doktorJmeno; // Новое свойство
         private int zamestnanecId; // Новое свойство
-        private MISTNOST mistnost; // Новое свойство
 
         public int IdNavsteva
         {
@@ -41,6 +41,19 @@ namespace BDAS2_SEM.Model
             }
         }
 
+        public int? Mistnost
+        {
+            get { return mistnost; }
+            set
+            {
+                if (mistnost != value)
+                {
+                    mistnost = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public int PacientId
         {
             get { return pacientId; }
@@ -54,14 +67,14 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public Status Status
+        public int StatusId
         {
-            get { return status; }
+            get { return statusId; }
             set
             {
-                if (status != value)
+                if (statusId != value)
                 {
-                    status = value;
+                    statusId = value;
                     OnPropertyChanged();
                 }
             }

@@ -84,5 +84,6 @@ namespace BDAS2_SEM.Repository
                 await db.ExecuteAsync("DELETE_OPERACE_ZAMESTNANEC", parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
     }
 }

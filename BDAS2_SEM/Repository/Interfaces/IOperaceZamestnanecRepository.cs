@@ -10,6 +10,8 @@ namespace BDAS2_SEM.Repository.Interfaces
     public interface IOperaceZamestnanecRepository
     {
         Task AddOperaceZamestnanec(OPERACE_ZAMESTNANEC operaceZamestnanec);
+
+        Task UpdateOperaceZamestnanec(OPERACE_ZAMESTNANEC operaceZamestnanec);
         Task<OPERACE_ZAMESTNANEC> GetOperaceZamestnanec(int operaceId, int zamestnanecId);
         Task<IEnumerable<OPERACE_ZAMESTNANEC>> GetAllOperaceZamestnanecs();
         Task DeleteOperaceZamestnanec(int operaceId, int zamestnanecId);

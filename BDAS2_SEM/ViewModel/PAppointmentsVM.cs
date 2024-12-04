@@ -77,7 +77,7 @@ namespace BDAS2_SEM.ViewModel
                     appointment.DoktorJmeno = "Unknown";
                 }
 
-                if (appointment.Status == Status.Pending)
+                if (appointment.StatusId == 3)
                 {
                     UnconfirmedAppointments.Add(appointment);
                 }

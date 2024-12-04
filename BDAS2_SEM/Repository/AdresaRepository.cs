@@ -20,7 +20,7 @@ namespace BDAS2_SEM.Repository
             this.connection = connection;
         }
 
-        public async Task<int> AddNewAdresa(ADRESA adresa)
+        public async Task<int> AddAdresa(ADRESA adresa)
         {
             using (var db = new OracleConnection(this.connection))
             {

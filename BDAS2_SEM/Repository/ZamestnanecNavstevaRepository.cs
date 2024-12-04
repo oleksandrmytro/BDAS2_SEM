@@ -62,7 +62,7 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task InsertZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva)
+        public async Task AddZamestnanecNavsteva(ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva)
         {
             using (var db = new OracleConnection(connectionString))
             {

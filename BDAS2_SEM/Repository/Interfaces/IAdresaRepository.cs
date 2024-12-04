@@ -9,7 +9,7 @@ namespace BDAS2_SEM.Repository.Interfaces
 {
     public interface IAdresaRepository
     {
-        Task<int> AddNewAdresa(ADRESA adresa);
+        Task<int> AddAdresa(ADRESA adresa);
         Task UpdateAdresa(int id, ADRESA adresa);
         Task<ADRESA> GetAdresaById(int id);
         Task<IEnumerable<ADRESA>> GetAllAddresses();
