@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BDAS2_SEM.Model.Enum
+namespace BDAS2_SEM.Model
 {
     public class STATUS : INotifyPropertyChanged
     {

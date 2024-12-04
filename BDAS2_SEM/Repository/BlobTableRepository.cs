@@ -43,7 +43,6 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("DatumModifikace", blob.DatumModifikace, DbType.Date);
                 parameters.Add("OperaceProvedl", blob.OperaceProvedl, DbType.String);
                 parameters.Add("PopisOperace", blob.PopisOperace, DbType.String);
-                parameters.Add("ZamestnanecId", blob.ZamestnanecId, DbType.Int32);
                 parameters.Add("IdBlob", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 await db.ExecuteAsync(sql, parameters);
@@ -96,7 +95,6 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("DatumModifikace", content.DatumModifikace);
                 parameters.Add("OperaceProvedl", content.OperaceProvedl);
                 parameters.Add("PopisOperace", content.PopisOperace);
-                parameters.Add("ZamestnanecId", content.ZamestnanecId, DbType.Int32);
                 parameters.Add("IdBlob", content.IdBlob);
 
                 await connection.ExecuteAsync(sql, parameters);
@@ -120,13 +118,12 @@ namespace BDAS2_SEM.Repository
                     SELECT id_blob AS IdBlob,
                            nazev_souboru AS NazevSouboru,
                            typ_souboru AS TypSouboru,
-                           pripona_souboru AS PriponaSouboru,
                            obsah AS Obsah,
                            datum_nahrani AS DatumNahrani,
                            datum_modifikace AS DatumModifikace,
                            operace_provedl AS OperaceProvedl,
                            popis_operace AS PopisOperace,
-                           zamestnanec_id AS ZamestnanecId
+                           pripona_id AS PriponaId
                     FROM BLOB_TABLE";
 
                 return await db.QueryAsync<BLOB_TABLE>(sqlQuery);

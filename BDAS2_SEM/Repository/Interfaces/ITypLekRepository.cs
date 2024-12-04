@@ -10,8 +10,8 @@ namespace BDAS2_SEM.Repository.Interfaces
 {
     public interface ITypLekRepository
     {
-        Task<int> AddTypLek(TYP_LEK pozice);
-        Task UpdateTypLek(TYP_LEK pozice);
+        Task<int> AddTypLek(TYP_LEK typLek);
+        Task UpdateTypLek(TYP_LEK typLek);
         Task<POZICE> GetTypLekById(int id);
         Task<IEnumerable<TYP_LEK>> GetAllTypLekes();
         Task DeleteTypLek(int id);

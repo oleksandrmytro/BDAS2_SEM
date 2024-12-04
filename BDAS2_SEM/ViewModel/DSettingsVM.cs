@@ -91,7 +91,6 @@ namespace BDAS2_SEM.ViewModel
                     DatumModifikace = DateTime.Now,
                     OperaceProvedl = $"{_doctor.Jmeno} {_doctor.Prijmeni}",
                     PopisOperace = "Добавление аватарки",
-                    ZamestnanecId = _doctor.IdZamestnanec
                 };
 
                 if (existingBlob != null)

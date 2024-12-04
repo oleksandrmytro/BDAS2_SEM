@@ -15,7 +15,7 @@ namespace BDAS2_SEM.Model
         private DateTime datumModifikace;
         private string operaceProvedl;
         private string popisOperace;
-        public int zamestnanecId { get; set; } // Новый атрибут
+        public int priponaId { get; set; } // Новый атрибут
 
         public int IdBlob
         {
@@ -107,12 +107,12 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public int ZamestnanecId
+        public int PriponaId
         {
-            get { return zamestnanecId; }
+            get { return priponaId; }
             set
             {
-                zamestnanecId = value;
+                priponaId = value;
                 OnPropertyChanged();
             }
         }

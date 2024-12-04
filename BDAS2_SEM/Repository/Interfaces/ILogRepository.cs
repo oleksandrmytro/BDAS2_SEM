@@ -7,8 +7,11 @@ using BDAS2_SEM.Model;
 
 namespace BDAS2_SEM.Repository.Interfaces
 {
-    public interface ISystemCatalogRepository
+    public interface ILogRepository
     {
-        Task<IEnumerable<SYSTEM_CATALOG>> GetSystemCatalog();
+        Task<int> AddLog(LOG log);
+        Task UpdateLog(LOG log);
+        Task<IEnumerable<LOG>> GetAllLogs();
+        Task DeleteLog(int id);
     }
 }
