@@ -111,13 +111,13 @@ namespace BDAS2_SEM.Repository
             {
                 string sql = @"
                     SELECT 
-                        ID AS Id, 
+                        ID_UZIVATEL_DATA AS Id, 
                         EMAIL AS Email, 
-                        ROLE AS RoleUzivatel 
+                        ROLE_ID_ROLE AS RoleUzivatel 
                     FROM 
                         UZIVATEL_DATA 
                     WHERE 
-                        ID = :Id";
+                        ID_UZIVATEL_DATA = :Id";
 
                 return await db.QueryFirstOrDefaultAsync<UZIVATEL_DATA>(sql, new { Id = id });
             }

@@ -109,10 +109,11 @@ namespace BDAS2_SEM.ViewModel
         private DSettingsView CreateSettingsView()
         {
             var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
+            var uzivatelRepository = _serviceProvider.GetRequiredService<IUzivatelDataRepository>();
             var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
             var windowService = _serviceProvider.GetRequiredService<IWindowService>();
 
-            var settingsVM = new DSettingsVM(_zamestnanec, zamestnanecRepository, blobRepository, windowService, UpdateAvatar);
+            var settingsVM = new DSettingsVM(zamestnanecRepository, uzivatelRepository, blobRepository, windowService, UpdateAvatar);
             return new DSettingsView(settingsVM);
         }
 
@@ -149,7 +150,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 if (settingsView.DataContext is DSettingsVM settingsVM)
                 {
-                    settingsVM.Doctor = _zamestnanec;
+                    settingsVM.SetDoctor(_zamestnanec);
                 }
             }
         }
@@ -174,7 +175,7 @@ namespace BDAS2_SEM.ViewModel
             else
             {
                 // Return a default image if no image is found
-                EmployeeImage = new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
+                //EmployeeImage = new BitmapImage(new Uri("pack://application:,,,/Images/default-user.png"));
             }
         }
 

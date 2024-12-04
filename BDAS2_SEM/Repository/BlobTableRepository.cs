@@ -52,24 +52,25 @@ namespace BDAS2_SEM.Repository
 
         public async Task<BLOB_TABLE> GetBlobByZamestnanecId(int zamestnanecId)
         {
-            using (var db = new OracleConnection(_connectionString))
-            {
-                string sql = @"
-        SELECT ID_BLOB AS IdBlob,
-               NAZEV_SOUBORU AS NazevSouboru,
-               TYP_SOUBORU AS TypSouboru,
-               PRIPONA_SOUBORU AS PriponaSouboru,
-               OBSAH AS Obsah,
-               DATUM_NAHRANI AS DatumNahrani,
-               DATUM_MODIFIKACE AS DatumModifikace,
-               OPERACE_PROVEDL AS OperaceProvedl,
-               POPIS_OPERACE AS PopisOperace,
-               ZAMESTNANEC_ID AS ZamestnanecId
-        FROM BLOB_TABLE
-        WHERE ZAMESTNANEC_ID = :ZamestnanecId";
+            //    using (var db = new OracleConnection(_connectionString))
+        //    {
+        //        string sql = @"
+        //SELECT ID_BLOB AS IdBlob,
+        //       NAZEV_SOUBORU AS NazevSouboru,
+        //       TYP_SOUBORU AS TypSouboru,
+        //       PRIPONA_SOUBORU AS PriponaSouboru,
+        //       OBSAH AS Obsah,
+        //       DATUM_NAHRANI AS DatumNahrani,
+        //       DATUM_MODIFIKACE AS DatumModifikace,
+        //       OPERACE_PROVEDL AS OperaceProvedl,
+        //       POPIS_OPERACE AS PopisOperace,
+        //       ZAMESTNANEC_ID AS ZamestnanecId
+        //FROM BLOB_TABLE
+        //WHERE ZAMESTNANEC_ID = :ZamestnanecId";
 
-                return await db.QueryFirstOrDefaultAsync<BLOB_TABLE>(sql, new { ZamestnanecId = zamestnanecId });
-            }
+        //        return await db.QueryFirstOrDefaultAsync<BLOB_TABLE>(sql, new { ZamestnanecId = zamestnanecId });
+        //    }
+        return null;
         }
 
         public async Task UpdateBlobContent(BLOB_TABLE content)
