@@ -13,9 +13,7 @@ namespace BDAS2_SEM.Model
         private int adresaId;
         private int poziceId;
         private int userDataId;
-        private string oddeleni; // Новое свойство
-        private byte[] avatar;
-
+        private int blobId; // Новое свойство
 
         public int IdZamestnanec
         {
@@ -121,24 +119,14 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public byte[] Avatar
+        public int BlobId
         {
-            get => avatar;
+            get { return blobId; }
             set
             {
-                avatar = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Oddeleni
-        {
-            get { return oddeleni; }
-            set
-            {
-                if (oddeleni != value)
+                if (blobId != value)
                 {
-                    oddeleni = value;
+                    blobId = value;
                     OnPropertyChanged();
                 }
             }

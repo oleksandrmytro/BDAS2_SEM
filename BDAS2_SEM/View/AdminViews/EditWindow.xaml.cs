@@ -112,9 +112,9 @@ namespace BDAS2_SEM.View.AdminViews
                         if (blobRepo != null)
                         {
                             if (_isNewItem)
-                                await blobRepo.AddBlobContent(blobTable);
+                                await blobRepo.AddBlob(blobTable);
                             else
-                                await blobRepo.UpdateBlobContent(blobTable);
+                                await blobRepo.UpdateBlob(blobTable);
                         }
                         break;
 

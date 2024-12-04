@@ -9,21 +9,23 @@ namespace BDAS2_SEM.Model
         private int idBlob;
         private string nazevSouboru;
         private string typSouboru;
-        private string priponaSouboru;
         private byte[] obsah;
         private DateTime datumNahrani;
         private DateTime datumModifikace;
         private string operaceProvedl;
         private string popisOperace;
-        public int zamestnanecId { get; set; } // Новый атрибут
+        private int priponaId; // Новое свойство
 
         public int IdBlob
         {
             get { return idBlob; }
             set
             {
-                idBlob = value;
-                OnPropertyChanged();
+                if (idBlob != value)
+                {
+                    idBlob = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -32,8 +34,11 @@ namespace BDAS2_SEM.Model
             get { return nazevSouboru; }
             set
             {
-                nazevSouboru = value;
-                OnPropertyChanged();
+                if (nazevSouboru != value)
+                {
+                    nazevSouboru = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -42,18 +47,11 @@ namespace BDAS2_SEM.Model
             get { return typSouboru; }
             set
             {
-                typSouboru = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string PriponaSouboru
-        {
-            get { return priponaSouboru; }
-            set
-            {
-                priponaSouboru = value;
-                OnPropertyChanged();
+                if (typSouboru != value)
+                {
+                    typSouboru = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -62,8 +60,11 @@ namespace BDAS2_SEM.Model
             get { return obsah; }
             set
             {
-                obsah = value;
-                OnPropertyChanged();
+                if (obsah != value)
+                {
+                    obsah = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -72,8 +73,11 @@ namespace BDAS2_SEM.Model
             get { return datumNahrani; }
             set
             {
-                datumNahrani = value;
-                OnPropertyChanged();
+                if (datumNahrani != value)
+                {
+                    datumNahrani = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -82,8 +86,11 @@ namespace BDAS2_SEM.Model
             get { return datumModifikace; }
             set
             {
-                datumModifikace = value;
-                OnPropertyChanged();
+                if (datumModifikace != value)
+                {
+                    datumModifikace = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -92,8 +99,11 @@ namespace BDAS2_SEM.Model
             get { return operaceProvedl; }
             set
             {
-                operaceProvedl = value;
-                OnPropertyChanged();
+                if (operaceProvedl != value)
+                {
+                    operaceProvedl = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -102,21 +112,28 @@ namespace BDAS2_SEM.Model
             get { return popisOperace; }
             set
             {
-                popisOperace = value;
-                OnPropertyChanged();
+                if (popisOperace != value)
+                {
+                    popisOperace = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
-        public int ZamestnanecId
+        public int PriponaId
         {
-            get { return zamestnanecId; }
+            get { return priponaId; }
             set
             {
-                zamestnanecId = value;
-                OnPropertyChanged();
+                if (priponaId != value)
+                {
+                    priponaId = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
+        // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

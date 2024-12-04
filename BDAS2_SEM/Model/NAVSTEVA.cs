@@ -41,14 +41,14 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public int? Mistnost
+        public int? MistnostId
         {
-            get { return mistnost; }
+            get { return mistnostId; }
             set
             {
-                if (mistnost != value)
+                if (mistnostId != value)
                 {
-                    mistnost = value;
+                    mistnostId = value;
                     OnPropertyChanged();
                 }
             }
@@ -101,19 +101,6 @@ namespace BDAS2_SEM.Model
                 if (zamestnanecId != value)
                 {
                     zamestnanecId = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public MISTNOST Mistnost
-        {
-            get { return mistnost; }
-            set
-            {
-                if (mistnost != value)
-                {
-                    mistnost = value;
                     OnPropertyChanged();
                 }
             }

@@ -62,6 +62,16 @@ namespace BDAS2_SEM.ViewModel
                 if (doctorData != null)
                 {
                     Doctor = doctorData;
+
+                    // Загружаем изображение, если указано в blob_id
+                    if (Doctor.BlobId != 0)
+                    {
+                        var blob = await _blobRepository.GetBlobById(Doctor.BlobId);
+                        if (blob != null && blob.Obsah != null)
+                        {
+                            //_updateAvatarAction(blob.Obsah);
+                        }
+                    }
                 }
             }
         }
@@ -79,31 +89,28 @@ namespace BDAS2_SEM.ViewModel
                 byte[] imageData = File.ReadAllBytes(openFileDialog.FileName);
 
                 // Сохраняем изображение в базе данных
-                var existingBlob = await _blobRepository.GetBlobByZamestnanecId(_doctor.IdZamestnanec);
-
                 BLOB_TABLE blob = new BLOB_TABLE
                 {
                     NazevSouboru = Path.GetFileName(openFileDialog.FileName),
                     TypSouboru = "Image",
-                    PriponaSouboru = Path.GetExtension(openFileDialog.FileName),
                     Obsah = imageData,
                     DatumNahrani = DateTime.Now,
                     DatumModifikace = DateTime.Now,
                     OperaceProvedl = $"{_doctor.Jmeno} {_doctor.Prijmeni}",
-                    PopisOperace = "Добавление аватарки",
-                    ZamestnanecId = _doctor.IdZamestnanec
+                    PopisOperace = "Добавление аватарки"
                 };
 
-                if (existingBlob != null)
+                if (Doctor.BlobId != 0)
                 {
                     // Обновляем существующую запись
-                    blob.IdBlob = existingBlob.IdBlob;
-                    await _blobRepository.UpdateBlobContent(blob);
+                    blob.IdBlob = Doctor.BlobId;
+                    await _blobRepository.UpdateBlob(blob);
                 }
                 else
                 {
                     // Добавляем новую запись
-                    await _blobRepository.AddBlobContent(blob);
+                    Doctor.BlobId = await _blobRepository.AddBlob(blob);
+                    await _zamestnanecRepository.UpdateZamestnanec(Doctor);
                 }
 
                 // Обновляем аватарку в главном меню

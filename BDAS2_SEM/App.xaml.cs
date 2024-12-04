@@ -74,6 +74,8 @@ namespace BDAS2_SEM
                 new SystemCatalogRepository(connectionString));
             services.AddSingleton<IMistnostRepository, MistnostRepository>(provider =>
                 new MistnostRepository(connectionString));
+            services.AddSingleton<IPriponaRepository, PriponaRepository>(provider =>
+                new PriponaRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();

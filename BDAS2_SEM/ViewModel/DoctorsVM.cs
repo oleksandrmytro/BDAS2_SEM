@@ -1,180 +1,189 @@
-﻿using System;
+﻿using BDAS2_SEM.Commands;
+using BDAS2_SEM.Model;
+using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.Services.Interfaces;
+using BDAS2_SEM.View.DoctorViews;
+using BDAS2_SEM.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.IO;
-using BDAS2_SEM.Services.Interfaces;
-using BDAS2_SEM.Model;
-using BDAS2_SEM.Commands;
-using BDAS2_SEM.View.DoctorViews;
-using Microsoft.Extensions.DependencyInjection;
-using BDAS2_SEM.Repository.Interfaces;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
-namespace BDAS2_SEM.ViewModel
+public class DoctorsVM : INotifyPropertyChanged
 {
-    public class DoctorsVM : INotifyPropertyChanged
+    private readonly IServiceProvider _serviceProvider;
+    private ZAMESTNANEC _zamestnanec;
+    private readonly IBlobTableRepository _blobRepository;
+    private readonly IZamestnanecRepository _zamestnanecRepository;
+
+    // Collection of tabs to display in the navigation panel
+    public ObservableCollection<TabItemVM> Tabs { get; set; }
+
+    // Currently selected tab
+    private TabItemVM _selectedTab;
+    public TabItemVM SelectedTab
     {
-        private readonly IServiceProvider _serviceProvider;
-        private ZAMESTNANEC _zamestnanec;
-        private readonly IBlobTableRepository _blobRepository;
-
-        // Collection of tabs to display in the navigation panel
-        public ObservableCollection<TabItemVM> Tabs { get; set; }
-
-        // Currently selected tab
-        private TabItemVM _selectedTab;
-        public TabItemVM SelectedTab
+        get => _selectedTab;
+        set
         {
-            get => _selectedTab;
-            set
+            _selectedTab = value;
+            OnPropertyChanged();
+        }
+    }
+
+    // Full name of the employee for display
+    private string _employeeName;
+    public string EmployeeName
+    {
+        get => _employeeName;
+        set
+        {
+            _employeeName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    // Employee image for display
+    private ImageSource _employeeImage;
+    public ImageSource EmployeeImage
+    {
+        get => _employeeImage;
+        set
+        {
+            if (_employeeImage != value)
             {
-                _selectedTab = value;
-                OnPropertyChanged();
+                _employeeImage = value;
+                OnPropertyChanged(nameof(EmployeeImage));
+                Console.WriteLine("EmployeeImage property changed.");
             }
         }
+    }
 
-        // Full name of the employee for display
-        private string _employeeName;
-        public string EmployeeName
+    // Command to handle logout action
+    public ICommand LogoutCommand { get; }
+
+    public DoctorsVM(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        _blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
+        _zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
+        InitializeTabs();
+
+        // Initialize commands
+        LogoutCommand = new RelayCommand(Logout);
+    }
+
+    // Initialize the tabs displayed in the navigation panel
+    private void InitializeTabs()
+    {
+        Tabs = new ObservableCollection<TabItemVM>
         {
-            get => _employeeName;
-            set
+            new TabItemVM
             {
-                _employeeName = value;
-                OnPropertyChanged();
+                Name = "Main",
+                Content = _serviceProvider.GetRequiredService<MainDoctorView>()
+            },
+            new TabItemVM
+            {
+                Name = "Appointments",
+                Content = _serviceProvider.GetRequiredService<AppointmentsView>()
+            },
+            new TabItemVM
+            {
+                Name = "Diagnoses",
+                Content = _serviceProvider.GetRequiredService<DDiagnosesView>()
+            },
+            // Settings Tab
+            new TabItemVM
+            {
+                Name = "Settings",
+                Content = CreateSettingsView()
             }
-        }
+        };
+        OnPropertyChanged(nameof(Tabs));
+        SelectedTab = Tabs.FirstOrDefault();
+    }
 
-        // Employee image for display
-        private ImageSource _employeeImage;
-        public ImageSource EmployeeImage
+    // Create the settings view and pass the necessary dependencies
+    private DSettingsView CreateSettingsView()
+    {
+        var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
+        var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
+        var windowService = _serviceProvider.GetRequiredService<IWindowService>();
+
+        var settingsVM = new DSettingsVM(_zamestnanec, zamestnanecRepository, blobRepository, windowService, null);
+        return new DSettingsView(settingsVM);
+    }
+
+    // Set the employee (doctor) information
+    public async void SetEmployee(ZAMESTNANEC zamestnanec)
+    {
+        try
         {
-            get => _employeeImage;
-            set
+            _zamestnanec = zamestnanec;
+            EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
+            Console.WriteLine($"Setting employee: {EmployeeName}");
+
+            // Load the employee image
+            if (_zamestnanec.BlobId != 0)
             {
-                if (_employeeImage != value)
+                await LoadEmployeeImage(_zamestnanec.BlobId);
+            }
+            else
+            {
+                EmployeeImage = null;
+            }
+
+            // Pass the doctor to AppointmentsVM
+            var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
+            var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
+            if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
+            {
+                if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
                 {
-                    _employeeImage = value;
-                    OnPropertyChanged(nameof(EmployeeImage));
-                    Console.WriteLine("EmployeeImage property changed.");
+                    appointmentsVM.SetDoctor(_zamestnanec);
+                }
+            }
+            if (diagnosesTab != null && diagnosesTab.Content is DDiagnosesView diagnosesView)
+            {
+                if (diagnosesView.DataContext is DDiagnosesVM diagnosesVM)
+                {
+                    diagnosesVM.SetDoctor(_zamestnanec);
+                }
+            }
+
+            // Update the settings view with the current doctor
+            var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
+            if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
+            {
+                if (settingsView.DataContext is DSettingsVM settingsVM)
+                {
+                    settingsVM.Doctor = _zamestnanec;
                 }
             }
         }
-
-        // Command to handle logout action
-        public ICommand LogoutCommand { get; }
-
-        public DoctorsVM(IServiceProvider serviceProvider)
+        catch (Exception ex)
         {
-            _serviceProvider = serviceProvider;
-            _blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
-            InitializeTabs();
-
-            // Initialize commands
-            LogoutCommand = new RelayCommand(Logout);
+            Console.WriteLine($"Error setting employee: {ex.Message}");
         }
+    }
 
-        // Initialize the tabs displayed in the navigation panel
-        private void InitializeTabs()
+    // Load the employee image from the database
+    private async Task LoadEmployeeImage(int blobId)
+    {
+        try
         {
-            Tabs = new ObservableCollection<TabItemVM>
+            var blob = await _blobRepository.GetBlobById(blobId);
+            if (blob != null && blob.Obsah != null)
             {
-                new TabItemVM
+                using (var ms = new MemoryStream(blob.Obsah))
                 {
-                    Name = "Main",
-                    Content = _serviceProvider.GetRequiredService<MainDoctorView>()
-                },
-                new TabItemVM
-                {
-                    Name = "Appointments",
-                    Content = _serviceProvider.GetRequiredService<AppointmentsView>()
-                },
-                new TabItemVM
-                {
-                    Name = "Diagnoses",
-                    Content = _serviceProvider.GetRequiredService<DDiagnosesView>()
-                },
-                // Settings Tab
-                new TabItemVM
-                {
-                    Name = "Settings",
-                    Content = CreateSettingsView()
-                }
-            };
-            OnPropertyChanged(nameof(Tabs));
-            SelectedTab = Tabs.FirstOrDefault();
-        }
-
-        // Create the settings view and pass the necessary dependencies
-        private DSettingsView CreateSettingsView()
-        {
-            var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
-            var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
-            var windowService = _serviceProvider.GetRequiredService<IWindowService>();
-
-            var settingsVM = new DSettingsVM(_zamestnanec, zamestnanecRepository, blobRepository, windowService, UpdateAvatar);
-            return new DSettingsView(settingsVM);
-        }
-
-        // Set the employee (doctor) information
-        public void SetEmployee(ZAMESTNANEC zamestnanec)
-        {
-            try
-            {
-                _zamestnanec = zamestnanec;
-                EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
-                Console.WriteLine($"Setting employee: {EmployeeName}");
-
-                // Load the employee image
-                LoadEmployeeImage(_zamestnanec.IdZamestnanec);
-
-                // Pass the doctor to AppointmentsVM
-                var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
-                var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
-                if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
-                {
-                    if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
-                    {
-                        appointmentsVM.SetDoctor(_zamestnanec);
-                    }
-                }
-                if (diagnosesTab != null && diagnosesTab.Content is DDiagnosesView diagnosesView)
-                {
-                    if (diagnosesView.DataContext is DDiagnosesVM diagnosesVM)
-                    {
-                        diagnosesVM.SetDoctor(_zamestnanec);
-                    }
-                }
-
-                // Update the settings view with the current doctor
-                var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
-                if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
-                {
-                    if (settingsView.DataContext is DSettingsVM settingsVM)
-                    {
-                        settingsVM.Doctor = _zamestnanec;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error setting employee: {ex.Message}");
-            }
-        }
-
-        // Load the employee image from the database
-        private async void LoadEmployeeImage(int zamestnanecId)
-        {
-            try
-            {
-                var blob = await _blobRepository.GetBlobByZamestnanecId(zamestnanecId);
-                if (blob != null && blob.Obsah != null)
-                {
-                    using (var ms = new MemoryStream(blob.Obsah))
+                    try
                     {
                         var image = new BitmapImage();
                         image.BeginInit();
@@ -185,60 +194,43 @@ namespace BDAS2_SEM.ViewModel
                         EmployeeImage = image;
                         Console.WriteLine("Employee image loaded successfully.");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Avatar not found, setting EmployeeImage to null.");
-                    EmployeeImage = null;
+                    catch (NotSupportedException)
+                    {
+                        Console.WriteLine("Unsupported image format.");
+                        EmployeeImage = null;
+                    }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"Error loading employee image: {ex}");
+                Console.WriteLine("Avatar not found, setting EmployeeImage to null.");
                 EmployeeImage = null;
             }
         }
-
-        private DrawingImage CreateEmptyImage()
+        catch (Exception ex)
         {
-            // Создаем пустое изображение
-            var drawingGroup = new DrawingGroup();
-            return new DrawingImage(drawingGroup);
+            Console.WriteLine($"Error loading employee image: {ex}");
+            EmployeeImage = null;
         }
+    }
 
-        // Update the avatar image
-        private void UpdateAvatar(byte[] imageData)
-        {
-            using (var ms = new MemoryStream(imageData))
-            {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = ms;
-                image.EndInit();
-                image.Freeze();
-                EmployeeImage = image;
-            }
-        }
+    // Logout command implementation
+    private void Logout(object obj)
+    {
+        // Implement logout logic here
+        // For example, navigate back to the login view or close the application
+        // If using a navigation service:
+        // _navigationService.NavigateTo("LoginView");
 
-        // Logout command implementation
-        private void Logout(object obj)
-        {
-            // Implement logout logic here
-            // For example, navigate back to the login view or close the application
-            // If using a navigation service:
-            // _navigationService.NavigateTo("LoginView");
+        // If you want to close the application:
+        System.Windows.Application.Current.Shutdown();
+    }
 
-            // If you want to close the application:
-            System.Windows.Application.Current.Shutdown();
-        }
+    // Implementation of INotifyPropertyChanged
+    public event PropertyChangedEventHandler PropertyChanged;
 
-        // Implementation of INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
