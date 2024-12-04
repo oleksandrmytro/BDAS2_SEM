@@ -1,5 +1,4 @@
-﻿// Updated AllTablesVM with PascalCase Properties Matching XAML Bindings
-
+﻿
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
+using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.View.AdminViews;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +26,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IKartaRepository _kartaRepository;
         private readonly ILekDiagnozaRepository _lekDiagnozaRepository;
         private readonly ILekRepository _lekRepository;
+        private readonly ILogRepository _logrepository;
         private readonly INavstevaDiagnozaRepository _navstevaDiagnozaRepository;
         private readonly INavstevaRepository _navstevaRepository;
         private readonly IOperaceRepository _operaceRepository;
@@ -35,6 +36,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPacientRepository _pacientRepository;
         private readonly IPlatbaRepository _platbaRepository;
         private readonly IPoziceRepository _poziceRepository;
+        private readonly IStatusRepository _statusRepository;
+        private readonly ITypLekRepository _typLekRepository;
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
         private readonly IZamestnanecRepository _zamestnanecRepository;
@@ -51,6 +54,7 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<KARTA> Karta { get; set; } = new ObservableCollection<KARTA>();
         public ObservableCollection<LEK_DIAGNOZA> LekDiagnoza { get; set; } = new ObservableCollection<LEK_DIAGNOZA>();
         public ObservableCollection<LEK> Lek { get; set; } = new ObservableCollection<LEK>();
+        public ObservableCollection<LOG> Log { get; set; } = new ObservableCollection<LOG>();
         public ObservableCollection<NAVSTEVA_DIAGNOZA> NavstevaDiagnoza { get; set; } = new ObservableCollection<NAVSTEVA_DIAGNOZA>();
         public ObservableCollection<NAVSTEVA> Navsteva { get; set; } = new ObservableCollection<NAVSTEVA>();
         public ObservableCollection<OPERACE> Operace { get; set; } = new ObservableCollection<OPERACE>();
@@ -60,6 +64,8 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<PACIENT> Pacient { get; set; } = new ObservableCollection<PACIENT>();
         public ObservableCollection<PLATBA> Platba { get; set; } = new ObservableCollection<PLATBA>();
         public ObservableCollection<POZICE> Pozice { get; set; } = new ObservableCollection<POZICE>();
+        public ObservableCollection<STATUS> Status { get; set; } = new ObservableCollection<STATUS>();
+        public ObservableCollection<TYP_LEK> TypLek { get; set; } = new ObservableCollection<TYP_LEK>();
         public ObservableCollection<UZIVATEL_DATA> UzivatelData { get; set; } = new ObservableCollection<UZIVATEL_DATA>();
         public ObservableCollection<ZAMESTNANEC_NAVSTEVA> ZamestnanecNavsteva { get; set; } = new ObservableCollection<ZAMESTNANEC_NAVSTEVA>();
         public ObservableCollection<ZAMESTNANEC> Zamestnanec { get; set; } = new ObservableCollection<ZAMESTNANEC>();
@@ -73,6 +79,7 @@ namespace BDAS2_SEM.ViewModel
             IKartaRepository kartaRepository,
             ILekDiagnozaRepository lekDiagnozaRepository,
             ILekRepository lekRepository,
+            ILogRepository logRepository,
             INavstevaDiagnozaRepository navstevaDiagnozaRepository,
             INavstevaRepository navstevaRepository,
             IOperaceRepository operaceRepository,
@@ -82,6 +89,8 @@ namespace BDAS2_SEM.ViewModel
             IPacientRepository pacientRepository,
             IPlatbaRepository platbaRepository,
             IPoziceRepository poziceRepository,
+            IStatusRepository statusRepository,
+            ITypLekRepository typLekRepository,
             IUzivatelDataRepository uzivatelDataRepository,
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
             IZamestnanecRepository zamestnanecRepository)
@@ -94,6 +103,7 @@ namespace BDAS2_SEM.ViewModel
             _kartaRepository = kartaRepository;
             _lekDiagnozaRepository = lekDiagnozaRepository;
             _lekRepository = lekRepository;
+            _logrepository = logRepository;
             _navstevaDiagnozaRepository = navstevaDiagnozaRepository;
             _navstevaRepository = navstevaRepository;
             _operaceRepository = operaceRepository;
@@ -103,6 +113,8 @@ namespace BDAS2_SEM.ViewModel
             _pacientRepository = pacientRepository;
             _platbaRepository = platbaRepository;
             _poziceRepository = poziceRepository;
+            _statusRepository = statusRepository;
+            _typLekRepository = typLekRepository;
             _uzivatelDataRepository = uzivatelDataRepository;
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
             _zamestnanecRepository = zamestnanecRepository;
@@ -152,6 +164,10 @@ namespace BDAS2_SEM.ViewModel
                         Lek.Add(lek);
                         break;
 
+                    case LOG log:
+                        Log.Add(log);
+                        break;
+
                     case NAVSTEVA_DIAGNOZA navstevaDiagnoza:
                         NavstevaDiagnoza.Add(navstevaDiagnoza);
                         break;
@@ -186,6 +202,14 @@ namespace BDAS2_SEM.ViewModel
 
                     case POZICE pozice:
                         Pozice.Add(pozice);
+                        break;
+
+                    case STATUS status:
+                        Status.Add(status);
+                        break;
+
+                    case TYP_LEK typLek:
+                        TypLek.Add(typLek);
                         break;
 
                     case UZIVATEL_DATA uzivatelData:
@@ -243,6 +267,9 @@ namespace BDAS2_SEM.ViewModel
                 Lek = new ObservableCollection<LEK>(await _lekRepository.GetAllLeks());
                 OnPropertyChanged(nameof(Lek));
 
+                Log = new ObservableCollection<LOG>(await _logrepository.GetAllLogs());
+                OnPropertyChanged(nameof(Log));
+
                 NavstevaDiagnoza = new ObservableCollection<NAVSTEVA_DIAGNOZA>(await _navstevaDiagnozaRepository.GetAllNavstevaDiagnozas());
                 OnPropertyChanged(nameof(NavstevaDiagnoza));
 
@@ -269,6 +296,12 @@ namespace BDAS2_SEM.ViewModel
 
                 Pozice = new ObservableCollection<POZICE>(await _poziceRepository.GetAllPozices());
                 OnPropertyChanged(nameof(Pozice));
+
+                Status = new ObservableCollection<STATUS>(await _statusRepository.GetAllStatuses());
+                OnPropertyChanged(nameof(Status));
+
+                TypLek = new ObservableCollection<TYP_LEK>(await _typLekRepository.GetAllTypLekes());
+                OnPropertyChanged(nameof(TypLek));
 
                 UzivatelData = new ObservableCollection<UZIVATEL_DATA>(await _uzivatelDataRepository.GetAllUzivatelDatas());
                 OnPropertyChanged(nameof(UzivatelData));
@@ -317,15 +350,15 @@ namespace BDAS2_SEM.ViewModel
                     case PLATBA platba:
                         await _platbaRepository.DeletePlatba(platba.IdPlatba);
                         break;
-                    //case LOG 
+                    case LOG log:
+                        await _logrepository.DeleteLog(log.IdLog);
+                        break;
                     case PACIENT pacient:
                         await _pacientRepository.DeletePacient(pacient.IdPacient);
                         break;
                     case POZICE pozice:
                         await _poziceRepository.DeletePozice(pozice.IdPozice);
                         break;
-                    //case STATUS
-                    //case TYP_LEK
                     case LEK lek:
                         await _lekRepository.DeleteLek(lek.IdLek);
                         break;
@@ -349,6 +382,12 @@ namespace BDAS2_SEM.ViewModel
                     case ZAMESTNANEC_NAVSTEVA zamestnanecNavsteva:
                         await _zamestnanecNavstevaRepository.DeleteZamestnanecNavsteva(
                             zamestnanecNavsteva.ZamestnanecId, zamestnanecNavsteva.NavstevaId);
+                        break;
+                    case STATUS status:
+                        await _statusRepository.DeleteStatus(status.IdStatus);
+                        break;
+                    case TYP_LEK typLek:
+                        await _typLekRepository.DeleteTypLek(typLek.IdTypLek);
                         break;
                     case NAVSTEVA_DIAGNOZA navstevaDiagnoza:
                         await _navstevaDiagnozaRepository.DeleteNavstevaDiagnoza(navstevaDiagnoza.NavstevaId,

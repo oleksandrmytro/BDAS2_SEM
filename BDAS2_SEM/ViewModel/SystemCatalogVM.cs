@@ -12,8 +12,8 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly ISystemCatalogRepository _repository;
 
-        private ObservableCollection<SystemCatalog> _systemCatalog;
-        public ObservableCollection<SystemCatalog> SystemCatalog
+        private ObservableCollection<SYSTEM_CATALOG> _systemCatalog;
+        public ObservableCollection<SYSTEM_CATALOG> SystemCatalog
         {
             get { return _systemCatalog; }
             set
@@ -38,7 +38,7 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        private ObservableCollection<SystemCatalog> _allEntries;
+        private ObservableCollection<SYSTEM_CATALOG> _allEntries;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -46,8 +46,8 @@ namespace BDAS2_SEM.ViewModel
         public SystemCatalogVM(ISystemCatalogRepository repository)
         {
             _repository = repository;
-            SystemCatalog = new ObservableCollection<SystemCatalog>();
-            _allEntries = new ObservableCollection<SystemCatalog>();
+            SystemCatalog = new ObservableCollection<SYSTEM_CATALOG>();
+            _allEntries = new ObservableCollection<SYSTEM_CATALOG>();
             LoadDataAsync();
         }
 
@@ -79,11 +79,11 @@ namespace BDAS2_SEM.ViewModel
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
             {
-                SystemCatalog = new ObservableCollection<SystemCatalog>(_allEntries);
+                SystemCatalog = new ObservableCollection<SYSTEM_CATALOG>(_allEntries);
             }
             else
             {
-                var filtered = new ObservableCollection<SystemCatalog>();
+                var filtered = new ObservableCollection<SYSTEM_CATALOG>();
                 foreach (var entry in _allEntries)
                 {
                     if ((entry.ObjectName != null && entry.ObjectName.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0) ||

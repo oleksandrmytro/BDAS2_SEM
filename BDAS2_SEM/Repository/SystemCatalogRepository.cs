@@ -19,7 +19,7 @@ namespace BDAS2_SEM.Repository
             this.connectionString = connection;
         }
 
-        public async Task<IEnumerable<SystemCatalog>> GetSystemCatalog()
+        public async Task<IEnumerable<SYSTEM_CATALOG>> GetSystemCatalog()
         {
             using (var db = new OracleConnection(connectionString))
             {
@@ -28,7 +28,7 @@ namespace BDAS2_SEM.Repository
                            object_type AS ObjectType
                     FROM all_objects WHERE OWNER = 'ST69616'";
 
-                return await db.QueryAsync<SystemCatalog>(sqlQuery);
+                return await db.QueryAsync<SYSTEM_CATALOG>(sqlQuery);
             }
         }
     }

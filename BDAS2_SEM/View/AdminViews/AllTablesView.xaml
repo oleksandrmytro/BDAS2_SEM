@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BDAS2_SEM.View.AdminViews" 
-             xmlns:models="clr-namespace:BDAS2_SEM.Model"
+             xmlns:models="clr-namespace:BDAS2_SEM.Model" 
+             xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -162,17 +163,17 @@
                 <!-- Log Table -->
                 <Expander Header="Log" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
                     <StackPanel>
-                        <!--<Button Content="Insert Log" 
-                                CommandParameter="{x:Type models:ADRESA}" 
-                                Style="{StaticResource InsertButtonStyle}" />-->
+                        <Button Content="Insert Log" 
+                                CommandParameter="{x:Type models:LOG}" 
+                                Style="{StaticResource InsertButtonStyle}" />
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Log}" CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_LOG" Binding="{Binding ID_LOG}" />
-                            <DataGridTextColumn Header="TABLE_NAME" Binding="{Binding TABLE_NAME}" />
-                            <DataGridTextColumn Header="OPERATION_TYPE" Binding="{Binding OPERATION_TYPE}" />
-                            <DataGridTextColumn Header="OPERATION_DATE" Binding="{Binding OPERATION_DATE}" />
-                            <DataGridTextColumn Header="OLD_VALUES" Binding="{Binding OLD_VALUES}" />
-                            <DataGridTextColumn Header="NEW_VALUES" Binding="{Binding NEW_VALUES}" />
+                            <DataGridTextColumn Header="ID_LOG" Binding="{Binding IdLog}" />
+                            <DataGridTextColumn Header="TABLE_NAME" Binding="{Binding TableName}" />
+                            <DataGridTextColumn Header="OPERATION_TYPE" Binding="{Binding OperationType}" />
+                            <DataGridTextColumn Header="OPERATION_DATE" Binding="{Binding OperationData}" />
+                            <DataGridTextColumn Header="OLD_VALUES" Binding="{Binding OldValues}" />
+                            <DataGridTextColumn Header="NEW_VALUES" Binding="{Binding NewValues}" />
                             <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
                             <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
                         </DataGrid.Columns>
@@ -224,9 +225,9 @@
                 <!-- Status Table -->
                 <Expander Header="Status" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
                     <StackPanel>
-                        <!--<Button Content="Insert Status" 
-                                CommandParameter="{x:Type models:ADRESA}" 
-                                Style="{StaticResource InsertButtonStyle}" />-->
+                        <Button Content="Insert Status" 
+                                CommandParameter="{x:Type models:STATUS}" 
+                                Style="{StaticResource InsertButtonStyle}" />
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Status}" CanUserAddRows="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID_STATUS" Binding="{Binding IdStatus}" />
@@ -241,9 +242,9 @@
                 <!-- Typ Lek Table -->
                 <Expander Header="Typ Lek" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
                     <StackPanel>
-                        <!--<Button Content="Insert Adresa" 
-                                CommandParameter="{x:Type models:ADRESA}" 
-                                Style="{StaticResource InsertButtonStyle}" />-->
+                        <Button Content="Insert Adresa" 
+                                CommandParameter="{x:Type models:TYP_LEK}" 
+                                Style="{StaticResource InsertButtonStyle}" />
                         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding TypLek}" CanUserAddRows="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID_TYP_LEK" Binding="{Binding IdTypLek}" />
@@ -348,7 +349,6 @@
                             <DataGridTextColumn Header="DATUM_MODIFIKACE" Binding="{Binding DatumModifikace}" />
                             <DataGridTextColumn Header="OPERACE_PROVEDL" Binding="{Binding OperaceProvedl}" />
                             <DataGridTextColumn Header="POPIS_OPERACE" Binding="{Binding PopisOperace}" />
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID" Binding="{Binding ZamestnanecId}" />
                             <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
                             <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
                         </DataGrid.Columns>

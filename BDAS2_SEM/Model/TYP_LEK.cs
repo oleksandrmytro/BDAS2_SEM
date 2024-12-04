@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace BDAS2_SEM.Model.Enum
+namespace BDAS2_SEM.Model
 {
     public class TYP_LEK : INotifyPropertyChanged
     {
