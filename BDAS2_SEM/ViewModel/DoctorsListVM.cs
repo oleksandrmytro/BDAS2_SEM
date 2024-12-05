@@ -10,21 +10,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BDAS2_SEM.Model.Enum;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BDAS2_SEM.ViewModel
 {
     public class DoctorsListVM : INotifyPropertyChanged
     {
-        private readonly IZamestnanecRepository _zamestnanecRepository;
+        private readonly IDoctorInfoRepository _doctorInfoRepository;
         private readonly IPatientContextService _patientContextService;
         private readonly INavstevaRepository _navstevaRepository;
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
-        private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
-        private readonly IOrdinaceRepository _ordinaceRepository;
-        private readonly IBlobTableRepository _blobRepository;
+        private readonly IWindowService _windowService;
 
-        private ObservableCollection<ZAMESTNANEC> _allDoctors;
-        public ObservableCollection<ZAMESTNANEC> Doctors { get; set; }
+        private ObservableCollection<DOCTOR_INFO> _allDoctors;
+        public ObservableCollection<DOCTOR_INFO> Doctors { get; set; }
         public ICommand CreateAppointmentCommand { get; }
         public ICommand SearchCommand { get; }
 
@@ -36,106 +35,93 @@ namespace BDAS2_SEM.ViewModel
             {
                 _searchText = value;
                 OnPropertyChanged();
-                FilterDoctors(null);
+                FilterDoctors();
             }
         }
 
         public DoctorsListVM(
-            IZamestnanecRepository zamestnanecRepository,
+            IDoctorInfoRepository doctorInfoRepository,
             IPatientContextService patientContextService,
             INavstevaRepository navstevaRepository,
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
-            IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
-            IOrdinaceRepository ordinaceRepository,
-            IBlobTableRepository blobRepository)
+            IWindowService windowService)
         {
-            _zamestnanecRepository = zamestnanecRepository;
+            _doctorInfoRepository = doctorInfoRepository;
             _patientContextService = patientContextService;
             _navstevaRepository = navstevaRepository;
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
-            _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
-            _ordinaceRepository = ordinaceRepository;
-            _blobRepository = blobRepository;
+            _windowService = windowService;
 
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
-            SearchCommand = new RelayCommand(FilterDoctors);
+            SearchCommand = new RelayCommand(_ => FilterDoctors());
             LoadDoctors();
+        }
+
+        // Конструктор по умолчанию для XAML
+        public DoctorsListVM() : this(
+            App.ServiceProvider.GetRequiredService<IDoctorInfoRepository>(),
+            App.ServiceProvider.GetRequiredService<IPatientContextService>(),
+            App.ServiceProvider.GetRequiredService<INavstevaRepository>(),
+            App.ServiceProvider.GetRequiredService<IZamestnanecNavstevaRepository>(),
+            App.ServiceProvider.GetRequiredService<IWindowService>())
+        {
         }
 
         private async void LoadDoctors()
         {
-            var doctors = await _zamestnanecRepository.GetAllZamestnanci();
-            var ordinaceZamestnanci = await _ordinaceZamestnanecRepository.GetAllOrdinaceZamestnanecs();
-            var ordinaceList = await _ordinaceRepository.GetAllOrdinaces();
-
-            foreach (var doctor in doctors)
-            {
-                var ordinaceZamestnanec = ordinaceZamestnanci.Where(o => o.ZamestnanecId == doctor.IdZamestnanec);
-                var ordinaceNames = ordinaceZamestnanec
-                    .Select(o => ordinaceList.FirstOrDefault(ord => ord.IdOrdinace == o.OrdinaceId)?.Nazev)
-                    .Where(name => !string.IsNullOrEmpty(name))
-                    .ToList();
-
-                // Загрузка аватарки
-                if (doctor.BlobId != 0)
-                {
-                    var blob = await _blobRepository.GetBlobById(doctor.BlobId);
-                    if (blob != null)
-                    {
-                        // Здесь можно обработать blob.Obsah, если это необходимо
-                    }
-                }
-            }
-
-            _allDoctors = new ObservableCollection<ZAMESTNANEC>(doctors);
-            Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+            var doctors = await _doctorInfoRepository.GetAllDoctors();
+            _allDoctors = new ObservableCollection<DOCTOR_INFO>(doctors);
+            Doctors = new ObservableCollection<DOCTOR_INFO>(_allDoctors);
             OnPropertyChanged(nameof(Doctors));
         }
 
-        private void FilterDoctors(object parameter)
+        private void FilterDoctors()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                Doctors = new ObservableCollection<ZAMESTNANEC>(_allDoctors);
+                Doctors = new ObservableCollection<DOCTOR_INFO>(_allDoctors);
             }
             else
             {
                 var filteredDoctors = _allDoctors.Where(d =>
-                    (d.Jmeno != null && d.Jmeno.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Prijmeni != null && d.Prijmeni.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Telefon.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    (d.FirstName != null && d.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Surname != null && d.Surname.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
-                Doctors = new ObservableCollection<ZAMESTNANEC>(filteredDoctors);
+                Doctors = new ObservableCollection<DOCTOR_INFO>(filteredDoctors);
             }
             OnPropertyChanged(nameof(Doctors));
         }
 
         private async void CreateAppointment(object parameter)
         {
-            var selectedDoctor = parameter as ZAMESTNANEC;
-            if (selectedDoctor != null)
+            if (parameter != null)
             {
-                var pacientId = _patientContextService.CurrentPatient.IdPacient;
-
-                var newAppointment = new NAVSTEVA
+                var selectedDoctor = parameter as DOCTOR_INFO;
+                if (selectedDoctor != null)
                 {
-                    PacientId = pacientId,
-                    StatusId = 3
-                };
+                    var pacientId = _patientContextService.CurrentPatient.IdPacient;
 
-                var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
-                newAppointment.IdNavsteva = newAppointmentId;
+                    var newAppointment = new NAVSTEVA
+                    {
+                        PacientId = pacientId,
+                        StatusId = 3
+                    };
 
-                var zamestnanecNavsteva = new ZAMESTNANEC_NAVSTEVA
-                {
-                    ZamestnanecId = selectedDoctor.IdZamestnanec,
-                    NavstevaId = newAppointmentId
-                };
+                    var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
+                    newAppointment.IdNavsteva = newAppointmentId;
 
-                await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
+                    var zamestnanecNavsteva = new ZAMESTNANEC_NAVSTEVA
+                    {
+                        ZamestnanecId = selectedDoctor.DoctorId, // Используем DoctorId вместо AvatarId
+                        NavstevaId = newAppointmentId
+                    };
 
-                MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
+
+                    MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
         }
 

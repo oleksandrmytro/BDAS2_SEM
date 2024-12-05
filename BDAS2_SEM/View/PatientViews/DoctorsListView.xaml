@@ -73,13 +73,12 @@
                             </Grid.ColumnDefinitions>
 
                             <Image Grid.Column="0" Source="{Binding Avatar, Converter={StaticResource ByteArrayToImageConverter}}" Width="50" Height="50" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{Binding Jmeno}" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Column="2" Text="{Binding Prijmeni}" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Column="3" Text="{Binding Telefon}" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Column="4" Text="{Binding Oddeleni}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="1" Text="{Binding FirstName}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Surname}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Phone}" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="4" Text="{Binding Department}" VerticalAlignment="Center" FontSize="14"/>
 
                             <Button Grid.Column="5" Content="Book" 
-                                    Style="{StaticResource ModernButtonStyle}"
                                     Command="{Binding DataContext.CreateAppointmentCommand, RelativeSource={RelativeSource AncestorType=ListView}}" 
                                     CommandParameter="{Binding}" 
                                     Margin="10,0,0,0"/>

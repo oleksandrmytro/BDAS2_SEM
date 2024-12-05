@@ -1,28 +1,21 @@
 ﻿using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Repository;
-using BDAS2_SEM.View;
-using BDAS2_SEM.ViewModel;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Configuration;
-using System.Data;
-using System.Windows;
-using System.Windows.Controls;
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.Services;
 using BDAS2_SEM.View.AdminViews;
-using BDAS2_SEM.View.PatientViews;
 using BDAS2_SEM.View.DoctorViews;
+using BDAS2_SEM.View.PatientViews;
+using BDAS2_SEM.View;
+using BDAS2_SEM.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using System.Configuration;
 
 namespace BDAS2_SEM
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        public IServiceProvider ServiceProvider { get; private set; }
+        public static IServiceProvider ServiceProvider { get; private set; }
 
         private void ConfigureServices(IServiceCollection services)
         {
@@ -82,6 +75,8 @@ namespace BDAS2_SEM
                 new MistnostRepository(connectionString));
             services.AddSingleton<IPriponaRepository, PriponaRepository>(provider =>
                 new PriponaRepository(connectionString));
+            services.AddSingleton<IDoctorInfoRepository, DoctorInfoRepository>(provider =>
+                new DoctorInfoRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -157,5 +152,4 @@ namespace BDAS2_SEM
             authWindow.Show();
         }
     }
-
 }
