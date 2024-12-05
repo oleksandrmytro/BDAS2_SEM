@@ -4,9 +4,7 @@
         xmlns:viewModel="clr-namespace:BDAS2_SEM.ViewModel"
         Title="Patient Dashboard" Height="601" Width="1001"
         WindowStartupLocation="CenterScreen">
-    <Window.DataContext>
-        <viewModel:PatientsVM />
-    </Window.DataContext>
+
     <Grid>
         <!-- Define Columns -->
         <Grid.ColumnDefinitions>

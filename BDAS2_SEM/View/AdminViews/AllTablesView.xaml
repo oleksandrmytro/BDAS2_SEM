@@ -1,35 +1,72 @@
 ﻿<UserControl x:Class="BDAS2_SEM.View.AdminViews.AllTablesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BDAS2_SEM.View.AdminViews" 
-             xmlns:models="clr-namespace:BDAS2_SEM.Model" 
+             xmlns:local="clr-namespace:BDAS2_SEM.View.AdminViews"
+             xmlns:models="clr-namespace:BDAS2_SEM.Model"
              xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="#FAFAFA">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="EditButtonTemplate">
-            <Button Content="Edit" 
-                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                    CommandParameter="{Binding}" 
-                    Width="50" />
-        </DataTemplate>
-        <DataTemplate x:Key="DeleteButtonTemplate">
-            <Button Content="Delete" 
-                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                    CommandParameter="{Binding}" 
-                    Width="60" 
-                    Background="Red" 
-                    Foreground="White"/>
-        </DataTemplate>
+        <!-- Стиль для Expander -->
+        <Style TargetType="Expander">
+            <Setter Property="Margin" Value="0,10,0,5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Background" Value="#f0f0f0"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Foreground" Value="#3d5170"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}">
+                            <StackPanel>
+                                <ToggleButton x:Name="ExpanderToggleButton"
+                                              Content="{TemplateBinding Header}"
+                                              FontWeight="{TemplateBinding FontWeight}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              FontFamily="{TemplateBinding FontFamily}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                              Cursor="Hand">
+                                    <ToggleButton.ContentTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" FontWeight="Bold"/>
+                                        </DataTemplate>
+                                    </ToggleButton.ContentTemplate>
+                                </ToggleButton>
+                                <ContentPresenter x:Name="ExpanderContent"
+                                                  Visibility="Collapsed"
+                                                  Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ExpanderContent" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ExpanderToggleButton" Property="Background" Value="#e9ecef"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Insert Button Style -->
-        <Style x:Key="InsertButtonStyle" TargetType="Button">
-            <Setter Property="Command" Value="{Binding DataContext.InsertCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-            <Setter Property="Width" Value="100" />
-            <Setter Property="Margin" Value="0,0,0,5" />
+        <!-- Стиль для тексту в DataGrid -->
+        <Style x:Key="WrappingTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
         </Style>
     </UserControl.Resources>
 
@@ -38,352 +75,898 @@
             <StackPanel Margin="10">
 
                 <!-- Adresa Table -->
-                <Expander Header="Adresa" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Adresa" IsExpanded="False">
                     <StackPanel>
-                        <!-- Кнопка Insert -->
-                        <Button Content="Insert Adresa" 
-                                CommandParameter="{x:Type models:ADRESA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Adresa" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:ADRESA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0" 
+                                     ToolTip="Пошук..."
+                                     Text="{Binding AdresaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
 
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Adresa}" CanUserAddRows="False">
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding AdresaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <!-- Ваші колонки -->
-                                <DataGridTextColumn Header="ID_ADRESA" Binding="{Binding IdAdresa}" />
-                                <DataGridTextColumn Header="STAT" Binding="{Binding Stat}" />
-                                <DataGridTextColumn Header="MESTO" Binding="{Binding Mesto}" />
-                                <DataGridTextColumn Header="PSC" Binding="{Binding PSC}" />
-                                <DataGridTextColumn Header="ULICE" Binding="{Binding Ulice}" />
-                                <DataGridTextColumn Header="CISLO_POPISNE" Binding="{Binding CisloPopisne}" />
-                                <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                                <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
+                                <DataGridTextColumn Header="ID_ADRESA" Binding="{Binding IdAdresa}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="STAT" Binding="{Binding Stat}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="MESTO" Binding="{Binding Mesto}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="PSC" Binding="{Binding PSC}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ULICE" Binding="{Binding Ulice}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="CISLO_POPISNE" Binding="{Binding CisloPopisne}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Zaměstnanec Table -->
-                <Expander Header="Zaměstnanec" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Zaměstnanec" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Zamestnanec" 
-                                CommandParameter="{x:Type models:ZAMESTNANEC}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Zamestnanec}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_ZAMESTNANEC" Binding="{Binding IdZamestnanec}" />
-                            <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" />
-                            <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" />
-                            <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" />
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding NadrazenyZamestnanecId}" />
-                            <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" />
-                            <DataGridTextColumn Header="POZICE_ID_POZICE" Binding="{Binding PoziceId}" />
-                            <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Zamestnanec" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:ZAMESTNANEC}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding ZamestnanecSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding ZamestnanecView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_ZAMESTNANEC" Binding="{Binding IdZamestnanec}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NADRAZENY_ZAMESTNANEC_ID" Binding="{Binding NadrazenyZamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="POZICE_ID_POZICE" Binding="{Binding PoziceId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Diagnóza Table -->
-                <Expander Header="Diagnóza" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Diagnóza" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Diagnoza" 
-                                CommandParameter="{x:Type models:DIAGNOZA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Diagnosis}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_DIAGNOZA" Binding="{Binding IdDiagnoza}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTextColumn Header="POPIS" Binding="{Binding Popis}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Diagnoza" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:DIAGNOZA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding DiagnózaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding DiagnózaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_DIAGNOZA" Binding="{Binding IdDiagnoza}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="POPIS" Binding="{Binding Popis}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Ordinace Table -->
-                <Expander Header="Ordinace" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Ordinace" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Ordinace" 
-                                CommandParameter="{x:Type models:ORDINACE}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Ordinace}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_ORDINACE" Binding="{Binding IdOrdinace}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Ordinace" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:ORDINACE}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding OrdinaceSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding OrdinaceView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_ORDINACE" Binding="{Binding IdOrdinace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
-                <!-- Uživatelská Data Table -->
-                <Expander Header="Uživatelská Data" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <!-- Uzivatelska Data Table -->
+                <Expander Header="Uživatelská Data" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Uzivatel Data" 
-                                CommandParameter="{x:Type models:UZIVATEL_DATA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UzivatelData}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_UZIVATEL_DATA" Binding="{Binding Id}" />
-                            <DataGridTextColumn Header="EMAIL" Binding="{Binding Email}" />
-                            <DataGridTextColumn Header="HESLO" Binding="{Binding Heslo}" />
-                            <DataGridTextColumn Header="PACIENT_ID_C" Binding="{Binding pacientId}" />
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID_C" Binding="{Binding zamestnanecId}" />
-                            <DataGridTextColumn Header="ROLE_ID_ROLE" Binding="{Binding RoleUzivatel}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Uzivatel Data" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:UZIVATEL_DATA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding UzivatelskaDataSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding UzivatelskaDataView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_UZIVATEL_DATA" Binding="{Binding Id}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="EMAIL" Binding="{Binding Email}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="HESLO" Binding="{Binding Heslo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="PACIENT_ID_C" Binding="{Binding pacientId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ZAMESTNANEC_ID_C" Binding="{Binding zamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ROLE_ID_ROLE" Binding="{Binding RoleUzivatel}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Platba Table -->
-                <Expander Header="Platba" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Platba" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Platba" 
-                                CommandParameter="{x:Type models:PLATBA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Platba}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" />
-                            <DataGridTextColumn Header="CASTKA" Binding="{Binding Castka}" />
-                            <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" />
-                            <DataGridTextColumn Header="TYP_PLATBY" Binding="{Binding TypPlatby}" />
-                            <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Platba" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:PLATBA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding PlatbaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding PlatbaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="CASTKA" Binding="{Binding Castka}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TYP_PLATBY" Binding="{Binding TypPlatby}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
-
                 <!-- Pacient Table -->
-                <Expander Header="Pacient" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Pacient" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Pacient" 
-                                CommandParameter="{x:Type models:PACIENT}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Pacient}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_PACIENT" Binding="{Binding IdPacient}" />
-                            <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" />
-                            <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" />
-                            <DataGridTextColumn Header="RODNE_CISLO" Binding="{Binding RodneCislo}" />
-                            <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" />
-                            <DataGridTextColumn Header="DATUM_NAROZENI" Binding="{Binding DatumNarozeni}" />
-                            <DataGridTextColumn Header="POHLAVI" Binding="{Binding Pohlavi}" />
-                            <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" />
-                            <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Pacient" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:PACIENT}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding PacientSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding PacientView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PACIENT" Binding="{Binding IdPacient}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="RODNE_CISLO" Binding="{Binding RodneCislo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM_NAROZENI" Binding="{Binding DatumNarozeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="POHLAVI" Binding="{Binding Pohlavi}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Pozice Table -->
-                <Expander Header="Pozice" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Pozice" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Pozice" 
-                                CommandParameter="{x:Type models:POZICE}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Pozice}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_POZICE" Binding="{Binding IdPozice}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTemplateColumn Header="Actions" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Pozice" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:POZICE}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding PoziceSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding PoziceView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_POZICE" Binding="{Binding IdPozice}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
+                <!-- PRIPONA Table -->
+                <Expander Header="Pripona" IsExpanded="False">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Pripona" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:PRIPONA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0" 
+                                     ToolTip="Пошук..."
+                                     Text="{Binding PriponaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding PriponaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PRIPONA" Binding="{Binding IdPripona}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TYP" Binding="{Binding Typ}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Status Table -->
-                <Expander Header="Status" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Status" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Status" 
-                                CommandParameter="{x:Type models:STATUS}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Status}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_STATUS" Binding="{Binding IdStatus}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Status" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:STATUS}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding StatusSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding StatusView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_STATUS" Binding="{Binding IdStatus}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Typ Lek Table -->
-                <Expander Header="Typ Lek" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Typ Lek" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Adresa" 
-                                CommandParameter="{x:Type models:TYP_LEK}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding TypLek}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_TYP_LEK" Binding="{Binding IdTypLek}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Typ Lek" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:TYP_LEK}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding TypLekSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding TypLekView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_TYP_LEK" Binding="{Binding IdTypLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Lek Table -->
-                <Expander Header="Lek" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Lek" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Lek" 
-                                CommandParameter="{x:Type models:LEK}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Lek}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_LEK" Binding="{Binding IdLek}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTextColumn Header="MNOZSTVI" Binding="{Binding Mnozstvi}" />
-                            <DataGridTextColumn Header="CENA" Binding="{Binding Cena}" />
-                            <DataGridTextColumn Header="TYP_LEK_ID_TYP_LEK" Binding="{Binding TypLekId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Lek" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:LEK}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding LekSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding LekView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_LEK" Binding="{Binding IdLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="MNOZSTVI" Binding="{Binding Mnozstvi}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="CENA" Binding="{Binding Cena}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TYP_LEK_ID_TYP_LEK" Binding="{Binding TypLekId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Operace Table -->
-                <Expander Header="Operace" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Operace" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Operace" 
-                                CommandParameter="{x:Type models:OPERACE}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Operace}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_OPERACE" Binding="{Binding IdOperace}" />
-                            <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" />
-                            <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" />
-                            <DataGridTextColumn Header="DIAGNOZA_ID_DIAGNOZA" Binding="{Binding DiagnozaId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Operace" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:OPERACE}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding OperaceSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding OperaceView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_OPERACE" Binding="{Binding IdOperace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DIAGNOZA_ID_DIAGNOZA" Binding="{Binding DiagnozaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Navsteva Table -->
-                <Expander Header="Navsteva" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Navsteva" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Navsteva" 
-                                CommandParameter="{x:Type models:NAVSTEVA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Navsteva}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_NAVSTEVA" Binding="{Binding IdNavsteva}" />
-                            <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" />
-                            <DataGridTextColumn Header="MISTNOST" Binding="{Binding Mistnost}" />
-                            <DataGridTextColumn Header="PACIENT_ID_PACIENT" Binding="{Binding PacientId}" />
-                            <DataGridTextColumn Header="STATUS_ID_STATUS" Binding="{Binding Status}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Navsteva" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:NAVSTEVA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding NavstevaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding NavstevaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_NAVSTEVA" Binding="{Binding IdNavsteva}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="MISTNOST" Binding="{Binding Mistnost}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="PACIENT_ID_PACIENT" Binding="{Binding PacientId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="STATUS_ID_STATUS" Binding="{Binding Status}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Operace_Zamestnanec Table -->
-                <Expander Header="Operace Zaměstnanec" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Operace Zaměstnanec" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Operace Zamestnanec" 
-                                CommandParameter="{x:Type models:OPERACE_ZAMESTNANEC}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding OperaceZamestnanec}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="OPERACE_ID_OPERACE" Binding="{Binding OperaceId}" />
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Operace Zamestnanec" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:OPERACE_ZAMESTNANEC}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding OperaceZamestnanecSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding OperaceZamestnanecView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="OPERACE_ID_OPERACE" Binding="{Binding OperaceId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
-                <!-- Blob_Table Table -->
-                <Expander Header="Blob Table" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <!-- Blob Table -->
+                <Expander Header="Blob Table" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Blob " 
-                                CommandParameter="{x:Type models:BLOB_TABLE}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding BlobTable}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID_BLOB" Binding="{Binding IdBlob}" />
-                            <DataGridTextColumn Header="NAZEV_SOUBORU" Binding="{Binding NazevSouboru}" />
-                            <DataGridTextColumn Header="TYP_SOUBORU" Binding="{Binding TypSouboru}" />
-                            <DataGridTextColumn Header="PRIPONA_SOUBORU" Binding="{Binding PriponaSouboru}" />
-                            <DataGridTextColumn Header="OBSAH" Binding="{Binding Obsah}" />
-                            <DataGridTextColumn Header="DATUM_NAHRANI" Binding="{Binding DatumNahrani}" />
-                            <DataGridTextColumn Header="DATUM_MODIFIKACE" Binding="{Binding DatumModifikace}" />
-                            <DataGridTextColumn Header="OPERACE_PROVEDL" Binding="{Binding OperaceProvedl}" />
-                            <DataGridTextColumn Header="POPIS_OPERACE" Binding="{Binding PopisOperace}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Blob" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:BLOB_TABLE}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding BlobTableSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding BlobTableView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_BLOB" Binding="{Binding IdBlob}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAZEV_SOUBORU" Binding="{Binding NazevSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TYP_SOUBORU" Binding="{Binding TypSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="OBSAH" Binding="{Binding Obsah}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM_NAHRANI" Binding="{Binding DatumNahrani}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM_MODIFIKACE" Binding="{Binding DatumModifikace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="OPERACE_PROVEDL" Binding="{Binding OperaceProvedl}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="POPIS_OPERACE" Binding="{Binding PopisOperace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Ordinace_Zamestnanec Table -->
-                <Expander Header="Ordinace Zaměstnanec" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Ordinace Zaměstnanec" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Ordinace Zamestnanec" 
-                                CommandParameter="{x:Type models:ORDINACE_ZAMESTNANEC}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding OrdinaceZamestnanec}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ORDINACE_ID_ORDINACE" Binding="{Binding OrdinaceId}" />
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Ordinace Zamestnanec" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:ORDINACE_ZAMESTNANEC}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding OrdinaceZamestnanecSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding OrdinaceZamestnanecView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ORDINACE_ID_ORDINACE" Binding="{Binding OrdinaceId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Zamestnanec_Navsteva Table -->
-                <Expander Header="Zaměstnanec Navsteva" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Zaměstnanec Navsteva" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Zamestnanec Navsteva" 
-                                CommandParameter="{x:Type models:ZAMESTNANEC_NAVSTEVA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ZamestnanecNavsteva}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" />
-                            <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Zamestnanec Navsteva" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:ZAMESTNANEC_NAVSTEVA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding ZamestnanecNavstevaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding ZamestnanecNavstevaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ZAMESTNANEC_ID_ZAMESTNANEC" Binding="{Binding ZamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 
                 <!-- Navsteva_Diagnoza Table -->
-                <Expander Header="Navsteva Diagnóza" FontWeight="Bold" Margin="0,10,0,5" IsExpanded="False">
+                <Expander Header="Navsteva Diagnóza" IsExpanded="False">
                     <StackPanel>
-                        <Button Content="Insert Navsteva_Diagnoza" 
-                                CommandParameter="{x:Type models:NAVSTEVA_DIAGNOZA}" 
-                                Style="{StaticResource InsertButtonStyle}" />
-                        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding NavstevaDiagnoza}" CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" />
-                            <DataGridTextColumn Header="DIAGNOZA_ID_DIAGNOZA" Binding="{Binding DiagnozaId}" />
-                            <DataGridTemplateColumn Header="Update" CellTemplate="{StaticResource EditButtonTemplate}" />
-                            <DataGridTemplateColumn Header="Delete" CellTemplate="{StaticResource DeleteButtonTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Navsteva_Diagnoza" 
+                                    Command="{Binding InsertCommand}"
+                                    CommandParameter="{x:Type models:NAVSTEVA_DIAGNOZA}" 
+                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                                     ToolTip="Пошук..."
+                                     Text="{Binding NavstevaDiagnozaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding NavstevaDiagnozaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="NAVSTEVA_ID_NAVSTEVA" Binding="{Binding NavstevaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DIAGNOZA_ID_DIAGNOZA" Binding="{Binding DiagnozaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ModernButtonStyle}"
+                                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
                 </Expander>
 

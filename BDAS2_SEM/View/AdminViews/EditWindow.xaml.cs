@@ -1,27 +1,31 @@
 ﻿// EditWindow.xaml.cs
 
 using System;
+using System.Reflection;
 using System.Windows;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace BDAS2_SEM.View.AdminViews
 {
     public partial class EditWindow : Window
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly object _item;
+        private readonly object _originalItem;
+        private readonly object _itemCopy;
         private readonly bool _isNewItem;
 
         public EditWindow(object item, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
-            _item = item;
-            this.DataContext = _item;
+            _originalItem = item;
+            _itemCopy = CreateCopy(item);
+            this.DataContext = _itemCopy;
 
-            _isNewItem = IsNewItem(item);
+            _isNewItem = IsNewItem(_itemCopy);
         }
 
         private bool IsNewItem(object item)
@@ -76,6 +80,9 @@ namespace BDAS2_SEM.View.AdminViews
                 case POZICE pozice:
                     return pozice.IdPozice == 0;
 
+                case PRIPONA pripona:
+                    return pripona.IdPripona == 0;
+
                 case UZIVATEL_DATA uzivatelData:
                     return uzivatelData.Id == 0;
 
@@ -94,7 +101,9 @@ namespace BDAS2_SEM.View.AdminViews
         {
             try
             {
-                switch (_item)
+                CopyProperties(_itemCopy, _originalItem);
+
+                switch (_originalItem)
                 {
                     case ADRESA adresa:
                         var adresaRepo = _serviceProvider.GetService<IAdresaRepository>();
@@ -272,6 +281,17 @@ namespace BDAS2_SEM.View.AdminViews
                         }
                         break;
 
+                    case PRIPONA pripona:
+                        var priponaRepo = _serviceProvider.GetService<IPriponaRepository>();
+                        if (priponaRepo != null)
+                        {
+                            if (_isNewItem)
+                                await priponaRepo.AddPripona(pripona);
+                            else
+                                await priponaRepo.UpdatePripona(pripona);
+                        }
+
+                        break;
                     case UZIVATEL_DATA uzivatelData:
                         var uzivatelDataRepo = _serviceProvider.GetService<IUzivatelDataRepository>();
                         if (uzivatelDataRepo != null)
@@ -317,6 +337,42 @@ namespace BDAS2_SEM.View.AdminViews
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving item: {ex.Message}");
+            }
+        }
+
+        private object CreateCopy(object source)
+        {
+            if (source == null)
+                return null;
+
+            var type = source.GetType();
+            var copy = Activator.CreateInstance(type);
+
+            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (prop.CanRead && prop.CanWrite)
+                {
+                    var value = prop.GetValue(source);
+                    prop.SetValue(copy, value);
+                }
+            }
+            return copy;
+        }
+
+        private void CopyProperties(object source, object destination)
+        {
+            if (source == null || destination == null)
+                return;
+
+            var type = source.GetType();
+
+            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (prop.CanRead && prop.CanWrite)
+                {
+                    var value = prop.GetValue(source);
+                    prop.SetValue(destination, value);
+                }
             }
         }
     }

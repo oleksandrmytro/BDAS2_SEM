@@ -3,6 +3,49 @@
                     xmlns:models="clr-namespace:BDAS2_SEM.Model"
                     xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum">
 
+    <!-- Define a style for TextBlocks -->
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="Foreground" Value="#3D5170"/>
+        <Setter Property="Margin" Value="0,5"/>
+    </Style>
+
+    <!-- Define a style for TextBoxes -->
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="BorderBrush" Value="#007ACC"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Define a style for Buttons -->
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="5,2"/>
+        <Setter Property="Margin" Value="0,20,0,0"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="#007ACC"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="#007ACC"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- DataTemplate for ADRESA -->
     <DataTemplate DataType="{x:Type models:ADRESA}">
         <StackPanel>
@@ -149,6 +192,17 @@
         </StackPanel>
     </DataTemplate>
 
+    <!-- DataTemplate for Pripona -->
+    <DataTemplate DataType="{x:Type models:PRIPONA}">
+        <StackPanel>
+            <Label Content="ID_Pripona:" />
+            <TextBox Text="{Binding IdPripona, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="Typ:" />
+            <TextBox Text="{Binding Typ, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
+
     <!-- DataTemplate for Pozice -->
     <DataTemplate DataType="{x:Type models:POZICE}">
         <StackPanel>
@@ -262,9 +316,6 @@
 
             <Label Content="TYP_SOUBORU:" />
             <TextBox Text="{Binding TypSouboru, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="PRIPONA_SOUBORU:" />
-            <TextBox Text="{Binding PriponaSouboru, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="OBSAH:" />
             <TextBox Text="{Binding Obsah, UpdateSourceTrigger=PropertyChanged}" />
