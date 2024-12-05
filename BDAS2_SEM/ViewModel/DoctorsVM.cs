@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using BDAS2_SEM.View;
+using System.Windows;
 
 public class DoctorsVM : INotifyPropertyChanged
 {
@@ -220,13 +222,9 @@ public class DoctorsVM : INotifyPropertyChanged
     // Logout command implementation
     private void Logout(object obj)
     {
-        // Implement logout logic here
-        // For example, navigate back to the login view or close the application
-        // If using a navigation service:
-        // _navigationService.NavigateTo("LoginView");
-
-        // If you want to close the application:
-        System.Windows.Application.Current.Shutdown();
+        var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
+        Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive)?.Close();
+        authWindow.Show();
     }
 
     // Implementation of INotifyPropertyChanged
