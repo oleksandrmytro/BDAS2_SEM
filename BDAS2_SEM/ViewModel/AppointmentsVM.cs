@@ -1,218 +1,198 @@
-﻿using BDAS2_SEM.Commands;
-using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
-using BDAS2_SEM.Repository.Interfaces;
-using BDAS2_SEM.Services.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using BDAS2_SEM.Commands;
+using BDAS2_SEM.Model;
+using BDAS2_SEM.Repository.Interfaces;
+using BDAS2_SEM.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace BDAS2_SEM.ViewModel
+namespace BDAS2_SEM.ViewModel;
+
+public class AppointmentsVM : INotifyPropertyChanged
 {
-    public class AppointmentsVM : INotifyPropertyChanged
+    private readonly IMistnostRepository _mistnostRepository;
+    private readonly INavstevaRepository _navstevaRepository;
+    private readonly IWindowService _windowService;
+    private ZAMESTNANEC _doctor;
+
+    // Constructor
+    public AppointmentsVM(IServiceProvider serviceProvider, IWindowService windowService)
     {
-        private readonly INavstevaRepository _navstevaRepository;
-        private readonly IWindowService _windowService;
-        private ZAMESTNANEC _doctor;
+        _navstevaRepository = serviceProvider.GetRequiredService<INavstevaRepository>();
+        _mistnostRepository = serviceProvider.GetRequiredService<IMistnostRepository>();
+        _windowService = windowService;
+        AppointmentRequests = new ObservableCollection<dynamic>();
+        FutureAppointments = new ObservableCollection<dynamic>();
+        PastAppointments = new ObservableCollection<dynamic>();
 
-        public ObservableCollection<dynamic> AppointmentRequests { get; set; }
-        public ObservableCollection<dynamic> FutureAppointments { get; set; }
-        public ObservableCollection<dynamic> PastAppointments { get; set; }
+        AcceptAppointmentCommand = new RelayCommand(AcceptAppointment);
+        CancelAppointmentCommand = new RelayCommand(CancelAppointment);
+        AssignAppointmentCommand = new RelayCommand(AssignAppointment);
+        UpdateAppointmentCommand = new RelayCommand(UpdateAppointment);
+    }
 
-        public ICommand AcceptAppointmentCommand { get; }
-        public ICommand CancelAppointmentCommand { get; }
-        public ICommand AssignAppointmentCommand { get; }
-        public ICommand UpdateAppointmentCommand { get; }
+    public ObservableCollection<dynamic> AppointmentRequests { get; set; }
+    public ObservableCollection<dynamic> FutureAppointments { get; set; }
+    public ObservableCollection<dynamic> PastAppointments { get; set; }
 
-        private string _noAppointmentsMessage;
-        public string NoAppointmentsMessage
-        {
-            get => _noAppointmentsMessage;
-            set
+    public ICommand AcceptAppointmentCommand { get; }
+    public ICommand CancelAppointmentCommand { get; }
+    public ICommand AssignAppointmentCommand { get; }
+    public ICommand UpdateAppointmentCommand { get; }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private async void LoadAppointments()
+    {
+        var appointments = await _navstevaRepository.GetAppointmentsByDoctorId(_doctor.IdZamestnanec);
+        AppointmentRequests.Clear();
+        FutureAppointments.Clear();
+        PastAppointments.Clear();
+
+        if (appointments != null)
+            foreach (var appointment in appointments)
             {
-                if (_noAppointmentsMessage != value)
+                var status = appointment.StatusId;
+
+                var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
+
+                var roomNumber = "";
+                if (appointment.MistnostId.HasValue)
                 {
-                    _noAppointmentsMessage = value;
-                    OnPropertyChanged();
+                    var mistnost = await _mistnostRepository.GetMistnostById(appointment.MistnostId.Value);
+                    if (mistnost != null) roomNumber = mistnost.Cislo.ToString();
+                }
+
+                var appointmentWithPatient = new
+                {
+                    appointment.IdNavsteva,
+                    appointment.PacientId,
+                    appointment.Datum,
+                    appointment.MistnostId,
+                    appointment.StatusId,
+                    PACIENTJMENO = pacient.FirstName,
+                    PACIENTPRIJMENI = pacient.LastName,
+                    MISTNOST = roomNumber
+                };
+
+                if (status == 3)
+                {
+                    AppointmentRequests.Add(appointmentWithPatient);
+                }
+                else if (status == 1)
+                {
+                    var appointmentDate = appointment.Datum;
+
+                    if (appointmentDate.HasValue)
+                    {
+                        if (appointmentDate.Value >= DateTime.Now)
+                            FutureAppointments.Add(appointmentWithPatient);
+                        else
+                            PastAppointments.Add(appointmentWithPatient);
+                    }
+                    else
+                    {
+                        FutureAppointments.Add(appointmentWithPatient);
+                    }
                 }
             }
-        }
+    }
 
-        public AppointmentsVM(IServiceProvider serviceProvider, IWindowService windowService)
+    public void SetDoctor(ZAMESTNANEC doctor)
+    {
+        _doctor = doctor;
+        LoadAppointments();
+    }
+    private async void AcceptAppointment(object parameter)
+    {
+        if (parameter != null)
         {
-            _navstevaRepository = serviceProvider.GetRequiredService<INavstevaRepository>();
-            _windowService = windowService;
-            AppointmentRequests = new ObservableCollection<dynamic>();
-            FutureAppointments = new ObservableCollection<dynamic>();
-            PastAppointments = new ObservableCollection<dynamic>();
+            dynamic appointment = parameter;
+            var navsteva = new NAVSTEVA
+            {
+                IdNavsteva = (int)appointment.IdNavsteva,
+                PacientId = (int)appointment.PacientId,
+                StatusId = appointment.StatusId,
+                Datum = appointment.Datum,
+                MistnostId = appointment.Mistnost
+            };
 
-            AcceptAppointmentCommand = new RelayCommand(AcceptAppointment);
-            CancelAppointmentCommand = new RelayCommand(CancelAppointment);
-            AssignAppointmentCommand = new RelayCommand(AssignAppointment);
-            UpdateAppointmentCommand = new RelayCommand(UpdateAppointment);
-        }
-
-        public void SetDoctor(ZAMESTNANEC doctor)
-        {
-            _doctor = doctor;
+            await _navstevaRepository.UpdateNavsteva(navsteva);
             LoadAppointments();
         }
+    }
 
-        private async void LoadAppointments()
+    private async void CancelAppointment(object parameter)
+    {
+        if (parameter != null)
         {
-            var appointments = await _navstevaRepository.GetAppointmentsByDoctorId(_doctor.IdZamestnanec);
-            AppointmentRequests.Clear();
-            FutureAppointments.Clear();
-            PastAppointments.Clear();
-
-            if (appointments != null)
+            dynamic appointment = parameter;
+            var navsteva = new NAVSTEVA
             {
-                foreach (var appointment in appointments)
+                IdNavsteva = appointment.IDNAVSTEVA,
+                PacientId = appointment.PACIENTID,
+                StatusId = 2
+            };
+
+            await _navstevaRepository.UpdateNavsteva(navsteva);
+            LoadAppointments();
+        }
+    }
+
+    private void AssignAppointment(object parameter)
+    {
+        if (parameter != null)
+        {
+            dynamic appointment = parameter;
+            var navsteva = new NAVSTEVA
+            {
+                IdNavsteva = (int)appointment.IdNavsteva,
+                PacientId = (int)appointment.PacientId,
+                StatusId = (int)appointment.StatusId,
+                Datum = appointment.Datum,
+                MistnostId = appointment.MistnostId
+            };
+
+            _windowService.OpenAssignAppointmentWindow(navsteva, async updatedAppointment =>
+            {
+                if (updatedAppointment != null)
                 {
-                    int status = (int)appointment.StatusId;
-
-                    // Отримуємо ім'я та прізвище пацієнта за ID візиту
-                    var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
-
-                    // Створюємо новий об'єкт з необхідними властивостями
-                    var appointmentWithPatient = new
-                    {
-                        appointment.IdNavsteva,
-                        appointment.PacientId,
-                        appointment.Datum,
-                        appointment.MistnostId,
-                        appointment.StatusId,
-                        PACIENTJMENO = pacient.FirstName,
-                        PACIENTPRIJMENI = pacient.LastName
-                    };
-
-                    // Перевіряємо статус та дату візиту
-                    if (status == 3)
-                    {
-                        AppointmentRequests.Add(appointmentWithPatient);
-                    }
-                    else if (status == 1)
-                    {
-                        DateTime? appointmentDate = appointment.Datum;
-
-                        if (appointmentDate.HasValue)
-                        {
-                            if (appointmentDate.Value >= DateTime.Now)
-                            {
-                                FutureAppointments.Add(appointmentWithPatient);
-                            }
-                            else
-                            {
-                                PastAppointments.Add(appointmentWithPatient);
-                            }
-                        }
-                        else
-                        {
-                            FutureAppointments.Add(appointmentWithPatient);
-                        }
-                    }
+                    await _navstevaRepository.UpdateNavsteva(updatedAppointment);
+                    LoadAppointments();
                 }
-                NoAppointmentsMessage = string.Empty;
-            }
-            else
-            {
-                NoAppointmentsMessage = "Лікар не має запланованих зустрічей.";
-            }
+            });
         }
+    }
 
-        private async void AcceptAppointment(object parameter)
+    private void UpdateAppointment(object parameter)
+    {
+        if (parameter != null)
         {
-            if (parameter != null)
+            dynamic appointment = parameter;
+            var navsteva = new NAVSTEVA
             {
-                dynamic appointment = parameter;
-                NAVSTEVA navsteva = new NAVSTEVA
-                {
-                    IdNavsteva = (int)appointment.IdNavsteva,
-                    PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.Status,
-                    Datum = appointment.Datum,
-                    MistnostId = appointment.Mistnost
-                };
+                IdNavsteva = (int)appointment.IdNavsteva,
+                PacientId = (int)appointment.PacientId,
+                StatusId = (int)appointment.StatusId,
+                Datum = appointment.Datum,
+                MistnostId = appointment.MistnostId
+            };
 
-                await _navstevaRepository.UpdateNavsteva(navsteva);
-                LoadAppointments();
-            }
-        }
-
-        private async void CancelAppointment(object parameter)
-        {
-            if (parameter != null)
+            _windowService.UpdateAppointmentWindow(navsteva, async updatedAppointment =>
             {
-                dynamic appointment = parameter;
-                NAVSTEVA navsteva = new NAVSTEVA
+                if (updatedAppointment != null)
                 {
-                    IdNavsteva = appointment.IDNAVSTEVA,
-                    PacientId = appointment.PACIENTID,
-                    StatusId = 2
-                };
-
-                await _navstevaRepository.UpdateNavsteva(navsteva);
-                LoadAppointments();
-            }
+                    await _navstevaRepository.UpdateNavsteva(updatedAppointment);
+                    LoadAppointments();
+                }
+            }, _doctor.IdZamestnanec); // Pass the doctor ID here
         }
+    }
 
-        private void AssignAppointment(object parameter)
-        {
-            if (parameter != null)
-            {
-                dynamic appointment = parameter;
-                NAVSTEVA navsteva = new NAVSTEVA
-                {
-                    IdNavsteva = (int)appointment.IdNavsteva,
-                    PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.StatusId, 
-                    Datum = appointment.Datum,
-                    MistnostId = appointment.MistnostId
-                };
-
-                _windowService.OpenAssignAppointmentWindow(navsteva, async (updatedAppointment) =>
-                {
-                    if (updatedAppointment != null)
-                    {
-                        await _navstevaRepository.UpdateNavsteva(updatedAppointment);
-                        LoadAppointments();
-                    }
-                });
-            }
-        }
-
-        private void UpdateAppointment(object parameter)
-        {
-            if (parameter != null)
-            {
-                dynamic appointment = parameter;
-                NAVSTEVA navsteva = new NAVSTEVA
-                {
-                    IdNavsteva = (int)appointment.IdNavsteva,
-                    PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.Status,
-                    Datum = appointment.Datum,
-                    MistnostId = appointment.Mistnost != null ? Convert.ToInt32(appointment.Mistnost) : (int?)null
-                };
-
-                _windowService.UpdateAppointmentWindow(navsteva, async (updatedAppointment) =>
-                {
-                    if (updatedAppointment != null)
-                    {
-                        await _navstevaRepository.UpdateNavsteva(updatedAppointment);
-                        LoadAppointments();
-                    }
-                }, _doctor.IdZamestnanec); // Pass the doctor ID here
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

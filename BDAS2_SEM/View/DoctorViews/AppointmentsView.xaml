@@ -36,7 +36,8 @@
             <ColumnDefinition Width="1.3*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Row="0" Grid.Column="0" Background="White" CornerRadius="10" Margin="10,10,10,10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
-            <StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
                 <TextBlock Text="Appointment Requests" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15"/>
 
                 <Grid>
@@ -89,9 +90,11 @@
                     </Border>
                 </Grid>
             </StackPanel>
+            </ScrollViewer>
         </Border>
         <Border Grid.Row="0" Grid.Column="1" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
-            <StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
                 <TextBlock Text="Future Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15"/>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -143,7 +146,7 @@
                                             <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" HorizontalAlignment="Center"/>
                                             <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" HorizontalAlignment="Center"/>
                                             <TextBlock Grid.Column="2" Text="{Binding Datum, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" Padding="10" HorizontalAlignment="Center"/>
-                                            <TextBlock Grid.Column="3" Text="{Binding Mistnost}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding MISTNOST}" Padding="10" HorizontalAlignment="Center"/>
 
                                             <!-- Кнопка оновлення -->
                                             <Button Grid.Column="4" Content="↻" Command="{Binding DataContext.UpdateAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -158,9 +161,11 @@
                     </Border>
                 </Grid>
             </StackPanel>
+            </ScrollViewer>
         </Border>
 
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="Past Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
                 <Grid>
@@ -223,6 +228,7 @@
                     </Border>
                 </Grid>
             </StackPanel>
+            </ScrollViewer>
         </Border>
     </Grid>
 </UserControl>

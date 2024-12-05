@@ -114,6 +114,7 @@ namespace BDAS2_SEM
             services.AddTransient<SimulateVM>();
             services.AddTransient<AllTablesVM>();
             services.AddTransient<SystemCatalogVM>();
+            services.AddTransient<LogVM>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -139,6 +140,7 @@ namespace BDAS2_SEM
             services.AddTransient<SimulateView>();
             services.AddTransient<AllTablesView>();
             services.AddTransient<SystemCatalogView>();
+            services.AddTransient<LogView>();
             // Register other Views if needed
 
         }

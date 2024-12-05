@@ -117,29 +117,6 @@
         </StackPanel>
     </DataTemplate>
 
-    <!-- DataTemplate for Log -->
-    <DataTemplate DataType="{x:Type models:LOG}">
-        <StackPanel>
-            <Label Content="ID_LOG:" />
-            <TextBox Text="{Binding IdLog, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="TABLE_NAME:" />
-            <TextBox Text="{Binding TableName, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="OPERATION_TYPE:" />
-            <TextBox Text="{Binding OperationType, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="OPERATION_DATE:" />
-            <DatePicker SelectedDate="{Binding OperationData, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="OLD_VALUES:" />
-            <TextBox Text="{Binding OldValues, UpdateSourceTrigger=PropertyChanged}" />
-
-            <Label Content="NEW_VALUES:" />
-            <TextBox Text="{Binding NewValues, UpdateSourceTrigger=PropertyChanged}" />
-        </StackPanel>
-    </DataTemplate>
-
     <!-- DataTemplate for Pacient -->
     <DataTemplate DataType="{x:Type models:PACIENT}">
         <StackPanel>

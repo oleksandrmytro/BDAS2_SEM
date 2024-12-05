@@ -118,7 +118,6 @@ namespace BDAS2_SEM.Repository
                            OPERACE_PROVEDL AS OperaceProvedl,
                            POPIS_OPERACE AS PopisOperace,
                            PRIPONA_ID AS PriponaId
-                           zamestnanec_id AS ZamestnanecId
                     FROM BLOB_TABLE";
 
                 return await db.QueryAsync<BLOB_TABLE>(sql);

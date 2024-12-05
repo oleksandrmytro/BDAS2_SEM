@@ -2,6 +2,7 @@
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Model.Enum;
+using BDAS2_SEM.Repository.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ namespace BDAS2_SEM.ViewModel
     public class AssignAppointmentVM : INotifyPropertyChanged
     {
         private readonly NAVSTEVA _navsteva;
+        private readonly IMistnostRepository _mistnostRepository;
 
         public Action<NAVSTEVA> CloseAction { get; set; }
 
@@ -61,18 +63,18 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        private Dictionary<int, int> _roomMapping;
+
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AssignAppointmentVM(NAVSTEVA navsteva)
+        public AssignAppointmentVM(NAVSTEVA navsteva, IMistnostRepository mistnostRepository)
         {
             _navsteva = navsteva;
+            _mistnostRepository = mistnostRepository;
 
             SaveCommand = new RelayCommand(Save);
             CancelCommand = new RelayCommand(Cancel);
-
-            // Initialize rooms (fetch from repository if needed)
-            Rooms = new ObservableCollection<int> { 101, 102, 103, 104, 105 };
 
             // Initialize available times (e.g., every 30 minutes from 8 AM to 5 PM)
             AvailableTimes = new ObservableCollection<string>();
@@ -80,6 +82,21 @@ namespace BDAS2_SEM.ViewModel
             {
                 AvailableTimes.Add($"{hour:D2}:00");
                 AvailableTimes.Add($"{hour:D2}:30");
+            }
+
+            // Fetch rooms from repository
+            Rooms = new ObservableCollection<int>();
+            _roomMapping = new Dictionary<int, int>();
+            LoadRooms();
+        }
+
+        private async void LoadRooms()
+        {
+            var rooms = await _mistnostRepository.GetAllMistnosti();
+            foreach (var room in rooms)
+            {
+                Rooms.Add(room.Cislo);
+                _roomMapping[room.Cislo] = room.IdMistnost;
             }
         }
 
@@ -91,7 +108,7 @@ namespace BDAS2_SEM.ViewModel
                 {
                     DateTime appointmentDateTime = SelectedDate.Value.Date.Add(time);
                     _navsteva.Datum = appointmentDateTime;
-                    _navsteva.MistnostId = SelectedRoom;
+                    _navsteva.MistnostId = _roomMapping[SelectedRoom];
                     _navsteva.StatusId = 1;
 
                     CloseAction?.Invoke(_navsteva);

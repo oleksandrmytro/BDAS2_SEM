@@ -84,7 +84,7 @@ namespace BDAS2_SEM.Services
 
         public void OpenAssignAppointmentWindow(NAVSTEVA navsteva, Action<NAVSTEVA> onClose)
         {
-            var viewModel = new AssignAppointmentVM(navsteva);
+            var viewModel = new AssignAppointmentVM(navsteva, _serviceProvider.GetRequiredService<IMistnostRepository>());
             var window = new AssignAppointmentView
             {
                 DataContext = viewModel

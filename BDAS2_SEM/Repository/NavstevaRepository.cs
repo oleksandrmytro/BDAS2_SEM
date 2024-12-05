@@ -124,7 +124,7 @@ namespace BDAS2_SEM.Repository
                 n.PACIENT_ID_PACIENT AS PacientId,
                 n.STATUS_ID_STATUS AS StatusId,
                 n.DATUM AS Datum,
-                n.MISTNOST_ID AS Mistnost
+                n.MISTNOST_ID AS MistnostId
             FROM NAVSTEVA n
             JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
             WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId

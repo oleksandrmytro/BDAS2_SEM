@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="BDAS2_SEM.View.AdminViews.LogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Search TextBox -->
+            <RowDefinition Height="*"/>
+            <!-- DataGrid -->
+        </Grid.RowDefinitions>
+
+        <!-- Search TextBox -->
+        <TextBox Width="200" Margin="0,0,0,10"
+                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- DataGrid -->
+        <DataGrid Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding Logs}"
+                  CanUserAddRows="False"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID_LOG"
+                                    Binding="{Binding IdLog}"
+                                    Width="100"/>
+                <DataGridTextColumn Header="TABLE_NAME"
+                                    Binding="{Binding TableName}"
+                                    Width="150">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="OPERATION_TYPE"
+                                    Binding="{Binding OperationType}"
+                                    Width="150">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="OPERATION_DATE"
+                                    Binding="{Binding OperationData}"
+                                    Width="150">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="OLD_VALUES"
+                                    Binding="{Binding OldValues}"
+                                    Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="NEW_VALUES"
+                                    Binding="{Binding NewValues}"
+                                    Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

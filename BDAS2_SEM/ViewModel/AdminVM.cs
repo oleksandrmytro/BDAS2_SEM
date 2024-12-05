@@ -54,7 +54,12 @@ namespace BDAS2_SEM.ViewModel
                     Name = "All tables",
                     Content = _serviceProvider.GetRequiredService<AllTablesView>()
                 },
-                new TabItemVM()
+                new TabItemVM
+                {
+                    Name = "Log",
+                    Content = _serviceProvider.GetRequiredService<LogView>()
+                },
+                new TabItemVM
                 {
                     Name = "System Catalog",
                     Content = _serviceProvider.GetRequiredService<SystemCatalogView>()
