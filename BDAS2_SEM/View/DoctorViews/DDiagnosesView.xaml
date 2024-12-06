@@ -93,7 +93,7 @@
                                                     </MultiBinding>
                                                 </TextBlock.Text>
                                             </TextBlock>
-                                            <TextBlock Grid.Column="3" Text="{Binding Mistnost}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding MISTNOST}" Padding="10" HorizontalAlignment="Center"/>
                                             <Button Grid.Column="4" Content="Diagnosis" Style="{StaticResource ModernButtonStyle}" 
                                                     Command="{Binding DataContext.AssignDiagnosisCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                     CommandParameter="{Binding}"/>

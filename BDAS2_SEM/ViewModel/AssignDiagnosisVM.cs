@@ -1,4 +1,5 @@
 ﻿// ViewModel/AssignDiagnosisVM.cs
+
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Model.Enum;
@@ -23,7 +24,6 @@ namespace BDAS2_SEM.ViewModel
         private readonly INavstevaDiagnozaRepository _navstevaDiagnozaRepository;
         private readonly IOperaceRepository _operaceRepository;
         private readonly IOperaceZamestnanecRepository _operaceZamestnanecRepository;
-        private readonly Func<NAVSTEVA, Task> _callback;
         private NAVSTEVA _appointment;
         private int _employeeId;
 
@@ -182,14 +182,9 @@ namespace BDAS2_SEM.ViewModel
             INavstevaDiagnozaRepository navstevaDiagnozaRepository,
             IOperaceRepository operaceRepository,
             IOperaceZamestnanecRepository operaceZamestnanecRepository,
-            dynamic appointment,
-            Func<NAVSTEVA, Task> callback,
+            NAVSTEVA appointment,
             int employeeId)
         {
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback), "Callback cannot be null");
-            if (appointment == null)
-                throw new ArgumentNullException(nameof(appointment), "Appointment cannot be null");
 
             _navstevaRepository = navstevaRepository;
             _diagnozaRepository = diagnozaRepository;
@@ -198,25 +193,9 @@ namespace BDAS2_SEM.ViewModel
             _navstevaDiagnozaRepository = navstevaDiagnozaRepository;
             _operaceRepository = operaceRepository;
             _operaceZamestnanecRepository = operaceZamestnanecRepository;
-            _callback = callback;
             _employeeId = employeeId;
 
-            try
-            {
-                _appointment = new NAVSTEVA
-                {
-                    IdNavsteva = (int)appointment.IdNavsteva,
-                    PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.Status,
-                    Datum = appointment.Datum,
-                    MistnostId = appointment.Mistnost
-                };
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка при завантаженні даних: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            _appointment = appointment;
 
             Diagnozy = new ObservableCollection<DIAGNOZA>();
             Leks = new ObservableCollection<LEK>();
@@ -285,9 +264,9 @@ namespace BDAS2_SEM.ViewModel
         private bool CanAssignDiagnosis()
         {
             bool isDiagnosisValid = SelectedDiagnoza != null || !string.IsNullOrWhiteSpace(NewDiagnozaNazev);
-            bool isOperationValid = !string.IsNullOrWhiteSpace(NewOperationName) && !string.IsNullOrWhiteSpace(NewOperationTimeString) && NewOperationTime.HasValue;
+            bool isOperationValid = !string.IsNullOrWhiteSpace(NewOperationName) && NewOperationDate.HasValue && NewOperationTime.HasValue;
 
-            return isDiagnosisValid && isOperationValid;
+            return isDiagnosisValid; // You can adjust this condition based on your requirements
         }
 
         private async Task AssignDiagnosis()
@@ -342,12 +321,13 @@ namespace BDAS2_SEM.ViewModel
                     await _operaceZamestnanecRepository.AddOperaceZamestnanec(operaceZamestnanec);
                 }
 
-                if (_callback != null && _appointment != null)
-                {
-                    await _callback(_appointment);
-                }
+                // Optionally, update the appointment status
+                // For example, set status to "Completed"
+                //_appointment.StatusId = (int)Status.Completed;
+                //await _navstevaRepository.UpdateNavsteva(_appointment);
 
                 MessageBox.Show("Діагноз, ліки та операція успішно призначені.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 CloseWindow();
             }
             catch (Exception ex)
@@ -441,25 +421,25 @@ namespace BDAS2_SEM.ViewModel
                 {
                     if (string.IsNullOrWhiteSpace(NewOperationTimeString))
                     {
-                        result = "Time is required.";
+                        result = "Час є обов'язковим.";
                     }
                     else if (!TimeSpan.TryParseExact(NewOperationTimeString, new[] { @"hh\:mm", @"hh\:mm\:ss" }, CultureInfo.InvariantCulture, out _))
                     {
-                        result = "Invalid time format. Use HH:MM or HH:MM:SS.";
+                        result = "Неправильний формат часу. Використовуйте HH:MM або HH:MM:SS.";
                     }
                 }
                 else if (columnName == nameof(NewOperationName))
                 {
                     if (string.IsNullOrWhiteSpace(NewOperationName))
                     {
-                        result = "Operation name is required.";
+                        result = "Назва операції є обов'язковою.";
                     }
                 }
                 else if (columnName == nameof(NewOperationDate))
                 {
                     if (!NewOperationDate.HasValue)
                     {
-                        result = "Operation date is required.";
+                        result = "Дата операції є обов'язковою.";
                     }
                 }
                 return result;

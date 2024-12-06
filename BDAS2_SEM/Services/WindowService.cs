@@ -98,7 +98,7 @@ namespace BDAS2_SEM.Services
             window.ShowDialog();
         }
 
-        public void OpenAssignDiagnosisWindow(NAVSTEVA navsteva,int idZamestnanec, Func<NAVSTEVA, Task> callback)
+        public void OpenAssignDiagnosisWindow(NAVSTEVA navsteva,int idZamestnanec)
         {
             // Створюємо екземпляр ViewModel для вікна призначення діагнозу
             var assignDiagnosisVM = new AssignDiagnosisVM(
@@ -110,7 +110,7 @@ namespace BDAS2_SEM.Services
                 _serviceProvider.GetRequiredService<IOperaceRepository>(),
                 _serviceProvider.GetRequiredService<IOperaceZamestnanecRepository>(),
                 navsteva,
-                callback, idZamestnanec);
+                idZamestnanec);
 
             // Створюємо екземпляр вікна призначення діагнозу з повним простором імен
             var window = new AssignDiagnosisWindow

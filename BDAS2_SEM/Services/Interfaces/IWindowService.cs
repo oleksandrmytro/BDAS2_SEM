@@ -19,7 +19,7 @@ namespace BDAS2_SEM.Services.Interfaces
         void OpenDoctorWindow(ZAMESTNANEC zamestnanec);
         void CloseWindow(Action closeAction);
         void OpenAssignAppointmentWindow(NAVSTEVA navsteva, Action<NAVSTEVA> onClose);
-        void OpenAssignDiagnosisWindow(NAVSTEVA navsteva, int idZamestnanec, Func<NAVSTEVA, Task> callbackck);
+        void OpenAssignDiagnosisWindow(NAVSTEVA navsteva, int idZamestnanec);
         void OpenDoctorsListWindow();
         void UpdateAppointmentWindow(NAVSTEVA appointment, Func<NAVSTEVA, Task> callback, int doctorId);
         void OpenEditPatientWindow(PACIENT patient);

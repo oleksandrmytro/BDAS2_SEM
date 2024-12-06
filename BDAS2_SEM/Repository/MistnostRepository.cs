@@ -52,7 +52,7 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<MISTNOST> GetMistnostById(int id)
+        public async Task<MISTNOST> GetMistnostById(int? id)
         {
             using (var db = new OracleConnection(_connectionString))
             {

@@ -11,7 +11,7 @@ namespace BDAS2_SEM.Repository.Interfaces
     {
         Task<int> AddMistnost(MISTNOST mistnost);
         Task UpdateMistnost(MISTNOST mistnost);
-        Task<MISTNOST> GetMistnostById(int id);
+        Task<MISTNOST> GetMistnostById(int? id);
         Task<MISTNOST> GetMistnostByNumber(int roomNumber);
         Task<IEnumerable<MISTNOST>> GetAllMistnosti();
         Task DeleteMistnost(int id);

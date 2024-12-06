@@ -23,6 +23,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPacientRepository _pacientRepository;
         private readonly IWindowService _windowService;
         private readonly INavstevaDiagnozaRepository _navstevaDiagnozaRepository;
+        private readonly IMistnostRepository _mistnostRepository;
 
         private ZAMESTNANEC _doctor;
 
@@ -36,6 +37,7 @@ namespace BDAS2_SEM.ViewModel
             _windowService = windowService;
             _navstevaDiagnozaRepository = serviceProvider.GetRequiredService<INavstevaDiagnozaRepository>();
             _pacientRepository = serviceProvider.GetRequiredService<IPacientRepository>();
+            _mistnostRepository = serviceProvider.GetRequiredService<IMistnostRepository>();
 
             PastAppointments = new ObservableCollection<dynamic>();
 
@@ -51,24 +53,15 @@ namespace BDAS2_SEM.ViewModel
                 {
                     IdNavsteva = (int)appointment.IdNavsteva,
                     PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.Status,
+                    StatusId = (int)appointment.StatusId,
                     Datum = appointment.Datum,
-                    MistnostId = appointment.Mistnost
+                    MistnostId = appointment.MistnostId
                 };
-                // Явне приведення лямбда-виразу до Func<NAVSTEVA, Task>
-                Func<NAVSTEVA, Task> callback = async (updatedAppointment) =>
-                {
-                    if (updatedAppointment != null)
-                    {
-                        // Завантажуємо діагнози для цього візиту
-                        var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync(updatedAppointment.IdNavsteva);
-                        // Оновлюємо список зустрічей
-                        LoadAppointments(); 
-                        MessageBox.Show("Діагноз успішно призначено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                };
+                // Відкриваємо вікно без колбеку
+                _windowService.OpenAssignDiagnosisWindow(navsteva, _doctor.IdZamestnanec);
 
-                _windowService.OpenAssignDiagnosisWindow(navsteva, _doctor.IdZamestnanec, callback);
+                // Після закриття вікна оновлюємо дані
+                LoadAppointments();
             }
         }
 
@@ -107,17 +100,16 @@ namespace BDAS2_SEM.ViewModel
 
                     if (status.Equals(1) && appointment.Datum < DateTime.Now)
                     {
-                        // Завантажуємо діагнози для цього візиту
-                        var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync((int)appointment.IdNavsteva);
+                        // Load diagnoses for this appointment
+                        var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync(appointment.IdNavsteva);
 
-                        // Використовуємо цикл для збору назв діагнозів
-                        List<string> diagnozyList = new List<string>();
-                        foreach (var d in diagnozy)
-                        {
-                            diagnozyList.Add(d.Nazev);
-                        }
+                        // Collect diagnosis names
+                        List<string> diagnozyList = diagnozy.Select(d => d.Nazev).ToList();
 
-                        // Створюємо анонімний об'єкт з діагнозами
+                        // Get room information
+                        var mistnost = await _mistnostRepository.GetMistnostById(appointment.MistnostId);
+
+                        // Create anonymous object with room info
                         var appointmentWithDiagnozy = new
                         {
                             appointment.IdNavsteva,
@@ -127,21 +119,15 @@ namespace BDAS2_SEM.ViewModel
                             appointment.StatusId,
                             PACIENTJmeno = pacient.FirstName,
                             PACIENTPrijmeni = pacient.LastName,
-                            Diagnozy = diagnozyList
+                            Diagnozy = diagnozyList,
+                            MISTNOST = mistnost?.Cislo ?? null
                         };
 
                         PastAppointments.Add(appointmentWithDiagnozy);
                     }
                 }
 
-                if (!PastAppointments.Any())
-                {
-                    NoAppointmentsMessage = "Лікар не має пройдених зустрічей.";
-                }
-                else
-                {
-                    NoAppointmentsMessage = string.Empty;
-                }
+                NoAppointmentsMessage = PastAppointments.Any() ? string.Empty : "Лікар не має пройдених зустрічей.";
             }
             else
             {
