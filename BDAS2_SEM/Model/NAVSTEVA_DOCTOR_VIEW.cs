@@ -11,6 +11,7 @@ namespace BDAS2_SEM.Model
         private string doctorFullName;
         private string navstevaStatus;
         private int pacientId;
+        private int? mistnostId; // Новое свойство
 
         public int NavstevaId
         {
@@ -72,6 +73,19 @@ namespace BDAS2_SEM.Model
                 if (pacientId != value)
                 {
                     pacientId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int? MistnostId // Новое свойство
+        {
+            get { return mistnostId; }
+            set
+            {
+                if (mistnostId != value)
+                {
+                    mistnostId = value;
                     OnPropertyChanged();
                 }
             }

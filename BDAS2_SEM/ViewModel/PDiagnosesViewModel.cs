@@ -64,7 +64,18 @@ namespace BDAS2_SEM.ViewModel
 
         private void ViewDiagnosis(object parameter)
         {
-            // Переход к окну с диагнозом
+            if (parameter is NAVSTEVA_DOCTOR_VIEW appointment)
+            {
+                var navsteva = new NAVSTEVA
+                {
+                    IdNavsteva = appointment.NavstevaId,
+                    Datum = appointment.VisitDate,
+                    PacientId = appointment.PacientId,
+                    DoktorJmeno = appointment.DoctorFullName
+                };
+
+                _windowService.OpenViewDiagnosisWindow(navsteva);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -50,20 +50,21 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task<OPERACE> GetOperaceById(int id)
+        public async Task<OPERACE> GetOperaceById(int navstevaId)
         {
             using (var db = new OracleConnection(_connectionString))
             {
                 var query = @"
-                    SELECT 
-                        ID_OPERACE AS IdOperace, 
-                        NAZEV AS Nazev, 
-                        DATUM AS Datum, 
-                        DIAGNOZA_ID_DIAGNOZA AS DiagnozaIdDiagnoza 
-                    FROM OPERACE 
-                    WHERE ID_OPERACE = :id";
+            SELECT 
+                o.ID_OPERACE AS IdOperace, 
+                o.NAZEV AS Nazev, 
+                o.DATUM AS Datum, 
+                o.DIAGNOZA_ID_DIAGNOZA AS DiagnozaId 
+            FROM OPERACE o
+            JOIN NAVSTEVA_DIAGNOZA nd ON o.DIAGNOZA_ID_DIAGNOZA = nd.DIAGNOZA_ID_DIAGNOZA
+            WHERE nd.NAVSTEVA_ID_NAVSTEVA = :navstevaId";
 
-                return await db.QueryFirstOrDefaultAsync<OPERACE>(query, new { id });
+                return await db.QueryFirstOrDefaultAsync<OPERACE>(query, new { navstevaId });
             }
         }
 

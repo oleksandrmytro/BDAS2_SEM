@@ -67,10 +67,14 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <!-- Новый столбец для Room -->
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
                     <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="Room" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
+                    <!-- Новый столбец для Room -->
                 </Grid>
             </Border>
             <ListView ItemsSource="{Binding FutureAppointments}" Grid.Row="2">
@@ -81,11 +85,15 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <!-- Новый столбец для Room -->
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding VisitDate}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="1" Text="{Binding DoctorFullName}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="2" Text="{Binding NavstevaStatus}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="3" Text="{Binding MistnostId}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                            <!-- Новый столбец для Room -->
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -106,10 +114,12 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="1*"/>
+                        <!-- Новый столбец для Room -->
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
                     <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
+                    <!-- Новый столбец для Room -->
                 </Grid>
             </Border>
             <ListView ItemsSource="{Binding UnconfirmedAppointments}" Grid.Row="2">
@@ -120,11 +130,15 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="1*"/>
+
+                                <!-- Новый столбец для Room -->
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding VisitDate}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="1" Text="{Binding DoctorFullName}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="2" Text="{Binding NavstevaStatus}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                           
+                            <!-- Новый столбец для Room -->
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -145,10 +159,14 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="1*"/>
+                       
+                        <!-- Новый столбец для Room -->
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Date" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Left"/>
                     <TextBlock Grid.Column="1" Text="Doctor" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Column="2" Text="Status" FontWeight="Bold" FontSize="14" Foreground="White" HorizontalAlignment="Right"/>
+                    
+                    <!-- Новый столбец для Room -->
                 </Grid>
             </Border>
             <ListView ItemsSource="{Binding PastAppointments}" Grid.Row="2">
@@ -159,11 +177,13 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="1*"/>
+                                <!-- Новый столбец для Room -->
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding VisitDate}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="1" Text="{Binding DoctorFullName}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="2" Text="{Binding NavstevaStatus}" VerticalAlignment="Center" FontSize="14" HorizontalAlignment="Right"/>
+                            <!-- Новый столбец для Room -->
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

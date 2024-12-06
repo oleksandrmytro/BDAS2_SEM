@@ -114,6 +114,7 @@ namespace BDAS2_SEM
             services.AddTransient<SystemCatalogVM>();
             services.AddTransient<LogVM>();
             services.AddTransient<PDiagnosesViewModel>();
+            services.AddTransient < VMDiagnosis>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -141,6 +142,7 @@ namespace BDAS2_SEM
             services.AddTransient<SystemCatalogView>();
             services.AddTransient<LogView>();
             services.AddTransient<PDiagnosesView>();
+            services.AddTransient<ViewDiagnosisWindow>();
             // Register other Views if needed
 
         }

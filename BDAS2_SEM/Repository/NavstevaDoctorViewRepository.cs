@@ -24,7 +24,8 @@ namespace BDAS2_SEM.Repository
                     VISIT_DATE AS VisitDate,
                     DOCTOR_FULL_NAME AS DoctorFullName,
                     NAVSTEVA_STATUS AS NavstevaStatus,
-                    PACIENT_ID AS PacientId
+                    PACIENT_ID AS PacientId,
+                    CISLO AS MistnostId
                 FROM NAVSTEVA_DOCTOR_VIEW
                 WHERE PACIENT_ID = :pacientId";
 
