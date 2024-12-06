@@ -19,6 +19,7 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly INavstevaRepository _navstevaRepository;
         private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
+        private readonly IMistnostRepository _mistnostRepository;
         private NAVSTEVA _appointment;
         private Func<NAVSTEVA, Task> _callback;
         private int _doctorId;
@@ -76,10 +77,12 @@ namespace BDAS2_SEM.ViewModel
 
         public UpdateAppointmentVM(
             INavstevaRepository navstevaRepository,
-            IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository)
+            IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
+            IMistnostRepository mistnostRepository)
         {
             _navstevaRepository = navstevaRepository;
             _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
+            _mistnostRepository = mistnostRepository;
 
             SaveCommand = new RelayCommand(async _ => await SaveAsync());
             CancelCommand = new RelayCommand(_ => Cancel());
@@ -221,19 +224,30 @@ namespace BDAS2_SEM.ViewModel
 
                     try
                     {
-                        // Перевіряємо, чи доступний обраний часовий слот
-                        var isAvailable = await _navstevaRepository.IsTimeSlotAvailable(_ordinaceId, newAppointmentDateTime, SelectedRoom.Value, _appointment.IdNavsteva);
+                        // Check if the time slot is available
+                        var isAvailable = await _navstevaRepository.IsTimeSlotAvailable(_doctorId, newAppointmentDateTime, SelectedRoom.Value, _appointment.IdNavsteva);
+
                         if (isAvailable)
                         {
-                            _appointment.Datum = newAppointmentDateTime;
-                            _appointment.MistnostId = SelectedRoom.Value;
-                            await _callback(_appointment);
-                            CloseWindow();
+                            // Get the Mistnost by room number
+                            var mistnost = await _mistnostRepository.GetMistnostByNumber(SelectedRoom.Value);
+
+                            if (mistnost != null)
+                            {
+                                _appointment.Datum = newAppointmentDateTime;
+                                _appointment.MistnostId = mistnost.IdMistnost; // Assign the correct MistnostId
+                                await _callback(_appointment);
+                                CloseWindow();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Не вдалося знайти кімнату з вказаним номером.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
                         }
                         else
                         {
                             MessageBox.Show("Обраний часовий слот вже зайнятий. Будь ласка, виберіть інший час.", "Часовий слот недоступний", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            await InitializeAvailableRoomsAndTimesAsync(); // Оновлюємо доступні кімнати та часи
+                            await InitializeAvailableRoomsAndTimesAsync();
                         }
                     }
                     catch (Exception ex)

@@ -81,7 +81,7 @@
             <!-- Room ComboBox -->
             <StackPanel Orientation="Horizontal" Margin="0,5">
                 <TextBlock Text="Room:" Width="100"/>
-                <ComboBox ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" Width="200"/>
+                <ComboBox ItemsSource="{Binding AvailableRooms}" SelectedItem="{Binding SelectedRoom}" Width="200"/>
             </StackPanel>
         </StackPanel>
 

@@ -19,6 +19,7 @@ using System.Windows;
 public class DoctorsVM : INotifyPropertyChanged
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDoctorContextService _doctorContextService;
     private ZAMESTNANEC _zamestnanec;
     private readonly IBlobTableRepository _blobRepository;
     private readonly IZamestnanecRepository _zamestnanecRepository;
@@ -73,6 +74,7 @@ public class DoctorsVM : INotifyPropertyChanged
     public DoctorsVM(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _doctorContextService = _serviceProvider.GetRequiredService<IDoctorContextService>();
         _blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
         _zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
         InitializeTabs();
@@ -133,6 +135,8 @@ public class DoctorsVM : INotifyPropertyChanged
             _zamestnanec = zamestnanec;
             EmployeeName = $"{_zamestnanec.Jmeno} {_zamestnanec.Prijmeni}";
             Console.WriteLine($"Setting employee: {EmployeeName}");
+
+            _doctorContextService.CurrentDoctor = zamestnanec;
 
             // Load the employee image
             if (_zamestnanec.BlobId != 0)
