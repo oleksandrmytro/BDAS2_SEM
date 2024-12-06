@@ -86,7 +86,8 @@ namespace BDAS2_SEM.ViewModel
                 var filteredDoctors = _allDoctors.Where(d =>
                     (d.FirstName != null && d.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                     (d.Surname != null && d.Surname.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Department != null && d.Department.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
                 Doctors = new ObservableCollection<DOCTOR_INFO>(filteredDoctors);
@@ -123,7 +124,7 @@ namespace BDAS2_SEM.ViewModel
                     MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-            
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

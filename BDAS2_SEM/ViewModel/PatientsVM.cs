@@ -83,9 +83,15 @@ namespace BDAS2_SEM.ViewModel
                     Content = _serviceProvider.GetRequiredService<PAppointmentsView>()
                 },
                 new TabItemVM {
+                    Name = "Diagnoses",
+                    Content = _serviceProvider.GetRequiredService<PDiagnosesView>()
+
+                },
+                new TabItemVM {
                     Name = "Settings",
                     Content = _serviceProvider.GetRequiredService<PSettingsView>()
-                },
+                }
+                
             };
             OnPropertyChanged(nameof(Tabs));
             SelectedTab = Tabs.FirstOrDefault();
