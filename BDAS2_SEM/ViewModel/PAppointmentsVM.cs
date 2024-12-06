@@ -1,12 +1,10 @@
 ﻿using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -15,25 +13,21 @@ namespace BDAS2_SEM.ViewModel
 {
     public class PAppointmentsVM : INotifyPropertyChanged
     {
-        private readonly INavstevaRepository _navstevaRepository;
+        private readonly INavstevaDoctorViewRepository _navstevaDoctorViewRepository;
         private readonly IWindowService _windowService;
         private readonly IPatientContextService _patientContextService;
-        private readonly IZamestnanecRepository _zamestnanecRepository;
-        private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
 
-        public ObservableCollection<NAVSTEVA> PastAppointments { get; set; }
-        public ObservableCollection<NAVSTEVA> FutureAppointments { get; set; }
-        public ObservableCollection<NAVSTEVA> UnconfirmedAppointments { get; set; }
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> PastAppointments { get; set; }
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> FutureAppointments { get; set; }
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> UnconfirmedAppointments { get; set; }
 
         public ICommand BookAppointmentCommand { get; }
 
-        public PAppointmentsVM(INavstevaRepository navstevaRepository, IWindowService windowService, IPatientContextService patientContextService, IZamestnanecRepository zamestnanecRepository, IZamestnanecNavstevaRepository zamestnanecNavstevaRepository)
+        public PAppointmentsVM(IWindowService windowService, IPatientContextService patientContextService, INavstevaDoctorViewRepository navstevaDoctorViewRepository)
         {
-            _navstevaRepository = navstevaRepository;
             _windowService = windowService;
             _patientContextService = patientContextService;
-            _zamestnanecRepository = zamestnanecRepository;
-            _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
+            _navstevaDoctorViewRepository = navstevaDoctorViewRepository;
 
             BookAppointmentCommand = new RelayCommand(BookAppointment);
             LoadAppointments();
@@ -49,35 +43,18 @@ namespace BDAS2_SEM.ViewModel
             }
 
             var pacientId = currentPatient.IdPacient;
-            var allAppointments = await _navstevaRepository.GetAllNavstevas();
+            var allAppointments = await _navstevaDoctorViewRepository.GetNavstevaDoctorViewByPatientId(pacientId);
             var now = DateTime.Now;
 
-            PastAppointments = new ObservableCollection<NAVSTEVA>();
-            FutureAppointments = new ObservableCollection<NAVSTEVA>();
-            UnconfirmedAppointments = new ObservableCollection<NAVSTEVA>();
+            PastAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
+            FutureAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
+            UnconfirmedAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
 
             foreach (var appointment in allAppointments)
             {
-                var appointmentDateTime = appointment.Datum;
-                var zamestnanecNavsteva = await _zamestnanecNavstevaRepository.GetZamestnanecNavstevaByNavstevaId(appointment.IdNavsteva);
-                if (zamestnanecNavsteva != null)
-                {
-                    var doctor = await _zamestnanecRepository.GetZamestnanecById(zamestnanecNavsteva.ZamestnanecId);
-                    if (doctor != null)
-                    {
-                        appointment.DoktorJmeno = $"{doctor.Jmeno} {doctor.Prijmeni}";
-                    }
-                    else
-                    {
-                        appointment.DoktorJmeno = "Unknown";
-                    }
-                }
-                else
-                {
-                    appointment.DoktorJmeno = "Unknown";
-                }
+                var appointmentDateTime = appointment.VisitDate;
 
-                if (appointment.StatusId == 3)
+                if (appointment.NavstevaStatus == "očekávání")
                 {
                     UnconfirmedAppointments.Add(appointment);
                 }
