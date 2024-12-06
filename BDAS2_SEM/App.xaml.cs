@@ -77,6 +77,8 @@ namespace BDAS2_SEM
                 new PriponaRepository(connectionString));
             services.AddSingleton<IDoctorInfoRepository, DoctorInfoRepository>(provider =>
                 new DoctorInfoRepository(connectionString));
+            services.AddSingleton<INavstevaDoctorViewRepository, NavstevaDoctorViewRepository>(provider =>
+                new NavstevaDoctorViewRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
