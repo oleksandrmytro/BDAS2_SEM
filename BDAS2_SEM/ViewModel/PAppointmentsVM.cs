@@ -76,6 +76,7 @@ namespace BDAS2_SEM.ViewModel
         private void BookAppointment(object parameter)
         {
             _windowService.OpenDoctorsListWindow();
+            LoadAppointments();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
