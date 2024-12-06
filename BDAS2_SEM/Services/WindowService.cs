@@ -84,7 +84,8 @@ namespace BDAS2_SEM.Services
 
         public void OpenAssignAppointmentWindow(NAVSTEVA navsteva, Action<NAVSTEVA> onClose)
         {
-            var viewModel = new AssignAppointmentVM(navsteva, _serviceProvider.GetRequiredService<IMistnostRepository>());
+            var viewModel = new AssignAppointmentVM(navsteva, _serviceProvider.GetRequiredService<IMistnostRepository>(), _serviceProvider.GetRequiredService<INavstevaRepository>(),
+                _serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>(), _serviceProvider.GetRequiredService<IDoctorContextService>());
             var window = new AssignAppointmentView
             {
                 DataContext = viewModel
@@ -171,7 +172,8 @@ namespace BDAS2_SEM.Services
         public void UpdateAppointmentWindow(NAVSTEVA appointment, Func<NAVSTEVA, Task> callback, int doctorId)
         {
             var window = _serviceProvider.GetRequiredService<UpdateAppointmentWindow>();
-            var viewModel = new UpdateAppointmentVM(_serviceProvider.GetRequiredService<INavstevaRepository>(), _serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>());
+            var viewModel = new UpdateAppointmentVM(_serviceProvider.GetRequiredService<INavstevaRepository>(), _serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>(),
+                _serviceProvider.GetRequiredService<IMistnostRepository>());
 
             viewModel.Initialize(appointment, callback, doctorId);
 

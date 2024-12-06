@@ -79,6 +79,23 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task<MISTNOST> GetMistnostByNumber(int roomNumber)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                string sql = @"
+                    SELECT ID_MISTNOST AS IdMistnost,
+                           CISLO AS Cislo
+                    FROM MISTNOST
+                    WHERE CISLO = :RoomNumber";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("RoomNumber", roomNumber, DbType.Int32);
+
+                return await db.QueryFirstOrDefaultAsync<MISTNOST>(sql, parameters);
+            }
+        }
+
         public async Task DeleteMistnost(int id)
         {
             using (var db = new OracleConnection(_connectionString))

@@ -192,7 +192,7 @@ namespace BDAS2_SEM.Repository
                     JOIN ZAMESTNANEC_NAVSTEVA zn ON n.ID_NAVSTEVA = zn.NAVSTEVA_ID_NAVSTEVA
                     WHERE zn.ZAMESTNANEC_ID_ZAMESTNANEC = :doctorId
                     AND n.DATUM = :dateTime
-                    AND n.MISTNOST = :room
+                    AND n.MISTNOST_ID = :room
                     AND n.STATUS_ID_STATUS IN (:accepted)
                     AND (:excludeId IS NULL OR n.ID_NAVSTEVA != :excludeId)
                 ";

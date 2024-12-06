@@ -1,13 +1,18 @@
 ﻿// ViewModel/AssignAppointmentVM.cs
+
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows;
+using System.Linq;
+using System.Globalization;
+using BDAS2_SEM.Services.Interfaces;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -15,6 +20,12 @@ namespace BDAS2_SEM.ViewModel
     {
         private readonly NAVSTEVA _navsteva;
         private readonly IMistnostRepository _mistnostRepository;
+        private readonly INavstevaRepository _navstevaRepository;
+        private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
+        private readonly IDoctorContextService _doctorContextService;
+
+        private int _doctorId;
+        private int _ordinaceId;
 
         public Action<NAVSTEVA> CloseAction { get; set; }
 
@@ -28,6 +39,7 @@ namespace BDAS2_SEM.ViewModel
                 {
                     _selectedDate = value;
                     OnPropertyChanged();
+                    _ = LoadAvailableRoomsAndTimesAsync();
                 }
             }
         }
@@ -46,11 +58,11 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        public ObservableCollection<string> AvailableTimes { get; set; }
-        public ObservableCollection<int> Rooms { get; set; }
+        public ObservableCollection<string> AvailableTimes { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<int> AvailableRooms { get; set; } = new ObservableCollection<int>();
 
-        private int _selectedRoom;
-        public int SelectedRoom
+        private int? _selectedRoom;
+        public int? SelectedRoom
         {
             get => _selectedRoom;
             set
@@ -59,70 +71,174 @@ namespace BDAS2_SEM.ViewModel
                 {
                     _selectedRoom = value;
                     OnPropertyChanged();
+                    _ = UpdateAvailableTimesAsync();
                 }
             }
         }
 
-        private Dictionary<int, int> _roomMapping;
+        private Dictionary<int, int> _roomMapping = new Dictionary<int, int>();
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        public AssignAppointmentVM(NAVSTEVA navsteva, IMistnostRepository mistnostRepository)
+        public AssignAppointmentVM(NAVSTEVA navsteva,
+                                   IMistnostRepository mistnostRepository,
+                                   INavstevaRepository navstevaRepository,
+                                   IOrdinaceZamestnanecRepository ordinaceZamestnanecRepository,
+                                   IDoctorContextService doctorContextService)
         {
             _navsteva = navsteva;
             _mistnostRepository = mistnostRepository;
+            _navstevaRepository = navstevaRepository;
+            _ordinaceZamestnanecRepository = ordinaceZamestnanecRepository;
+            _doctorContextService = doctorContextService;
 
-            SaveCommand = new RelayCommand(Save);
+            _doctorId = _doctorContextService.CurrentDoctor.IdZamestnanec;
+
+            SaveCommand = new RelayCommand(async _ => await SaveAsync());
             CancelCommand = new RelayCommand(Cancel);
 
-            // Initialize available times (e.g., every 30 minutes from 8 AM to 5 PM)
-            AvailableTimes = new ObservableCollection<string>();
-            for (int hour = 8; hour <= 17; hour++)
-            {
-                AvailableTimes.Add($"{hour:D2}:00");
-                AvailableTimes.Add($"{hour:D2}:30");
-            }
-
-            // Fetch rooms from repository
-            Rooms = new ObservableCollection<int>();
-            _roomMapping = new Dictionary<int, int>();
-            LoadRooms();
+            _ = InitializeAsync();
         }
 
-        private async void LoadRooms()
+        private async Task InitializeAsync()
         {
-            var rooms = await _mistnostRepository.GetAllMistnosti();
-            foreach (var room in rooms)
+            var ordinaceZamestnanec = await _ordinaceZamestnanecRepository.GetOrdinaceZamestnanecByZamestnanecId(_doctorId);
+            if (ordinaceZamestnanec != null)
             {
-                Rooms.Add(room.Cislo);
-                _roomMapping[room.Cislo] = room.IdMistnost;
+                _ordinaceId = ordinaceZamestnanec.OrdinaceId;
             }
+            else
+            {
+                MessageBox.Show("Не вдалося знайти ординатуру для даного лікаря.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            await LoadAvailableRoomsAndTimesAsync();
         }
 
-        private void Save(object obj)
+        private async Task LoadAvailableRoomsAndTimesAsync()
         {
-            if (SelectedDate.HasValue && !string.IsNullOrEmpty(SelectedTime))
+            AvailableRooms.Clear();
+            AvailableTimes.Clear();
+            _roomMapping.Clear();
+
+            if (SelectedDate.HasValue)
             {
-                if (TimeSpan.TryParse(SelectedTime, out TimeSpan time))
+                try
                 {
-                    DateTime appointmentDateTime = SelectedDate.Value.Date.Add(time);
-                    _navsteva.Datum = appointmentDateTime;
-                    _navsteva.MistnostId = _roomMapping[SelectedRoom];
-                    _navsteva.StatusId = 1;
+                    var availableRoomsAndTimes = await _navstevaRepository.GetAvailableRoomsAndTimes(_ordinaceId, SelectedDate.Value);
 
-                    CloseAction?.Invoke(_navsteva);
+                    if (availableRoomsAndTimes == null || !availableRoomsAndTimes.Any())
+                    {
+                        MessageBox.Show("Немає доступних кімнат для вибраної дати.", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    var rooms = availableRoomsAndTimes.Select(rt => rt.Room).Distinct();
+
+                    foreach (var room in rooms)
+                    {
+                        AvailableRooms.Add(room);
+                    }
+
+                    if (AvailableRooms.Any())
+                    {
+                        SelectedRoom = AvailableRooms.First();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка при отриманні доступних кімнат: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private async Task UpdateAvailableTimesAsync()
+        {
+            AvailableTimes.Clear();
+
+            if (SelectedDate.HasValue && SelectedRoom.HasValue)
+            {
+                try
+                {
+                    var availableRoomsAndTimes = await _navstevaRepository.GetAvailableRoomsAndTimes(_ordinaceId, SelectedDate.Value);
+
+                    var times = availableRoomsAndTimes
+                        .Where(rt => rt.Room == SelectedRoom.Value)
+                        .Select(rt => rt.TimeSlot)
+                        .Distinct()
+                        .OrderBy(t => t);
+
+                    foreach (var time in times)
+                    {
+                        AvailableTimes.Add(time);
+                    }
+
+                    if (AvailableTimes.Any())
+                    {
+                        SelectedTime = AvailableTimes.First();
+                    }
+                    else
+                    {
+                        SelectedTime = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка при отриманні доступного часу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private async Task SaveAsync()
+        {
+            if (SelectedDate.HasValue && !string.IsNullOrEmpty(SelectedTime) && SelectedRoom.HasValue)
+            {
+                if (TimeSpan.TryParseExact(SelectedTime, "hh\\:mm", CultureInfo.InvariantCulture, out TimeSpan time))
+                {
+                    DateTime appointmentDateTime = SelectedDate.Value.Date + time;
+
+                    try
+                    {
+                        var isAvailable = await _navstevaRepository.IsTimeSlotAvailable(_doctorId, appointmentDateTime, SelectedRoom.Value);
+
+                        if (isAvailable)
+                        {
+                            var mistnost = await _mistnostRepository.GetMistnostByNumber(SelectedRoom.Value);
+
+                            if (mistnost != null)
+                            {
+                                _navsteva.Datum = appointmentDateTime;
+                                _navsteva.MistnostId = mistnost.IdMistnost;
+                                _navsteva.StatusId = 1;
+
+                                CloseAction?.Invoke(_navsteva);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Не вдалося знайти кімнату з вказаним номером.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Обраний часовий слот вже зайнятий. Будь ласка, виберіть інший час.", "Часовий слот недоступний", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            await LoadAvailableRoomsAndTimesAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Помилка при збереженні запису: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else
                 {
-                    // Handle invalid time format
-                    System.Windows.MessageBox.Show("Invalid time format. Please select a valid time.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    MessageBox.Show("Неправильний формат часу. Будь ласка, виберіть коректний час.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                // Handle missing date or time
-                System.Windows.MessageBox.Show("Please select both date and time.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                MessageBox.Show("Будь ласка, виберіть дату, час та кімнату.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
