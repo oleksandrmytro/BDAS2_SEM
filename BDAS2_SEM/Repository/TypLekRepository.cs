@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;

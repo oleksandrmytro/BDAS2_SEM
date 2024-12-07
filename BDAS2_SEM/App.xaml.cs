@@ -56,6 +56,8 @@ namespace BDAS2_SEM
                 new PlatbaRepository(connectionString));
             services.AddSingleton<IPoziceRepository, PoziceRepository>(provider =>
                 new PoziceRepository(connectionString));
+            services.AddSingleton<IRoleRepository, RoleRepository>(provider =>
+                new RoleRepository(connectionString));
             services.AddSingleton<IStatusRepository, StatusRepository>(provider =>
                 new StatusRepository(connectionString));
             services.AddSingleton<ITypLekRepository, TypLekRepository>(provider =>

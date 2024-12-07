@@ -7,10 +7,10 @@ namespace BDAS2_SEM.Model
     public class PLATBA : INotifyPropertyChanged
     {
         private int idPlatba;
-        private decimal castka;
+        private decimal? castka;
         private DateTime datum;
         private string typPlatby;
-        private int navstevaId;
+        private int? navstevaId;
         private decimal? cisloKarty; // For card payments
         private decimal? prijato;    // For cash payments
         private decimal? vraceno;    // For cash payments
@@ -28,7 +28,7 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public decimal Castka
+        public decimal? Castka
         {
             get { return castka; }
             set
@@ -67,7 +67,7 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public int NavstevaId
+        public int? NavstevaId
         {
             get { return navstevaId; }
             set

@@ -1,5 +1,4 @@
 ﻿using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Services.Interfaces;
@@ -14,20 +13,22 @@ namespace BDAS2_SEM.ViewModel
     public class NewUsersVM : INotifyPropertyChanged
     {
         public ObservableCollection<UZIVATEL_DATA> NewUsers { get; set; }
-        public ObservableCollection<Role> AvailableRoles { get; set; }
+        public ObservableCollection<ROLE> AvailableRoles { get; set; }
         public ICommand AssignRoleCommand { get; }
 
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IWindowService _windowService;
 
-        public NewUsersVM(IUzivatelDataRepository uzivatelDataRepository, IWindowService windowService)
+        public NewUsersVM(IUzivatelDataRepository uzivatelDataRepository, IWindowService windowService, IRoleRepository roleRepository)
         {
             _uzivatelDataRepository = uzivatelDataRepository;
             _windowService = windowService;
-
+            _roleRepository = roleRepository;
             AssignRoleCommand = new RelayCommand(AssignRole);
-            LoadRoles();
+            LoadRolesAsync();
             LoadNewUsers();
+            
         }
 
         private async void LoadNewUsers()
@@ -37,14 +38,10 @@ namespace BDAS2_SEM.ViewModel
             OnPropertyChanged(nameof(NewUsers));
         }
 
-        private void LoadRoles()
+        private async Task LoadRolesAsync()
         {
-            AvailableRoles = new ObservableCollection<Role>
-            {
-                Role.NEOVERENY,
-                Role.PACIENT,
-                Role.ZAMESTNANEC
-            };
+            var roles = await _roleRepository.GetAllRoles();
+            AvailableRoles = new ObservableCollection<ROLE>(roles);
             OnPropertyChanged(nameof(AvailableRoles));
         }
 
@@ -52,15 +49,15 @@ namespace BDAS2_SEM.ViewModel
         {
             if (parameter is UZIVATEL_DATA user)
             {
-                if (user.RoleUzivatel == Role.PACIENT || user.RoleUzivatel == Role.ZAMESTNANEC)
+                if (user.RoleId == 2 || user.RoleId == 3)
                 {
-                    if (user.RoleUzivatel == Role.ZAMESTNANEC)
+                    if (user.RoleId == 3)
                     {
                         _windowService.OpenNewEmployeeWindow(user, async (bool isSaved) =>
                         {
                             if (isSaved)
                             {
-                                //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+                                //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleId);
                                 await _uzivatelDataRepository.UpdateUserData(user);
 
                                 Application.Current.Dispatcher.Invoke(() =>
@@ -73,15 +70,15 @@ namespace BDAS2_SEM.ViewModel
                             {
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    user.RoleUzivatel = Role.NEOVERENY;
-                                    OnPropertyChanged(nameof(user.RoleUzivatel));
+                                    user.RoleId = 1;
+                                    OnPropertyChanged(nameof(user.RoleId));
                                 });
                             }
                         });
                     }
                     else
                     {
-                        //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleUzivatel);
+                        //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleId);
                         await _uzivatelDataRepository.UpdateUserData(user);
 
                         Application.Current.Dispatcher.Invoke(() =>
@@ -93,7 +90,7 @@ namespace BDAS2_SEM.ViewModel
                 }
                 else
                 {
-                    MessageBox.Show("Please select a role before assigning.", "Role Not Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please select a role before assigning.", "ROLE Not Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }

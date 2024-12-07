@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.View.AdminViews;
@@ -39,6 +39,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPlatbaRepository _platbaRepository;
         private readonly IPoziceRepository _poziceRepository;
         private readonly IPriponaRepository _priponaRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IStatusRepository _statusRepository;
         private readonly IMistnostRepository _mistnostRepository;
         private readonly ITypLekRepository _typLekRepository;
@@ -71,6 +72,7 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<PLATBA> Platba { get; set; } = new ObservableCollection<PLATBA>();
         public ObservableCollection<POZICE> Pozice { get; set; } = new ObservableCollection<POZICE>();
         public ObservableCollection<PRIPONA> Pripona { get; set; } = new ObservableCollection<PRIPONA>();
+        public ObservableCollection<ROLE> Role { get; set; } = new ObservableCollection<ROLE>();
         public ObservableCollection<STATUS> Status { get; set; } = new ObservableCollection<STATUS>();
         public ObservableCollection<MISTNOST> Mistnost { get; set; } = new ObservableCollection<MISTNOST>();
         public ObservableCollection<TYP_LEK> TypLek { get; set; } = new ObservableCollection<TYP_LEK>();
@@ -210,6 +212,21 @@ namespace BDAS2_SEM.ViewModel
                     _priponaSearchText = value;
                     OnPropertyChanged();
                     PriponaView.Refresh();
+                }
+            }
+        }
+
+        private string _roleSearchText;
+        public string RoleSearchText
+        {
+            get => _roleSearchText;
+            set
+            {
+                if (_roleSearchText != value)
+                {
+                    _roleSearchText = value;
+                    OnPropertyChanged();
+                    RoleView.Refresh();
                 }
             }
         }
@@ -379,6 +396,47 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        private string _kartaSearchText;
+        public string KartaSearchText
+        {
+            get => _kartaSearchText;
+            set
+            {
+                if (_kartaSearchText != value)
+                {
+                    _kartaSearchText = value;
+                    OnPropertyChanged();
+                    KartaView.Refresh();
+                }
+            }
+        }
+
+        private string _hotovostSearchText;
+        public string HotovostSearchText
+        {
+            get => _hotovostSearchText;
+            set
+            {
+                if (_hotovostSearchText != value)
+                {
+                    _hotovostSearchText = value;
+                    OnPropertyChanged();
+                    HotovostView.Refresh();
+                }
+            }
+        }
+
+        private ObservableCollection<ROLE> _availableRoles;
+        public ObservableCollection<ROLE> AvailableRoles
+        {
+            get => _availableRoles;
+            set
+            {
+                _availableRoles = value;
+                OnPropertyChanged();
+            }
+        }
+
         private readonly ICollectionView _adresaView;
         public ICollectionView AdresaView => _adresaView;
 
@@ -397,6 +455,12 @@ namespace BDAS2_SEM.ViewModel
         private readonly ICollectionView _platbaView;
         public ICollectionView PlatbaView => _platbaView;
 
+        public readonly ICollectionView _hotovostView;
+        public ICollectionView HotovostView => _hotovostView;
+
+        public readonly ICollectionView _kartaView;
+        public ICollectionView KartaView => _kartaView;
+
         private readonly ICollectionView _pacientView;
         public ICollectionView PacientView => _pacientView;
 
@@ -405,6 +469,9 @@ namespace BDAS2_SEM.ViewModel
 
         private readonly ICollectionView _priponaView;
         public ICollectionView PriponaView => _priponaView;
+
+        private readonly ICollectionView _roleView;
+        public ICollectionView RoleView => _roleView;
 
         private readonly ICollectionView _statusView;
         public ICollectionView StatusView => _statusView;
@@ -459,6 +526,7 @@ namespace BDAS2_SEM.ViewModel
             IPlatbaRepository platbaRepository,
             IPoziceRepository poziceRepository,
             IPriponaRepository priponaRepository,
+            IRoleRepository roleRepository,
             IStatusRepository statusRepository,
             IMistnostRepository mistnostRepository,
             ITypLekRepository typLekRepository,
@@ -485,6 +553,7 @@ namespace BDAS2_SEM.ViewModel
             _platbaRepository = platbaRepository;
             _poziceRepository = poziceRepository;
             _priponaRepository = priponaRepository;
+            _roleRepository = roleRepository;
             _statusRepository = statusRepository;
             _mistnostRepository = mistnostRepository;
             _typLekRepository = typLekRepository;
@@ -501,6 +570,7 @@ namespace BDAS2_SEM.ViewModel
 
             AdresaList = new ObservableCollection<ADRESA>();
             PoziceList = new ObservableCollection<POZICE>();
+            AvailableRoles = new ObservableCollection<ROLE>();
 
             _zamestnanecView = CollectionViewSource.GetDefaultView(Zamestnanec);
             _zamestnanecView.Filter = ZamestnanecFilter;
@@ -517,6 +587,12 @@ namespace BDAS2_SEM.ViewModel
             _platbaView = CollectionViewSource.GetDefaultView(Platba);
             _platbaView.Filter = PlatbaFilter;
 
+            _hotovostView = CollectionViewSource.GetDefaultView(Hotovost);
+            _hotovostView.Filter = HotovostFilter;
+
+            _kartaView = CollectionViewSource.GetDefaultView(Karta);
+            _kartaView.Filter = KartaFilter;
+
             _pacientView = CollectionViewSource.GetDefaultView(Pacient);
             _pacientView.Filter = PacientFilter;
 
@@ -525,6 +601,9 @@ namespace BDAS2_SEM.ViewModel
 
             _priponaView = CollectionViewSource.GetDefaultView(Pripona);
             _priponaView.Filter = PriponaFilter;
+
+            _roleView = CollectionViewSource.GetDefaultView(Role);
+            _roleView.Filter = RoleFilter;
 
             _statusView = CollectionViewSource.GetDefaultView(Status);
             _statusView.Filter = StatusFilter;
@@ -643,6 +722,10 @@ namespace BDAS2_SEM.ViewModel
 
                     case POZICE pozice:
                         Pozice.Add(pozice);
+                        break;
+
+                    case ROLE role:
+                        Role.Add(role);
                         break;
 
                     case STATUS status:
@@ -771,6 +854,13 @@ namespace BDAS2_SEM.ViewModel
                 foreach (var priponaItem in await _priponaRepository.GetAllPriponas())
                     Pripona.Add(priponaItem);
 
+                Role.Clear();
+                foreach (var roleItem in await _roleRepository.GetAllRoles())
+                {
+                    Role.Add(roleItem);
+                    AvailableRoles.Add(roleItem);
+                }
+
                 Status.Clear();
                 foreach (var statItem in await _statusRepository.GetAllStatuses())
                     Status.Add(statItem);
@@ -842,6 +932,16 @@ namespace BDAS2_SEM.ViewModel
                         Platba.Remove(platba);
                         break;
 
+                    case HOTOVOST hotovost:
+                        await _hotovostRepository.DeleteHotovost(hotovost.IdPlatba);
+                        Hotovost.Remove(hotovost);
+                        break;
+
+                    case KARTA karta:
+                        await _kartaRepository.DeleteKarta(karta.IdPlatba);
+                        Karta.Remove(karta);
+                        break;
+
                     case LOG log:
                         await _logrepository.DeleteLog(log.IdLog);
                         Log.Remove(log);
@@ -898,6 +998,11 @@ namespace BDAS2_SEM.ViewModel
                         await _zamestnanecNavstevaRepository.DeleteZamestnanecNavsteva(
                             zamestnanecNavsteva.ZamestnanecId, zamestnanecNavsteva.NavstevaId);
                         ZamestnanecNavsteva.Remove(zamestnanecNavsteva);
+                        break;
+
+                    case ROLE role:
+                        await _roleRepository.DeleteRole(role.IdRole);
+                        Role.Remove(role);
                         break;
 
                     case STATUS status:
@@ -1017,6 +1122,32 @@ namespace BDAS2_SEM.ViewModel
                    );
         }
 
+        private bool KartaFilter(object item)
+        {
+            if (string.IsNullOrWhiteSpace(KartaSearchText))
+                return true;
+
+            var karta = item as KARTA;
+            return karta != null && (
+                karta.IdPlatba.ToString().IndexOf(KartaSearchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (karta.CisloKarty != null && karta.CisloKarty.ToString().IndexOf(KartaSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            );
+        }
+
+        private bool HotovostFilter(object item)
+        {
+            if (string.IsNullOrWhiteSpace(HotovostSearchText))
+                return true;
+
+            var hotovost = item as HOTOVOST;
+            return hotovost != null && (
+                hotovost.IdPlatba.ToString().IndexOf(HotovostSearchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (hotovost.Prijato != null && hotovost.Prijato.ToString().IndexOf(HotovostSearchText, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                (hotovost.Vraceno != null && hotovost.Vraceno.ToString().IndexOf(HotovostSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+            );
+        }
+
+
         private bool PacientFilter(object item)
         {
             if (string.IsNullOrWhiteSpace(PacientSearchText))
@@ -1048,6 +1179,17 @@ namespace BDAS2_SEM.ViewModel
             var pripona = item as PRIPONA;
             return pripona != null && (
                 pripona.Typ?.IndexOf(PriponaSearchText, StringComparison.OrdinalIgnoreCase) >= 0
+            );
+        }
+
+        private bool RoleFilter(object item)
+        {
+            if (string.IsNullOrWhiteSpace(RoleSearchText))
+                return true;
+
+            var role = item as ROLE;
+            return role != null && (
+                (role.Nazev != null && role.Nazev.IndexOf(StatusSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
             );
         }
 

@@ -44,7 +44,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Email" FontWeight="Bold" FontSize="14"/>
-                    <TextBlock Grid.Column="1" Text="Role" FontWeight="Bold" FontSize="14"/>
+                    <TextBlock Grid.Column="1" Text="ROLE" FontWeight="Bold" FontSize="14"/>
                     <TextBlock Grid.Column="2" Text="Action" FontWeight="Bold" FontSize="14"/>
                 </Grid>
             </Border>
@@ -63,7 +63,7 @@
                             <TextBlock Text="{Binding Email}" VerticalAlignment="Center" FontSize="14"/>
 
                             <ComboBox Grid.Column="1"
-                                      SelectedItem="{Binding RoleUzivatel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedItem="{Binding RoleId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       ItemsSource="{Binding DataContext.AvailableRoles, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       SelectedValuePath="."
                                       VerticalAlignment="Center"
@@ -75,7 +75,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <Button Grid.Column="2" Content="Assign Role" 
+                            <Button Grid.Column="2" Content="Assign ROLE" 
                                     Style="{StaticResource ModernButtonStyle}"
                                     Command="{Binding DataContext.AssignRoleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                     CommandParameter="{Binding}" 

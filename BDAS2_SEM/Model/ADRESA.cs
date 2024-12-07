@@ -91,6 +91,11 @@ namespace BDAS2_SEM.Model
             }
         }
 
+        public string FullAddress
+        {
+            get => $"{Ulice} {CisloPopisne}, {Mesto}, {Stat}, {PSC}";
+        }
+
         // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

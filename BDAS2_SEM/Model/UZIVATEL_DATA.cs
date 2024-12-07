@@ -1,5 +1,4 @@
-﻿using BDAS2_SEM.Model.Enum;
-using BDAS2_SEM.Model;
+﻿using BDAS2_SEM.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +14,7 @@ namespace BDAS2_SEM.Model
         private int id;
         private string email;
         private string heslo;
-        private Role role;
+        private int roleId;
         public int? pacientId { get; set; }
         public int? zamestnanecId { get; set; }
 
@@ -58,14 +57,14 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        public Role RoleUzivatel
+        public int RoleId
         {
-            get { return role; }
+            get { return roleId; }
             set
             {
-                if (role != value)
+                if (roleId != value)
                 {
-                    role = value;
+                    roleId = value;
                     OnPropertyChanged();
                 }
             }

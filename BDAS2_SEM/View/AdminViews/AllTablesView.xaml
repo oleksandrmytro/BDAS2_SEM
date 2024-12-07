@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:BDAS2_SEM.View.AdminViews"
              xmlns:models="clr-namespace:BDAS2_SEM.Model"
-             xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum"
              xmlns:converters="clr-namespace:BDAS2_SEM.Converters"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -344,7 +343,22 @@
 
                                 <DataGridTextColumn Header="PACIENT_ID_C" Binding="{Binding pacientId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="ZAMESTNANEC_ID_C" Binding="{Binding zamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="ROLE_ID_ROLE" Binding="{Binding RoleUzivatel}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="ROLE">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource RoleConverter}">
+                                                        <Binding Path="RoleId"/>
+                                                        <!-- Отримуємо колекцію ролей з DataContext AllTablesVM -->
+                                                        <Binding Path="DataContext.AvailableRoles" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -417,6 +431,52 @@
                         </DataGrid>
                     </StackPanel>
                 </Expander>
+
+                <!-- HOTOVOST -->
+                <Expander Header="Hotovost" IsExpanded="False">
+                    <StackPanel>
+                        <TextBox Width="200" Margin="10,0,0,0" 
+                                 ToolTip="Пошук..."
+                                 Text="{Binding HotovostSearchText, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <!-- DataGrid для відображення даних HOTOVOST -->
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding HotovostView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="PRIJATO" Binding="{Binding Prijato}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="VRACENO" Binding="{Binding Vraceno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
+                <!-- KARTA Table -->
+                <Expander Header="Karta" IsExpanded="False">
+                    <StackPanel>
+                        <!-- Панель з полем пошуку -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBox Width="200" Margin="10,0,0,0" 
+                                     ToolTip="Пошук..."
+                                     Text="{Binding KartaSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+
+                        <!-- DataGrid для відображення даних KARTA -->
+                        <DataGrid AutoGenerateColumns="False"
+                                  ItemsSource="{Binding KartaView}"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="CISLO_KARTY" Binding="{Binding CisloKarty}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
+
 
                 <!-- Pacient Table -->
                 <Expander Header="Pacient" IsExpanded="False">
@@ -591,6 +651,50 @@
                                                     Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Role Table -->
+                <Expander Header="Role" IsExpanded="False">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Role" 
+                    Command="{Binding InsertCommand}"
+                    CommandParameter="{x:Type models:ROLE}" 
+                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                     ToolTip="Пошук..."
+                     Text="{Binding RoleSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                  ItemsSource="{Binding RoleView}"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource DeleteButtonStyle}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using BDAS2_SEM.Model.Enum;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BDAS2_SEM.ViewModel

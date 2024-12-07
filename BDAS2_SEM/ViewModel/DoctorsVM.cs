@@ -121,9 +121,10 @@ public class DoctorsVM : INotifyPropertyChanged
             var uzivatelRepository = _serviceProvider.GetRequiredService<IUzivatelDataRepository>();
             var blobRepository = _serviceProvider.GetRequiredService<IBlobTableRepository>();
             var priponaRepository = _serviceProvider.GetRequiredService<IPriponaRepository>();
+            var adresaRepository = _serviceProvider.GetRequiredService<IAdresaRepository>();
             var windowService = _serviceProvider.GetRequiredService<IWindowService>();
 
-            var settingsVM = new DSettingsVM(zamestnanecRepository, uzivatelRepository, blobRepository, priponaRepository, windowService, null);
+            var settingsVM = new DSettingsVM(zamestnanecRepository, uzivatelRepository, blobRepository, priponaRepository, adresaRepository, windowService, null);
             return new DSettingsView(settingsVM);
         }
 

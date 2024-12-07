@@ -1,9 +1,9 @@
-﻿using BDAS2_SEM.Model.Enum;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Windows.Data;
+using BDAS2_SEM.Model;
 
 namespace BDAS2_SEM.Converters
 {
@@ -15,7 +15,7 @@ namespace BDAS2_SEM.Converters
                 return string.Empty;
 
             // Ensure the value is an enum
-            if (!Enum.IsDefined(typeof(Role), value))
+            if (!Enum.IsDefined(typeof(ROLE), value))
                 return value.ToString().ToLower();
 
             FieldInfo fi = value.GetType().GetField(value.ToString());
@@ -32,16 +32,7 @@ namespace BDAS2_SEM.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
-                return Role.NEOVERENY;
-
-            foreach (Role role in Enum.GetValues(typeof(Role)))
-            {
-                string description = RoleService.GetRoleName(role);
-                if (description.Equals(value.ToString(), StringComparison.InvariantCultureIgnoreCase))
-                    return role;
-            }
-            return Role.NEOVERENY;
+            throw new NotImplementedException();
         }
     }
 }
