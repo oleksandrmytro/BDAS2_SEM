@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:BDAS2_SEM.View.AdminViews"
              xmlns:models="clr-namespace:BDAS2_SEM.Model"
              xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum"
+             xmlns:converters="clr-namespace:BDAS2_SEM.Converters"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
@@ -144,19 +145,51 @@
                                 <DataGridTextColumn Header="ID_ZAMESTNANEC" Binding="{Binding IdZamestnanec}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="TELEFON">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="******"/>
+                                            <Setter Property="ToolTip" Value="{Binding Telefon}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Telefon}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
                                 <DataGridTextColumn Header="NADRAZENY_ZAMESTNANEC_ID" Binding="{Binding NadrazenyZamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="POZICE_ID_POZICE" Binding="{Binding PoziceId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                <!-- Нові колонки для Адреси та Позиції -->
+                                <DataGridTextColumn Header="Adresa">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource AddressConverter}">
+                                            <Binding Path="AdresaId"/>
+                                            <Binding Path="DataContext.AdresaList" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Pozice">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource PositionConverter}">
+                                            <Binding Path="PoziceId"/>
+                                            <Binding Path="DataContext.PoziceList" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+
                                 <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Edit"
-                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource ModernButtonStyle}"
-                                                    Width="60"/>
+                            Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource ModernButtonStyle}"
+                            Width="60"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -164,9 +197,9 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="X"
-                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource DeleteButtonStyle}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -188,11 +221,10 @@
                                      Text="{Binding DiagnózaSearchText, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <DataGrid AutoGenerateColumns="False"
-                                  ItemsSource="{Binding DiagnózaView}"
+                                  ItemsSource="{Binding DiagnozaView}"
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_DIAGNOZA" Binding="{Binding IdDiagnoza}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="POPIS" Binding="{Binding Popis}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
@@ -238,7 +270,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_ORDINACE" Binding="{Binding IdOrdinace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -283,9 +314,34 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_UZIVATEL_DATA" Binding="{Binding Id}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="EMAIL" Binding="{Binding Email}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="HESLO" Binding="{Binding Heslo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="EMAIL">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="******"/>
+                                            <Setter Property="ToolTip" Value="{Binding Email}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Email}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="HESLO">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="******"/>
+                                            <Setter Property="ToolTip" Value="{Binding Heslo}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Heslo}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
                                 <DataGridTextColumn Header="PACIENT_ID_C" Binding="{Binding pacientId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="ZAMESTNANEC_ID_C" Binding="{Binding zamestnanecId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="ROLE_ID_ROLE" Binding="{Binding RoleUzivatel}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
@@ -332,7 +388,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CASTKA" Binding="{Binding Castka}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP_PLATBY" Binding="{Binding TypPlatby}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
@@ -367,36 +422,75 @@
                 <Expander Header="Pacient" IsExpanded="False">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <Button Content="Insert Pacient" 
-                                    Command="{Binding InsertCommand}"
-                                    CommandParameter="{x:Type models:PACIENT}" 
-                                    Style="{StaticResource ModernButtonStyle}"/>
+                            <Button Content="Insert Pacient"
+                    Command="{Binding InsertCommand}"
+                    CommandParameter="{x:Type models:PACIENT}"
+                    Style="{StaticResource ModernButtonStyle}"/>
                             <TextBox Width="200" Margin="10,0,0,0"
-                                     ToolTip="Пошук..."
-                                     Text="{Binding PacientSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                     ToolTip="Пошук..."
+                     Text="{Binding PacientSearchText, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <DataGrid AutoGenerateColumns="False"
-                                  ItemsSource="{Binding PacientView}"
-                                  CanUserAddRows="False"
-                                  HeadersVisibility="Column">
+                  ItemsSource="{Binding PacientView}"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_PACIENT" Binding="{Binding IdPacient}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="RODNE_CISLO" Binding="{Binding RodneCislo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="TELEFON" Binding="{Binding Telefon}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                <!-- Rodne Cislo: зірочки за замовчуванням, справжнє значення при наведенні -->
+                                <DataGridTextColumn Header="RODNE_CISLO">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="******"/>
+                                            <Setter Property="ToolTip" Value="{Binding RodneCislo}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Text" Value="{Binding RodneCislo}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="TELEFON">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="******"/>
+                                            <Setter Property="ToolTip" Value="{Binding Telefon}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Text" Value="{Binding Telefon}"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
                                 <DataGridTextColumn Header="DATUM_NAROZENI" Binding="{Binding DatumNarozeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                <!-- Pohlavi тепер редагується лише в DataTemplate, на екрані показуємо як текст -->
                                 <DataGridTextColumn Header="POHLAVI" Binding="{Binding Pohlavi}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="ADRESA_ID_ADRESA" Binding="{Binding AdresaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                <!-- Adresa: використовуємо конвертер з AdresaId та AdresaList -->
+                                <DataGridTextColumn Header="Adresa">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource AddressConverter}">
+                                            <Binding Path="AdresaId"/>
+                                            <Binding Path="DataContext.AdresaList" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+
                                 <DataGridTextColumn Header="UZIVATEL_DATA_ID_UZIVATEL_DATA" Binding="{Binding UserDataId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Edit"
-                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource ModernButtonStyle}"
-                                                    Width="60"/>
+                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Width="60"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -404,9 +498,9 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="X"
-                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource DeleteButtonStyle}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -414,6 +508,7 @@
                         </DataGrid>
                     </StackPanel>
                 </Expander>
+
 
                 <!-- Pozice Table -->
                 <Expander Header="Pozice" IsExpanded="False">
@@ -432,7 +527,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_POZICE" Binding="{Binding IdPozice}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -478,7 +572,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_PRIPONA" Binding="{Binding IdPripona}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP" Binding="{Binding Typ}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -523,7 +616,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_STATUS" Binding="{Binding IdStatus}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -568,7 +660,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_TYP_LEK" Binding="{Binding IdTypLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -613,11 +704,21 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_LEK" Binding="{Binding IdLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="MNOZSTVI" Binding="{Binding Mnozstvi}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CENA" Binding="{Binding Cena}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="TYP_LEK_ID_TYP_LEK" Binding="{Binding TypLekId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+
+                                <DataGridTextColumn Header="TYP LEK" ElementStyle="{StaticResource WrappingTextBlockStyle}">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource TypLekMultiConverter}">
+                                            <!-- First binding: the current row's TypLekId -->
+                                            <Binding Path="TypLekId"/>
+                                            <!-- Second binding: the TypLeks collection from the ViewModel -->
+                                            <Binding Path="DataContext.TypLek" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -649,30 +750,30 @@
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                             <Button Content="Insert Operace" 
-                                    Command="{Binding InsertCommand}"
-                                    CommandParameter="{x:Type models:OPERACE}" 
-                                    Style="{StaticResource ModernButtonStyle}"/>
+                    Command="{Binding InsertCommand}"
+                    CommandParameter="{x:Type models:OPERACE}" 
+                    Style="{StaticResource ModernButtonStyle}"/>
                             <TextBox Width="200" Margin="10,0,0,0"
-                                     ToolTip="Пошук..."
-                                     Text="{Binding OperaceSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                     ToolTip="Пошук..."
+                     Text="{Binding OperaceSearchText, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <DataGrid AutoGenerateColumns="False"
-                                  ItemsSource="{Binding OperaceView}"
-                                  CanUserAddRows="False"
-                                  HeadersVisibility="Column">
+                  ItemsSource="{Binding OperaceView}"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_OPERACE" Binding="{Binding IdOperace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="DATUM" Binding="{Binding Datum, StringFormat=dd.MM.yyyy}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="ČAS" Binding="{Binding Datum, StringFormat=HH:mm:ss}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DIAGNOZA_ID_DIAGNOZA" Binding="{Binding DiagnozaId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Edit"
-                                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource ModernButtonStyle}"
-                                                    Width="60"/>
+                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Width="60"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -680,9 +781,9 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="X"
-                                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource DeleteButtonStyle}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -690,6 +791,7 @@
                         </DataGrid>
                     </StackPanel>
                 </Expander>
+
 
                 <!-- Navsteva Table -->
                 <Expander Header="Navsteva" IsExpanded="False">
@@ -708,11 +810,24 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_NAVSTEVA" Binding="{Binding IdNavsteva}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="MISTNOST" Binding="{Binding Mistnost}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTextColumn Header="MISTNOST">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource MistnostConverter}">
+                                            <Binding Path="MistnostId"/>
+                                            <Binding Path="DataContext.Mistnost" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="STATUS">
+                                    <DataGridTextColumn.Binding>
+                                        <MultiBinding Converter="{StaticResource StatusConverter}">
+                                            <Binding Path="StatusId"/>
+                                            <Binding Path="DataContext.Status" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                        </MultiBinding>
+                                    </DataGridTextColumn.Binding>
+                                </DataGridTextColumn>
                                 <DataGridTextColumn Header="PACIENT_ID_PACIENT" Binding="{Binding PacientId}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-                                <DataGridTextColumn Header="STATUS_ID_STATUS" Binding="{Binding Status}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -784,6 +899,50 @@
                     </StackPanel>
                 </Expander>
 
+                <!-- Mistnost Table -->
+                <Expander Header="Mistnost" IsExpanded="False">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Button Content="Insert Mistnost" 
+                    Command="{Binding InsertCommand}"
+                    CommandParameter="{x:Type models:MISTNOST}" 
+                    Style="{StaticResource ModernButtonStyle}"/>
+                            <TextBox Width="200" Margin="10,0,0,0"
+                     ToolTip="Пошук..."
+                     Text="{Binding MistnostSearchText, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <DataGrid AutoGenerateColumns="False"
+                  ItemsSource="{Binding MistnostView}"
+                  CanUserAddRows="False"
+                  HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="CISLO" Binding="{Binding Cislo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
+                                <DataGridTemplateColumn Header="Update">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Edit"
+                                    Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource ModernButtonStyle}"
+                                    Width="60"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delete">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="X"
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource DeleteButtonStyle}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Expander>
+
                 <!-- Blob Table -->
                 <Expander Header="Blob Table" IsExpanded="False">
                     <StackPanel>
@@ -801,7 +960,6 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID_BLOB" Binding="{Binding IdBlob}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV_SOUBORU" Binding="{Binding NazevSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP_SOUBORU" Binding="{Binding TypSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="OBSAH" Binding="{Binding Obsah}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />

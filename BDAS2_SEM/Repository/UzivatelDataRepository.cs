@@ -60,13 +60,10 @@ namespace BDAS2_SEM.Repository
 
                 try
                 {
-                    // Викликаємо збережену процедуру
                     await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
-                    // Отримуємо значення вихідного параметра
                     var userId = parameters.Get<int?>("p_id_uzivatel_data");
 
-                    // Перевірка значення
                     if (userId.HasValue)
                     {
                         return userId.Value;

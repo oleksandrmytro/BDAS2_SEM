@@ -41,59 +41,75 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(_connectionString))
             {
-                // Проверяем, существует ли PriponaId в таблице Pripona
-                string checkPriponaSql = "SELECT COUNT(1) FROM PRIPONA WHERE ID_PRIPONA = :PriponaId";
-                var priponaExists = await db.ExecuteScalarAsync<int>(checkPriponaSql, new { PriponaId = blob.PriponaId }) > 0;
-
-                string sql = @"
-                    INSERT INTO BLOB_TABLE (ID_BLOB, NAZEV_SOUBORU, TYP_SOUBORU, OBSAH, DATUM_NAHRANI, DATUM_MODIFIKACE, OPERACE_PROVEDL, POPIS_OPERACE, PRIPONA_ID)
-                    VALUES (BLOB_SEQ.NEXTVAL, :NazevSouboru, :TypSouboru, :Obsah, :DatumNahrani, :DatumModifikace, :OperaceProvedl, :PopisOperace, :PriponaId)
-                    RETURNING ID_BLOB INTO :IdBlob";
+                var procedureName = "manage_blob_table";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("NazevSouboru", blob.NazevSouboru, DbType.String);
-                parameters.Add("TypSouboru", blob.TypSouboru, DbType.String);
-                parameters.Add("Obsah", blob.Obsah, DbType.Binary);
-                parameters.Add("DatumNahrani", blob.DatumNahrani, DbType.Date);
-                parameters.Add("DatumModifikace", blob.DatumModifikace, DbType.Date);
-                parameters.Add("OperaceProvedl", blob.OperaceProvedl, DbType.String);
-                parameters.Add("PopisOperace", blob.PopisOperace, DbType.String);
-                parameters.Add("PriponaId", priponaExists ? (object)blob.PriponaId : DBNull.Value, DbType.Int32);
-                parameters.Add("IdBlob", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sql, parameters);
-                return parameters.Get<int>("IdBlob");
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_blob", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_nazev_souboru", blob.NazevSouboru, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_typ_souboru", blob.TypSouboru, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_obsah", blob.Obsah, DbType.Binary, ParameterDirection.Input);
+                parameters.Add("p_operace_provedl", blob.OperaceProvedl, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_popis_operace", blob.PopisOperace, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_pripona_id", blob.PriponaId, DbType.Int32, ParameterDirection.Input);
+
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                    int newIdBlob = parameters.Get<int>("p_id_blob");
+                    return newIdBlob;
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task UpdateBlob(BLOB_TABLE blob)
         {
             using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    UPDATE BLOB_TABLE
-                    SET NAZEV_SOUBORU = :NazevSouboru,
-                        TYP_SOUBORU = :TypSouboru,
-                        OBSAH = :Obsah,
-                        DATUM_MODIFIKACE = :DatumModifikace,
-                        OPERACE_PROVEDL = :OperaceProvedl,
-                        POPIS_OPERACE = :PopisOperace,
-                        PRIPONA_ID = :PriponaId
-                    WHERE ID_BLOB = :IdBlob";
+                var procedureName = "manage_blob_table";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("NazevSouboru", blob.NazevSouboru, DbType.String);
-                parameters.Add("TypSouboru", blob.TypSouboru, DbType.String);
-                parameters.Add("Obsah", blob.Obsah, DbType.Binary);
-                parameters.Add("DatumModifikace", blob.DatumModifikace, DbType.Date);
-                parameters.Add("OperaceProvedl", blob.OperaceProvedl, DbType.String);
-                parameters.Add("PopisOperace", blob.PopisOperace, DbType.String);
-                parameters.Add("PriponaId", blob.PriponaId, DbType.Int32);
-                parameters.Add("IdBlob", blob.IdBlob, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_blob", blob.IdBlob, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_nazev_souboru", blob.NazevSouboru, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_typ_souboru", blob.TypSouboru, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_obsah", blob.Obsah, DbType.Binary, ParameterDirection.Input);
+                parameters.Add("p_operace_provedl", blob.OperaceProvedl, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_popis_operace", blob.PopisOperace, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_pripona_id", blob.PriponaId, DbType.Int32, ParameterDirection.Input);
+
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                    Console.WriteLine($"Blob with ID {blob.IdBlob} updated successfully.");
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task DeleteBlob(int id)
         {

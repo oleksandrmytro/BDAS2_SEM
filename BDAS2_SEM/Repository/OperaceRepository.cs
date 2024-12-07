@@ -87,10 +87,8 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(_connectionString))
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("p_id_operace", id, DbType.Int32, ParameterDirection.Input);
-
-                await db.ExecuteAsync("DELETE_OPERACE", parameters, commandType: CommandType.StoredProcedure);
+                string sql = "DELETE FROM OPERACE WHERE ID_OPERACE = :Id";
+                await db.ExecuteAsync(sql, new { Id = id });
             }
         }
     }

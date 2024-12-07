@@ -14,5 +14,16 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<PLATBA> GetPlatbaById(int id);
         Task<IEnumerable<PLATBA>> GetAllPlatbas();
         Task DeletePlatba(int id);
+
+        Task<int> ManagePaymentAsync(
+            string action,
+            int? idPlatba,
+            decimal castka,
+            DateTime datum,
+            string typPlatby,
+            int navstevaId,
+            long? cisloKarty = null,
+            decimal? prijato = null,
+            decimal? vraceno = null);
     }
 }

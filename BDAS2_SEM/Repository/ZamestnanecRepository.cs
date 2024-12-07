@@ -31,7 +31,6 @@ public class ZamestnanecRepository : IZamestnanecRepository
             parameters.Add("p_adresa_id", zamestnanec.AdresaId, DbType.Int32);
             parameters.Add("p_pozice_id", zamestnanec.PoziceId, DbType.Int32);
             parameters.Add("p_uzivatel_data_id", zamestnanec.UserDataId, DbType.Int32);
-            parameters.Add("p_blob_id", zamestnanec.BlobId, DbType.Int32);
 
             await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 

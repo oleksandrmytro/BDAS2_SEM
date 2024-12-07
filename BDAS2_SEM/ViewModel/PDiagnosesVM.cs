@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace BDAS2_SEM.ViewModel
 {
-    public class PDiagnosesViewModel : INotifyPropertyChanged
+    public class PDiagnosesVM : INotifyPropertyChanged
     {
         private readonly INavstevaDoctorViewRepository _navstevaDoctorViewRepository;
         private readonly IWindowService _windowService;
@@ -21,7 +21,7 @@ namespace BDAS2_SEM.ViewModel
 
         public ICommand ViewDiagnosisCommand { get; }
 
-        public PDiagnosesViewModel(
+        public PDiagnosesVM(
             IWindowService windowService,
             IPatientContextService patientContextService,
             INavstevaDoctorViewRepository navstevaDoctorViewRepository)

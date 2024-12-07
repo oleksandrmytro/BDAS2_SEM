@@ -19,6 +19,11 @@
             <converters:StatusToBooleanConverter x:Key="StatusToBooleanConverter"/>
             <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:AddressConverter x:Key="AddressConverter"/>
+            <converters:PositionConverter x:Key="PositionConverter"/>
+            <converters:MistnostConverter x:Key="MistnostConverter" />
+            <converters:StatusConverter x:Key="StatusConverter" />
+            <converters:TypLekMultiConverter x:Key="TypLekMultiConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

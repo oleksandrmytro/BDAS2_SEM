@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace BDAS2_SEM.Repository
 {
@@ -24,50 +25,72 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    INSERT INTO PLATBA 
-                        (CASTKA, DATUM, TYP_PLATBY, NAVSTEVA_ID) 
-                    VALUES 
-                        (:Castka, :Datum, :TypPlatby, :NavstevaId) 
-                    RETURNING ID_PLATBA INTO :IdPlatba";
-
+                var procedureName = "manage_payment";
                 var parameters = new DynamicParameters();
-                parameters.Add("Castka", platba.Castka, DbType.Decimal);
-                parameters.Add("Datum", platba.Datum, DbType.Date);
-                parameters.Add("TypPlatby", platba.TypPlatby, DbType.String);
-                parameters.Add("NavstevaId", platba.NavstevaId, DbType.Int32);
-                parameters.Add("IdPlatba", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_platba", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_castka", platba.Castka, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_datum", platba.Datum, DbType.Date, ParameterDirection.Input);
+                parameters.Add("p_typ_platby", platba.TypPlatby, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_navsteva_id", platba.NavstevaId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_cislo_karty", platba.CisloKarty, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_prijato", platba.Prijato, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_vraceno", platba.Vraceno, DbType.Decimal, ParameterDirection.Input);
 
-                return parameters.Get<int>("IdPlatba");
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                    return parameters.Get<int>("p_id_platba");
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task UpdatePlatba(PLATBA platba)
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    UPDATE PLATBA 
-                    SET 
-                        CASTKA = :Castka, 
-                        DATUM = :Datum, 
-                        TYP_PLATBY = :TypPlatby, 
-                        NAVSTEVA_ID = :NavstevaId 
-                    WHERE 
-                        ID_PLATBA = :IdPlatba";
-
+                var procedureName = "manage_payment";
                 var parameters = new DynamicParameters();
-                parameters.Add("Castka", platba.Castka, DbType.Decimal);
-                parameters.Add("Datum", platba.Datum, DbType.Date);
-                parameters.Add("TypPlatby", platba.TypPlatby, DbType.String);
-                parameters.Add("NavstevaId", platba.NavstevaId, DbType.Int32);
-                parameters.Add("IdPlatba", platba.IdPlatba, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_platba", platba.IdPlatba, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_castka", platba.Castka, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_datum", platba.Datum, DbType.Date, ParameterDirection.Input);
+                parameters.Add("p_typ_platby", platba.TypPlatby, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_navsteva_id", platba.NavstevaId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_cislo_karty", platba.CisloKarty, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_prijato", platba.Prijato, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_vraceno", platba.Vraceno, DbType.Decimal, ParameterDirection.Input);
+
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task<PLATBA> GetPlatbaById(int id)
         {
@@ -112,6 +135,45 @@ namespace BDAS2_SEM.Repository
                 string sql = "DELETE FROM PLATBA WHERE ID_PLATBA = :Id";
 
                 await db.ExecuteAsync(sql, new { Id = id });
+            }
+        }
+
+        public async Task<int> ManagePaymentAsync(
+            string action,
+            int? idPlatba,
+            decimal castka,
+            DateTime datum,
+            string typPlatby,
+            int navstevaId,
+            long? cisloKarty = null,
+            decimal? prijato = null,
+            decimal? vraceno = null)
+        {
+            using (var db = new OracleConnection(connectionString))
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("p_action", action, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_platba", idPlatba, DbType.Int32, ParameterDirection.InputOutput);
+                parameters.Add("p_castka", castka, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_datum", datum, DbType.Date, ParameterDirection.Input);
+                parameters.Add("p_typ_platby", typPlatby, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_navsteva_id", navstevaId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_cislo_karty", cisloKarty, DbType.Int64, ParameterDirection.Input);
+                parameters.Add("p_prijato", prijato, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_vraceno", vraceno, DbType.Decimal, ParameterDirection.Input);
+
+                await db.ExecuteAsync("manage_payment", parameters, commandType: CommandType.StoredProcedure);
+
+                // Отримання значення OUT параметра p_id_platba
+                var generatedId = parameters.Get<int?>("p_id_platba");
+                if (generatedId.HasValue)
+                {
+                    return generatedId.Value;
+                }
+                else
+                {
+                    throw new Exception("Не вдалося отримати ID платежу.");
+                }
             }
         }
     }

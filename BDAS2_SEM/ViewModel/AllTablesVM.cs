@@ -11,6 +11,7 @@ using System.Windows.Input;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Model.Enum;
+using BDAS2_SEM.Repository;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.View.AdminViews;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,10 +40,14 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPoziceRepository _poziceRepository;
         private readonly IPriponaRepository _priponaRepository;
         private readonly IStatusRepository _statusRepository;
+        private readonly IMistnostRepository _mistnostRepository;
         private readonly ITypLekRepository _typLekRepository;
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IZamestnanecNavstevaRepository _zamestnanecNavstevaRepository;
         private readonly IZamestnanecRepository _zamestnanecRepository;
+
+        public ObservableCollection<ADRESA> AdresaList { get; set; }
+        public ObservableCollection<POZICE> PoziceList { get; set; }
 
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -67,6 +72,7 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<POZICE> Pozice { get; set; } = new ObservableCollection<POZICE>();
         public ObservableCollection<PRIPONA> Pripona { get; set; } = new ObservableCollection<PRIPONA>();
         public ObservableCollection<STATUS> Status { get; set; } = new ObservableCollection<STATUS>();
+        public ObservableCollection<MISTNOST> Mistnost { get; set; } = new ObservableCollection<MISTNOST>();
         public ObservableCollection<TYP_LEK> TypLek { get; set; } = new ObservableCollection<TYP_LEK>();
         public ObservableCollection<UZIVATEL_DATA> UzivatelData { get; set; } = new ObservableCollection<UZIVATEL_DATA>();
         public ObservableCollection<ZAMESTNANEC_NAVSTEVA> ZamestnanecNavsteva { get; set; } = new ObservableCollection<ZAMESTNANEC_NAVSTEVA>();
@@ -113,7 +119,7 @@ namespace BDAS2_SEM.ViewModel
                 {
                     _diagnózaSearchText = value;
                     OnPropertyChanged();
-                    DiagnózaView.Refresh();
+                    DiagnozaView.Refresh();
                 }
             }
         }
@@ -219,6 +225,21 @@ namespace BDAS2_SEM.ViewModel
                     _statusSearchText = value;
                     OnPropertyChanged();
                     StatusView.Refresh();
+                }
+            }
+        }
+
+        private string _mistnostSearchText;
+        public string MistnostSearchText
+        {
+            get => _mistnostSearchText;
+            set
+            {
+                if (_mistnostSearchText != value)
+                {
+                    _mistnostSearchText = value;
+                    OnPropertyChanged();
+                    MistnostView.Refresh();
                 }
             }
         }
@@ -364,8 +385,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly ICollectionView _zamestnanecView;
         public ICollectionView ZamestnanecView => _zamestnanecView;
 
-        private readonly ICollectionView _diagnózaView;
-        public ICollectionView DiagnózaView => _diagnózaView;
+        private readonly ICollectionView _diagnozaView;
+        public ICollectionView DiagnozaView => _diagnozaView;
 
         private readonly ICollectionView _ordinaceView;
         public ICollectionView OrdinaceView => _ordinaceView;
@@ -390,6 +411,9 @@ namespace BDAS2_SEM.ViewModel
 
         private readonly ICollectionView _typLekView;
         public ICollectionView TypLekView => _typLekView;
+
+        private readonly ICollectionView _mistnostView;
+        public ICollectionView MistnostView => _mistnostView;
 
         private readonly ICollectionView _lekView;
         public ICollectionView LekView => _lekView;
@@ -436,6 +460,7 @@ namespace BDAS2_SEM.ViewModel
             IPoziceRepository poziceRepository,
             IPriponaRepository priponaRepository,
             IStatusRepository statusRepository,
+            IMistnostRepository mistnostRepository,
             ITypLekRepository typLekRepository,
             IUzivatelDataRepository uzivatelDataRepository,
             IZamestnanecNavstevaRepository zamestnanecNavstevaRepository,
@@ -461,6 +486,7 @@ namespace BDAS2_SEM.ViewModel
             _poziceRepository = poziceRepository;
             _priponaRepository = priponaRepository;
             _statusRepository = statusRepository;
+            _mistnostRepository = mistnostRepository;
             _typLekRepository = typLekRepository;
             _uzivatelDataRepository = uzivatelDataRepository;
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
@@ -473,11 +499,14 @@ namespace BDAS2_SEM.ViewModel
             _adresaView = CollectionViewSource.GetDefaultView(Adresa);
             _adresaView.Filter = AdresaFilter;
 
+            AdresaList = new ObservableCollection<ADRESA>();
+            PoziceList = new ObservableCollection<POZICE>();
+
             _zamestnanecView = CollectionViewSource.GetDefaultView(Zamestnanec);
             _zamestnanecView.Filter = ZamestnanecFilter;
 
-            _diagnózaView = CollectionViewSource.GetDefaultView(Diagnosis);
-            _diagnózaView.Filter = DiagnózaFilter;
+            _diagnozaView = CollectionViewSource.GetDefaultView(Diagnosis);
+            _diagnozaView.Filter = DiagnózaFilter;
 
             _ordinaceView = CollectionViewSource.GetDefaultView(Ordinace);
             _ordinaceView.Filter = OrdinaceFilter;
@@ -499,6 +528,9 @@ namespace BDAS2_SEM.ViewModel
 
             _statusView = CollectionViewSource.GetDefaultView(Status);
             _statusView.Filter = StatusFilter;
+
+            _mistnostView = CollectionViewSource.GetDefaultView(Mistnost);
+            _mistnostView.Filter = MistnostFilter;
 
             _typLekView = CollectionViewSource.GetDefaultView(TypLek);
             _typLekView.Filter = TypLekFilter;
@@ -617,6 +649,10 @@ namespace BDAS2_SEM.ViewModel
                         Status.Add(status);
                         break;
 
+                    case MISTNOST mistnost:
+                        Mistnost.Add(mistnost);
+                        break;
+
                     case TYP_LEK typLek:
                         TypLek.Add(typLek);
                         break;
@@ -637,6 +673,8 @@ namespace BDAS2_SEM.ViewModel
                         MessageBox.Show("Unsupported entity type.");
                         break;
                 }
+
+                LoadDataAsync();
             }
         }
 
@@ -657,7 +695,10 @@ namespace BDAS2_SEM.ViewModel
             {
                 Adresa.Clear();
                 foreach (var adresaItem in await _adresaRepository.GetAllAddresses())
+                {
+                    AdresaList.Add(adresaItem);
                     Adresa.Add(adresaItem);
+                }
 
                 BlobTable.Clear();
                 foreach (var blobItem in await _blobTableRepository.GetAllBlobTables())
@@ -721,7 +762,10 @@ namespace BDAS2_SEM.ViewModel
 
                 Pozice.Clear();
                 foreach (var pozItem in await _poziceRepository.GetAllPozices())
+                {
+                    PoziceList.Add(pozItem);
                     Pozice.Add(pozItem);
+                }
 
                 Pripona.Clear();
                 foreach (var priponaItem in await _priponaRepository.GetAllPriponas())
@@ -730,6 +774,10 @@ namespace BDAS2_SEM.ViewModel
                 Status.Clear();
                 foreach (var statItem in await _statusRepository.GetAllStatuses())
                     Status.Add(statItem);
+
+                Mistnost.Clear();
+                foreach (var mistItem in await _mistnostRepository.GetAllMistnosti())
+                    Mistnost.Add(mistItem);
 
                 TypLek.Clear();
                 foreach (var tLekItem in await _typLekRepository.GetAllTypLekes())
@@ -857,6 +905,11 @@ namespace BDAS2_SEM.ViewModel
                         Status.Remove(status);
                         break;
 
+                    case MISTNOST mistnost:
+                        await _mistnostRepository.DeleteMistnost(mistnost.IdMistnost);
+                        Mistnost.Remove(mistnost);
+                        break;
+
                     case TYP_LEK typLek:
                         await _typLekRepository.DeleteTypLek(typLek.IdTypLek);
                         TypLek.Remove(typLek);
@@ -870,8 +923,9 @@ namespace BDAS2_SEM.ViewModel
 
                     default:
                         MessageBox.Show("Unsupported entity type.");
-                        break;
+                        break; 
                 }
+                LoadDataAsync();
 
                 MessageBox.Show("Запис успішно видалено.");
             }
@@ -1006,6 +1060,16 @@ namespace BDAS2_SEM.ViewModel
             return status != null && (
                    (status.Nazev != null && status.Nazev.IndexOf(StatusSearchText, StringComparison.OrdinalIgnoreCase) >= 0)
                    );
+        }
+
+        private bool MistnostFilter(object item)
+        {
+            if (string.IsNullOrWhiteSpace(MistnostSearchText))
+                return true;
+
+            var mistnost = item as MISTNOST;
+            return (mistnost.Cislo != null &&
+                    mistnost.Cislo >= 0);
         }
 
         private bool TypLekFilter(object item)

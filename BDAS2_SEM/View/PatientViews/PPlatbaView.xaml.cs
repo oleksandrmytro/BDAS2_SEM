@@ -10,17 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BDAS2_SEM.ViewModel;
 
 namespace BDAS2_SEM.View.PatientViews
 {
     /// <summary>
-    /// Логика взаимодействия для PDiagnosesView.xaml
+    /// Interaction logic for PPlatbaView.xaml
     /// </summary>
-    public partial class PDiagnosesView : UserControl
+    public partial class PPlatbaView : UserControl
     {
-        public PDiagnosesView(PDiagnosesVM vm)
+        public PPlatbaView(PPlatbaVM vm)
         {
             InitializeComponent();
             DataContext = vm;

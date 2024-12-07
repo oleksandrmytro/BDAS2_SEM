@@ -21,17 +21,17 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    INSERT INTO PRIPONA (ID_PRIPONA, TYP)
-                    VALUES (PRIPONA_SEQ.NEXTVAL, :Typ)
-                    RETURNING ID_PRIPONA INTO :IdPripona";
-
+                var procedureName = "MANAGE_PRIPONA";
                 var parameters = new DynamicParameters();
-                parameters.Add("Typ", pripona.Typ, DbType.String);
-                parameters.Add("IdPripona", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sql, parameters);
-                return parameters.Get<int>("IdPripona");
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_pripona", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_typ", pripona.Typ, DbType.String, ParameterDirection.Input);
+
+                await db.OpenAsync();
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                return parameters.Get<int>("p_id_pripona");
             }
         }
 
@@ -39,16 +39,15 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(_connectionString))
             {
-                string sql = @"
-                    UPDATE PRIPONA
-                    SET TYP = :Typ
-                    WHERE ID_PRIPONA = :IdPripona";
-
+                var procedureName = "MANAGE_PRIPONA";
                 var parameters = new DynamicParameters();
-                parameters.Add("Typ", pripona.Typ, DbType.String);
-                parameters.Add("IdPripona", pripona.IdPripona, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_pripona", pripona.IdPripona, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_typ", pripona.Typ, DbType.String, ParameterDirection.Input);
+
+                await db.OpenAsync();
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
         }
 

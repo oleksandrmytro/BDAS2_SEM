@@ -66,7 +66,6 @@ namespace BDAS2_SEM
                 new ZamestnanecNavstevaRepository(connectionString));
             services.AddSingleton<IZamestnanecRepository, ZamestnanecRepository>(provider =>
                 new ZamestnanecRepository(connectionString));
-            // IBlobTableRepository
             services.AddSingleton<IBlobTableRepository, BlobTableRepository>(provider =>
                 new BlobTableRepository(connectionString));
             services.AddSingleton<ISystemCatalogRepository, SystemCatalogRepository>(provider =>
@@ -79,6 +78,8 @@ namespace BDAS2_SEM
                 new DoctorInfoRepository(connectionString));
             services.AddSingleton<INavstevaDoctorViewRepository, NavstevaDoctorViewRepository>(provider =>
                 new NavstevaDoctorViewRepository(connectionString));
+            services.AddSingleton<IPDiagnosesRepository, PDiagnosesRepository>(provider =>
+                new PDiagnosesRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -113,8 +114,9 @@ namespace BDAS2_SEM
             services.AddTransient<AllTablesVM>();
             services.AddTransient<SystemCatalogVM>();
             services.AddTransient<LogVM>();
-            services.AddTransient<PDiagnosesViewModel>();
-            services.AddTransient < VMDiagnosis>();
+            services.AddTransient<PDiagnosesVM>();
+            services.AddTransient<VMDiagnosis>();
+            services.AddTransient<PPlatbaVM>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -143,6 +145,8 @@ namespace BDAS2_SEM
             services.AddTransient<LogView>();
             services.AddTransient<PDiagnosesView>();
             services.AddTransient<ViewDiagnosisWindow>();
+            services.AddTransient<PPlatbaView>();
+            services.AddTransient<PaymentWindow>();
             // Register other Views if needed
 
         }

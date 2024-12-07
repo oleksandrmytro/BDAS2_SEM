@@ -11,6 +11,9 @@ namespace BDAS2_SEM.Model
         private DateTime datum;
         private string typPlatby;
         private int navstevaId;
+        private decimal? cisloKarty; // For card payments
+        private decimal? prijato;    // For cash payments
+        private decimal? vraceno;    // For cash payments
 
         public int IdPlatba
         {
@@ -77,7 +80,45 @@ namespace BDAS2_SEM.Model
             }
         }
 
-        // INotifyPropertyChanged implementation
+        public decimal? CisloKarty
+        {
+            get { return cisloKarty; }
+            set
+            {
+                if (cisloKarty != value)
+                {
+                    cisloKarty = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public decimal? Prijato
+        {
+            get { return prijato; }
+            set
+            {
+                if (prijato != value)
+                {
+                    prijato = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public decimal? Vraceno
+        {
+            get { return vraceno; }
+            set
+            {
+                if (vraceno != value)
+                {
+                    vraceno = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

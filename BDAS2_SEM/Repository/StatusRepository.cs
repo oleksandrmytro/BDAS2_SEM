@@ -21,7 +21,7 @@ namespace BDAS2_SEM.Repository
             this.connectionString = connectionString;
         }
 
-        public async Task<int> AddStatus(STATUS pozice)
+        public async Task<int> AddStatus(STATUS status)
         {
             using (var db = new OracleConnection(connectionString))
             {
@@ -30,7 +30,7 @@ namespace BDAS2_SEM.Repository
                 var parameters = new DynamicParameters();
                 parameters.Add("p_action", "INSERT", DbType.String);
                 parameters.Add("p_id_status", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                parameters.Add("p_nazev", pozice.Nazev, DbType.String);
+                parameters.Add("p_nazev", status.Nazev, DbType.String);
 
                 await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
 
@@ -38,7 +38,7 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-        public async Task UpdateStatus(STATUS pozice)
+        public async Task UpdateStatus(STATUS status)
         {
             using (var db = new OracleConnection(connectionString))
             {
@@ -46,8 +46,8 @@ namespace BDAS2_SEM.Repository
 
                 var parameters = new DynamicParameters();
                 parameters.Add("p_action", "UPDATE", DbType.String);
-                parameters.Add("p_id_status", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                parameters.Add("p_nazev", pozice.Nazev, DbType.String);
+                parameters.Add("p_id_status", status.IdStatus, DbType.Int32, direction: ParameterDirection.Input);
+                parameters.Add("p_nazev", status.Nazev, DbType.String);
 
                 await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }

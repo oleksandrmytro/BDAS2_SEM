@@ -17,8 +17,8 @@
     <Grid Margin="10">
         <StackPanel>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <!-- ContentControl to display the appropriate DataTemplate -->
-                <ContentControl Content="{Binding}" />
+                <!-- ContentControl прив'язаний до властивості Item в ViewModel -->
+                <ContentControl Content="{Binding Item}" />
             </ScrollViewer>
 
             <Button Content="Save" Width="80" HorizontalAlignment="Right" Margin="0,20,0,0" Click="SaveButton_Click"/>

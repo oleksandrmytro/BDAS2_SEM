@@ -10,8 +10,8 @@ namespace BDAS2_SEM.Repository.Interfaces
 {
     public interface IStatusRepository
     {
-        Task<int> AddStatus(STATUS pozice);
-        Task UpdateStatus(STATUS pozice);
+        Task<int> AddStatus(STATUS status);
+        Task UpdateStatus(STATUS status);
         Task<STATUS> GetStatusById(int id);
         Task<IEnumerable<STATUS>> GetAllStatuses();
         Task DeleteStatus(int id);

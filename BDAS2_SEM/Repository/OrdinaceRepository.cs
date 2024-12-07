@@ -24,35 +24,29 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    INSERT INTO ORDINACE (NAZEV) 
-                    VALUES (:Nazev) 
-                    RETURNING ID_ORDINACE INTO :IdOrdinace";
-
+                var procedureName = "manage_ordinace";
                 var parameters = new DynamicParameters();
-                parameters.Add("Nazev", ordinace.Nazev, DbType.String);
-                parameters.Add("IdOrdinace", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_ordinace", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_nazev", ordinace.Nazev, DbType.String, ParameterDirection.Input);
 
-                return parameters.Get<int>("IdOrdinace");
-            }
-        }
+                await db.OpenAsync();
 
-        public async Task AddOrdinaceZamestnanec(ORDINACE_ZAMESTNANEC ordinaceZamestnanec)
-        {
-            using (var db = new OracleConnection(connectionString))
-            {
-                string sql = @"
-                    INSERT INTO ORDINACE_ZAMESTNANEC (ID_ORDINACE, ID_ZAMESTNANEC) 
-                    INSERT INTO ORDINACE_ZAMESTNANEC (ORDINACE_ID_ORDINACE, ZAMESTNANEC_ID_ZAMESTNANEC) 
-                    VALUES (:OrdinaceId, :ZamestnanecId)";
-
-                var parameters = new DynamicParameters();
-                parameters.Add("OrdinaceId", ordinaceZamestnanec.OrdinaceId, DbType.Int32);
-                parameters.Add("ZamestnanecId", ordinaceZamestnanec.ZamestnanecId, DbType.Int32);
-
-                await db.ExecuteAsync(sql, parameters);
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                    int newIdOrdinace = parameters.Get<int>("p_id_ordinace");
+                    return newIdOrdinace;
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
 
@@ -60,18 +54,30 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    UPDATE ORDINACE 
-                    SET NAZEV = :Nazev 
-                    WHERE ID_ORDINACE = :IdOrdinace";
-
+                var procedureName = "manage_ordinace";
                 var parameters = new DynamicParameters();
-                parameters.Add("Nazev", ordinace.Nazev, DbType.String);
-                parameters.Add("IdOrdinace", ordinace.IdOrdinace, DbType.Int32);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_ordinace", ordinace.IdOrdinace, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_nazev", ordinace.Nazev, DbType.String, ParameterDirection.Input);
+
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task<ORDINACE> GetOrdinaceById(int id)
         {

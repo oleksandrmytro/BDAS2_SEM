@@ -24,22 +24,36 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(this.connection))
             {
-                var sqlQuery = @"
-                    INSERT INTO ADRESA (ID_ADRESA, STAT, MESTO, PSC, ULICE, CISLO_POPISNE) 
-                    VALUES (ADRESA_SEQ.NEXTVAL, :Stat, :Mesto, :PSC, :Ulice, :CisloPopisne) 
-                    RETURNING ID_ADRESA INTO :IdAdresa";
+                var procedureName = "manage_adresa";
 
                 var parameters = new DynamicParameters();
-                parameters.Add("Stat", adresa.Stat, DbType.String);
-                parameters.Add("Mesto", adresa.Mesto, DbType.String);
-                parameters.Add("PSC", adresa.PSC, DbType.Int32);
-                parameters.Add("Ulice", adresa.Ulice, DbType.String);
-                parameters.Add("CisloPopisne", adresa.CisloPopisne, DbType.Int32);
-                parameters.Add("IdAdresa", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sqlQuery, parameters);
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_adresa", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_stat", adresa.Stat, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_mesto", adresa.Mesto, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_psc", adresa.PSC, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_ulice", adresa.Ulice, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_cislo_popisne", adresa.CisloPopisne, DbType.Int32, ParameterDirection.Input);
 
-                return parameters.Get<int>("IdAdresa");
+                await db.OpenAsync();
+
+                try
+                {
+                    await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+
+                    int newIdAdresa = parameters.Get<int>("p_id_adresa");
+
+                    return newIdAdresa;
+                }
+                catch (OracleException ex)
+                {
+                    throw new Exception($"Database error occurred: {ex.Message}", ex);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"An error occurred: {ex.Message}", ex);
+                }
             }
         }
 
@@ -48,6 +62,7 @@ namespace BDAS2_SEM.Repository
             using (var db = new OracleConnection(this.connection))
             {
                 var parameters = new DynamicParameters();
+                parameters.Add("p_action", "UPDATE",DbType.String);
                 parameters.Add("p_id_adresa", id, DbType.Int32);
                 parameters.Add("p_stat", adresa.Stat, DbType.String);
                 parameters.Add("p_mesto", adresa.Mesto, DbType.String);
@@ -55,7 +70,7 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_ulice", adresa.Ulice, DbType.String);
                 parameters.Add("p_cislo_popisne", adresa.CisloPopisne, DbType.Int32);
 
-                await db.ExecuteAsync("UPDATE_ADRESA", parameters, commandType: CommandType.StoredProcedure);
+                await db.ExecuteAsync("manage_adresa", parameters, commandType: CommandType.StoredProcedure);
             }
         }
 

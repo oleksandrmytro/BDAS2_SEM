@@ -98,7 +98,7 @@ namespace BDAS2_SEM.ViewModel
                     var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
                     var status = (int)appointment.StatusId;
 
-                    if (status.Equals(1) && appointment.Datum < DateTime.Now)
+                    if (status.Equals(4) && appointment.Datum < DateTime.Now)
                     {
                         // Load diagnoses for this appointment
                         var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync(appointment.IdNavsteva);

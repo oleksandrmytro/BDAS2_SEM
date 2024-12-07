@@ -62,8 +62,7 @@ namespace BDAS2_SEM.Repository
                 var query = @"SELECT 
                                 ID_NAVSTEVA AS IdNavsteva,
                                 DATUM AS Datum,
-                                CAS AS Cas,
-                                MISTNOST AS Mistnost,
+                                MISTNOST_ID AS MistnostId,
                                 PACIENT_ID_PACIENT AS PacientId,
                                 STATUS_ID_STATUS AS Status
                               FROM NAVSTEVA WHERE ID_NAVSTEVA = :id";
@@ -107,10 +106,8 @@ namespace BDAS2_SEM.Repository
         {
             using (var db = new OracleConnection(connectionString))
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("p_id_navsteva", id, DbType.Int32);
-
-                await db.ExecuteAsync("DELETE_NAVSTEVA", parameters, commandType: CommandType.StoredProcedure);
+                string sql = "DELETE FROM NAVSTEVA WHERE ID_NAVSTEVA = :Id";
+                await db.ExecuteAsync(sql, new { Id = id });
             }
         }
 
@@ -264,7 +261,7 @@ namespace BDAS2_SEM.Repository
                     SELECT id_navsteva AS IdNavsteva,
                            datum AS Datum,
                            pacient_id_pacient AS PacientId,
-                           status_id_status AS Status,
+                           status_id_status AS StatusId,
                            MISTNOST_ID As MistnostId
                     FROM NAVSTEVA";
 

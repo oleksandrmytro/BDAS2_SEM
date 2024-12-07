@@ -47,7 +47,7 @@ namespace BDAS2_SEM.Repository
 
                 var parameters = new DynamicParameters();
                 parameters.Add("p_action", "UPDATE", DbType.String);
-                parameters.Add("p_id_typ_lek", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_id_typ_lek", typLek.IdTypLek, DbType.Int32, direction: ParameterDirection.Input);
                 parameters.Add("p_nazev", typLek.Nazev, DbType.String);
 
                 await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);

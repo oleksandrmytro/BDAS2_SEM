@@ -88,14 +88,23 @@ public class AppointmentsVM : INotifyPropertyChanged
                     if (appointmentDate.HasValue)
                     {
                         if (appointmentDate.Value >= DateTime.Now)
+                        
                             FutureAppointments.Add(appointmentWithPatient);
+
                         else
+                        {
+                            appointment.StatusId = 4;
+                            _navstevaRepository.UpdateNavsteva(appointment);
                             PastAppointments.Add(appointmentWithPatient);
+                        }
                     }
                     else
                     {
                         FutureAppointments.Add(appointmentWithPatient);
                     }
+                } else if (status == 4)
+                {
+                    PastAppointments.Add(appointmentWithPatient);
                 }
             }
     }

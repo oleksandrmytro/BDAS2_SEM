@@ -22,50 +22,41 @@ namespace BDAS2_SEM.Repository
 
         public async Task<int> AddLek(LEK lek)
         {
-            using (var db = new OracleConnection(this.connectionString))
+            using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    INSERT INTO LEK (NAZEV, MNOZSTVI, CENA, TYP_LEK_ID) 
-                    VALUES (:Nazev, :Mnozstvi, :Cena, :TypLekId) 
-                    RETURNING ID_LEK INTO :IdLek";
-
+                var procedureName = "manage_lek";
                 var parameters = new DynamicParameters();
-                parameters.Add("Nazev", lek.Nazev, DbType.String);
-                parameters.Add("Mnozstvi", lek.Mnozstvi, DbType.Int32);
-                parameters.Add("Cena", lek.Cena, DbType.Decimal);
-                parameters.Add("TypLekId", lek.TypLekId, DbType.Int32);
-                parameters.Add("IdLek", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                await db.ExecuteAsync(sql, parameters);
+                parameters.Add("p_action", "INSERT", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_lek", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("p_nazev", lek.Nazev, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_mnozstvi", lek.Mnozstvi, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_cena", lek.Cena, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_typ_lek_id", lek.TypLekId, DbType.Int32, ParameterDirection.Input);
 
-                return parameters.Get<int>("IdLek");
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+                return parameters.Get<int>("p_id_lek");
             }
         }
 
         public async Task UpdateLek(LEK lek)
         {
-            using (var db = new OracleConnection(this.connectionString))
+            using (var db = new OracleConnection(connectionString))
             {
-                string sql = @"
-                    UPDATE LEK 
-                    SET NAZEV = :Nazev, 
-                        MNOZSTVI = :Mnozstvi, 
-                        CENA = :Cena, 
-                        TYP_LEK_ID = :TypLekId 
-                    WHERE ID_LEK = :IdLek";
+                var procedureName = "manage_lek";
+                var parameters = new DynamicParameters();
 
-                var parameters = new
-                {
-                    Nazev = lek.Nazev,
-                    Mnozstvi = lek.Mnozstvi,
-                    Cena = lek.Cena,
-                    TypLekId = lek.TypLekId,
-                    IdLek = lek.IdLek
-                };
+                parameters.Add("p_action", "UPDATE", DbType.String, ParameterDirection.Input);
+                parameters.Add("p_id_lek", lek.IdLek, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_nazev", lek.Nazev, DbType.String, ParameterDirection.Input);
+                parameters.Add("p_mnozstvi", lek.Mnozstvi, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("p_cena", lek.Cena, DbType.Decimal, ParameterDirection.Input);
+                parameters.Add("p_typ_lek_id", lek.TypLekId, DbType.Int32, ParameterDirection.Input);
 
-                await db.ExecuteAsync(sql, parameters);
+                await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
 
         public async Task<LEK> GetLekById(int id)
         {

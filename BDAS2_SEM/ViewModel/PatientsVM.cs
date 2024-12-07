@@ -87,6 +87,11 @@ namespace BDAS2_SEM.ViewModel
                     Content = _serviceProvider.GetRequiredService<PDiagnosesView>()
 
                 },
+                new TabItemVM
+                {
+                    Name = "Platba",
+                    Content = _serviceProvider.GetRequiredService<PPlatbaView>()
+                },
                 new TabItemVM {
                     Name = "Settings",
                     Content = _serviceProvider.GetRequiredService<PSettingsView>()
