@@ -40,6 +40,10 @@ namespace BDAS2_SEM.ViewModel
         {
             Tabs = new ObservableCollection<TabItemVM>
             {
+                new TabItemVM { 
+                    Name = "Analyze",
+                    Content = _serviceProvider.GetRequiredService<AnalyzeView>()    
+                },
                 new TabItemVM {
                     Name = "New Users",
                     Content = _serviceProvider.GetRequiredService<NewUsersView>()

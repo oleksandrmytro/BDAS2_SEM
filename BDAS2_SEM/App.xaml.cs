@@ -80,6 +80,8 @@ namespace BDAS2_SEM
                 new NavstevaDoctorViewRepository(connectionString));
             services.AddSingleton<IPDiagnosesRepository, PDiagnosesRepository>(provider =>
                 new PDiagnosesRepository(connectionString));
+            services.AddSingleton<IAnalyzeRepository, AnalyzeRepository>(provider =>
+                new AnalyzeRepository(connectionString));
 
             // Register services
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
@@ -117,6 +119,7 @@ namespace BDAS2_SEM
             services.AddTransient<PDiagnosesVM>();
             services.AddTransient<VMDiagnosis>();
             services.AddTransient<PPlatbaVM>();
+            services.AddTransient<AnalyzeViewModel>();
             // Register other ViewModels if needed
 
             // Register Views
@@ -147,6 +150,7 @@ namespace BDAS2_SEM
             services.AddTransient<ViewDiagnosisWindow>();
             services.AddTransient<PPlatbaView>();
             services.AddTransient<PaymentWindow>();
+            services.AddTransient<AnalyzeView>();
             // Register other Views if needed
 
         }

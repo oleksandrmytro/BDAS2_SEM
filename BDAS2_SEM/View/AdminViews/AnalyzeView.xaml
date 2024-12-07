@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="BDAS2_SEM.View.AdminViews.AnalyzeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <!-- Определение стиля для TextBlock -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="#3D5170"/>
+        </Style>
+
+        <!-- Определение стиля для TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="BorderBrush" Value="#007ACC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- Определение стиля для Button -->
+        <Style TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="5,2"/>
+            <Setter Property="Margin" Value="0,20,0,0"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#007ACC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Для ComboBox -->
+            <RowDefinition Height="Auto"/>
+            <!-- Для DatePicker'ов -->
+            <RowDefinition Height="Auto"/>
+            <!-- Для ID менеджера -->
+            <RowDefinition Height="Auto"/>
+            <!-- Для кнопки -->
+            <RowDefinition Height="Auto"/>
+            <!-- Для TextBox -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" Text="Анализ Данных" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <!-- ComboBox для выбора процедуры -->
+        <ComboBox Grid.Row="1" 
+                  x:Name="ProcedureComboBox" 
+                  HorizontalAlignment="Stretch"
+                  Margin="0,0,0,10"
+                  ItemsSource="{Binding Procedures}" 
+                  SelectedItem="{Binding SelectedProcedure}"/>
+
+        <!-- Grid с DatePicker'ами -->
+        <Grid Grid.Row="2" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <DatePicker x:Name="StartDatePicker" 
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        SelectedDate="{Binding StartDate}"/>
+            <DatePicker x:Name="EndDatePicker" 
+                        Grid.Column="2"
+                        HorizontalAlignment="Stretch"
+                        SelectedDate="{Binding EndDate}"/>
+        </Grid>
+
+        <!-- Поле для ввода ID менеджера -->
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="ID менеджера:" 
+                       VerticalAlignment="Center" 
+                       Grid.Column="0"/>
+            <TextBox Grid.Column="2" 
+                     HorizontalAlignment="Stretch" 
+                     Text="{Binding ManagerId, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+
+        <!-- Кнопка выполнения процедуры -->
+        <Button Grid.Row="4" 
+                Content="Выполнить" 
+                Width="150" 
+                HorizontalAlignment="Left" 
+                Command="{Binding ExecuteProcedureCommand}"/>
+
+        <!-- TextBox с прокруткой -->
+        <ScrollViewer Grid.Row="5" 
+                      VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Auto">
+            <TextBox x:Name="ResultTextBox" 
+                     TextWrapping="Wrap" 
+                     Text="{Binding Result}" 
+                     IsReadOnly="True" 
+                     Background="LightGray"
+                     Padding="5"/>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
