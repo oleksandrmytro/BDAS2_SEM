@@ -2,7 +2,6 @@
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
-using BDAS2_SEM.Model.Enum;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +12,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using BDAS2_SEM.View.AdminViews;
+using BDAS2_SEM.Repository;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -50,6 +50,18 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        private ObservableCollection<ROLE> _availableRoles;
+        public ObservableCollection<ROLE> AvailableRoles
+        {
+            get => _availableRoles;
+            set
+            {
+                _availableRoles = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IZamestnanecRepository _zamestnanecRepository;
         private readonly IPacientRepository _pacientRepository;
@@ -65,7 +77,8 @@ namespace BDAS2_SEM.ViewModel
             IUzivatelDataRepository uzivatelDataRepository,
             IZamestnanecRepository zamestnanecRepository,
             IPacientRepository pacientRepository,
-            IWindowService windowService)
+            IWindowService windowService,
+            IRoleRepository roleRepository)
         {
             _uzivatelDataRepository = uzivatelDataRepository;
             _zamestnanecRepository = zamestnanecRepository;
@@ -73,7 +86,14 @@ namespace BDAS2_SEM.ViewModel
             _windowService = windowService;
 
             Users = new ObservableCollection<dynamic>();
+            LoadRolesAsync(roleRepository);
             LoadUsersCommand.Execute(null);
+        }
+
+        private async void LoadRolesAsync(IRoleRepository roleRepository)
+        {
+            var roles = await roleRepository.GetAllRoles();
+            AvailableRoles = new ObservableCollection<ROLE>(roles);
         }
 
         private async Task LoadUsersAsync()
@@ -89,7 +109,7 @@ namespace BDAS2_SEM.ViewModel
                     string firstName = null;
                     string lastName = null;
 
-                    if (user.RoleUzivatel == Role.PACIENT && user.pacientId.HasValue)
+                    if (user.RoleId == 2 && user.pacientId.HasValue)
                     {
                         var pacient = await _pacientRepository.GetPacientByUserDataId(user.Id);
                         firstName = pacient.Jmeno;
@@ -102,7 +122,7 @@ namespace BDAS2_SEM.ViewModel
 
                         usersWithNames.Add(dynamicUser);
                     }
-                    else if (user.RoleUzivatel == Role.ZAMESTNANEC && user.zamestnanecId.HasValue)
+                    else if (user.RoleId == 3 && user.zamestnanecId.HasValue)
                     {
                         var zamestnanec = await _zamestnanecRepository.GetZamestnanecByUserDataId(user.Id);
                         firstName = zamestnanec.Jmeno;
@@ -145,11 +165,25 @@ namespace BDAS2_SEM.ViewModel
 
             string search = SearchQuery.ToLower();
 
-            return (dynamicUser.FirstName != null && dynamicUser.FirstName.ToLower().Contains(search))
-                || (dynamicUser.LastName != null && dynamicUser.LastName.ToLower().Contains(search))
-                || (dynamicUser.User.Email != null && dynamicUser.User.Email.ToLower().Contains(search))
-                || (dynamicUser.User.RoleUzivatel != null && dynamicUser.User.RoleUzivatel.ToString().ToLower().Contains(search));
+            string firstName = dynamicUser.FirstName ?? "";
+            string lastName = dynamicUser.LastName ?? "";
+            string email = dynamicUser.User.Email ?? "";
+
+            // Знаходимо назву ролі
+            string roleName = "Unknown Role";
+            if (dynamicUser.User.RoleId is int roleId && AvailableRoles != null)
+            {
+                var role = AvailableRoles.FirstOrDefault(r => r.IdRole == roleId);
+                if (role != null)
+                    roleName = role.Nazev ?? "Unknown Role";
+            }
+
+            return firstName.ToLower().Contains(search)
+                   || lastName.ToLower().Contains(search)
+                   || email.ToLower().Contains(search)
+                   || roleName.ToLower().Contains(search);
         }
+
 
         private async Task SimulateAsync(dynamic dynamicUser)
         {
@@ -158,11 +192,11 @@ namespace BDAS2_SEM.ViewModel
                 var user = dynamicUser.User as UZIVATEL_DATA;
                 if (user != null)
                 {
-                    if (user.RoleUzivatel == Role.ADMIN)
+                    if (user.RoleId == 4)
                     {
                         _windowService.OpenAdminWindow();
                     }
-                    else if (user.RoleUzivatel == Role.ZAMESTNANEC)
+                    else if (user.RoleId == 3)
                     {
                         var zamestnanec = await _zamestnanecRepository.GetZamestnanecByUserDataId(user.Id);
                         if (zamestnanec != null)
@@ -170,7 +204,7 @@ namespace BDAS2_SEM.ViewModel
                             _windowService.OpenDoctorWindow(zamestnanec);
                         }
                     }
-                    else if (user.RoleUzivatel == Role.PACIENT)
+                    else if (user.RoleId == 2)
                     {
                         var pacient = await _pacientRepository.GetPacientByUserDataId(user.Id);
                         if (pacient != null)

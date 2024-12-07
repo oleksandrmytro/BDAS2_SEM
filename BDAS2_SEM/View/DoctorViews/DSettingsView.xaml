@@ -6,6 +6,11 @@
              xmlns:local="clr-namespace:BDAS2_SEM.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+    </UserControl.Resources>
 
     <Grid Background="White" Margin="20">
         <Grid.RowDefinitions>
@@ -64,6 +69,28 @@
                 <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditEmailCommand}">
                     <Image Source="Icons/edit.png" Width="20" Height="20"/>
                 </Button>
+            </StackPanel>
+
+            <!-- Address Editing -->
+            <StackPanel Orientation="Horizontal" Margin="0,15" VerticalAlignment="Center">
+                <TextBlock Text="Address" Width="200" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+                <!-- Display Selected Address -->
+                <TextBlock Text="{Binding SelectedAddress.FullAddress}" Width="300" FontSize="16" Foreground="Gray" VerticalAlignment="Center"
+                           Visibility="{Binding IsEditingAddress, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                <!-- ComboBox for Editing Address -->
+                <ComboBox Width="300" FontSize="16"
+                          ItemsSource="{Binding AddressList}"
+                          SelectedItem="{Binding SelectedAddress, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="FullAddress"
+                          Visibility="{Binding IsEditingAddress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <!-- Edit Address Button -->
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditAddressCommand}">
+                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
+                </Button>
+                <!-- Add New Address Button -->
+                <Button Content="Add New" Width="80" Height="30" Margin="10,0,0,0" Background="LightGray"
+                        Command="{Binding AddAddressCommand}"
+                        Visibility="{Binding IsEditingAddress, Converter={StaticResource BoolToVisibilityConverter}}"/>
             </StackPanel>
 
             <!-- Кнопка для завантаження фото -->

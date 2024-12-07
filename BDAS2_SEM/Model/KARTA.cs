@@ -7,6 +7,7 @@ namespace BDAS2_SEM.Model
     {
         private int idPlatba;
         private long cisloKarty;
+        private decimal? _castkaIn;
 
         public int IdPlatba
         {
@@ -29,6 +30,19 @@ namespace BDAS2_SEM.Model
                 if (cisloKarty != value)
                 {
                     cisloKarty = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public decimal? CastkaIn
+        {
+            get => _castkaIn;
+            set
+            {
+                if (_castkaIn != value)
+                {
+                    _castkaIn = value;
                     OnPropertyChanged();
                 }
             }

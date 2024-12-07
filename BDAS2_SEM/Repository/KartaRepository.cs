@@ -78,7 +78,7 @@ namespace BDAS2_SEM.Repository
             {
                 var sqlQuery = @"
                     SELECT ID_PLATBA AS IdPlatba,
-                           CISLO_KARTY AS Cislo
+                           CISLO_KARTY AS CisloKarty
                     FROM KARTA";
 
                 return await db.QueryAsync<KARTA>(sqlQuery);

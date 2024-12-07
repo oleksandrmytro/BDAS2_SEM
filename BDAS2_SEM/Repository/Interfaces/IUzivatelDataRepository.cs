@@ -1,5 +1,4 @@
 ﻿using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;

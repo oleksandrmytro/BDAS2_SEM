@@ -24,6 +24,8 @@
             <converters:MistnostConverter x:Key="MistnostConverter" />
             <converters:StatusConverter x:Key="StatusConverter" />
             <converters:TypLekMultiConverter x:Key="TypLekMultiConverter" />
+            <converters:RoleConverter x:Key="RoleConverter"/>
+            <converters:DecimalNullableConverter x:Key="DecimalNullableConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

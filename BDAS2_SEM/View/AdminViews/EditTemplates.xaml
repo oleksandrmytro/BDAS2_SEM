@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:BDAS2_SEM.Model"
-                    xmlns:enum="clr-namespace:BDAS2_SEM.Model.Enum"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <!-- Define a style for TextBlocks -->
@@ -116,7 +115,27 @@
         </StackPanel>
     </DataTemplate>
 
+    <!-- DataTemplate for HOTOVOST -->
+    <DataTemplate DataType="{x:Type models:HOTOVOST}">
+        <StackPanel>
+            <Label Content="PRIJATO:" />
+            <TextBox Text="{Binding Prijato, UpdateSourceTrigger=PropertyChanged}" />
 
+            <Label Content="VRACENO:" />
+            <TextBox Text="{Binding Vraceno, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- DataTemplate для KARTA -->
+    <DataTemplate DataType="{x:Type models:KARTA}">
+        <StackPanel>
+            <Label Content="Номер Картки:" />
+            <TextBox Text="{Binding CisloKarty, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+            <Label Content="Сума (Castka):" />
+            <TextBox Text="{Binding DataContext.CastkaIn, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+        </StackPanel>
+    </DataTemplate>
 
     <!-- DataTemplate for Diagnóza -->
     <DataTemplate DataType="{x:Type models:DIAGNOZA}">
@@ -154,28 +173,59 @@
             <Label Content="ZAMESTNANEC_ID_C:" />
             <TextBox Text="{Binding zamestnanecId, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Content="ROLE_ID_ROLE:" />
-            <TextBox Text="{Binding RoleUzivatel, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="ROLE:" />
+            <ComboBox 
+                ItemsSource="{Binding DataContext.AvailableRoles, RelativeSource={RelativeSource AncestorType=Window}}"
+                SelectedValue="{Binding RoleId, UpdateSourceTrigger=PropertyChanged}"
+                SelectedValuePath="IdRole"
+                DisplayMemberPath="Nazev"
+                Margin="0,5"/>
+
         </StackPanel>
     </DataTemplate>
 
-    <!-- DataTemplate for Platba -->
+
+    <!-- DataTemplate for PLATBA -->
     <DataTemplate DataType="{x:Type models:PLATBA}">
         <StackPanel>
-
             <Label Content="CASTKA:" />
             <TextBox Text="{Binding Castka, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Content="DATUM:" />
-            <DatePicker SelectedDate="{Binding Datum, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="DATA:" />
+            <DatePicker SelectedDate="{Binding DataContext.DatumDate, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Label Content="ЧАС:" />
+            <TextBox Text="{Binding DataContext.DatumTime, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" ToolTip="Формат: HH:mm:ss" />
 
             <Label Content="TYP_PLATBY:" />
-            <TextBox Text="{Binding TypPlatby, UpdateSourceTrigger=PropertyChanged}" />
+            <ComboBox SelectedValuePath="Content" 
+                      SelectedValue="{Binding DataContext.SelectedPaymentMethod, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}"
+                      Margin="0,5"
+                      Width="150">
+                <ComboBoxItem Content="karta"/>
+                <ComboBoxItem Content="hotovost"/>
+            </ComboBox>
+
+            <!-- Поля для оплати карткою -->
+            <StackPanel Margin="0,10,0,0" Visibility="{Binding DataContext.IsKartaMethod, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Label Content="Card Number:" />
+                <TextBox Text="{Binding DataContext.CardNumber, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <!-- Поля для готівкової оплати -->
+            <StackPanel Margin="0,10,0,0" Visibility="{Binding DataContext.IsHotovostMethod, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Label Content="Amount Given:" />
+                <TextBox Text="{Binding DataContext.CashGiven, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Content="Change:" />
+                <TextBox Text="{Binding DataContext.Change, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Background="#f0f0f0"/>
+            </StackPanel>
 
             <Label Content="NAVSTEVA_ID_NAVSTEVA:" />
             <TextBox Text="{Binding NavstevaId, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
     </DataTemplate>
+
 
     <!-- DataTemplate for PACIENT -->
     <DataTemplate DataType="{x:Type models:PACIENT}">
@@ -248,8 +298,15 @@
         </StackPanel>
     </DataTemplate>
 
-    <!-- DataTemplate for Status -->
+    <!-- DataTemplate for Role -->
+    <DataTemplate DataType="{x:Type models:ROLE}">
+        <StackPanel>
+            <Label Content="NAZEV:" />
+            <TextBox Text="{Binding Nazev, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </DataTemplate>
 
+    <!-- DataTemplate for Status -->
     <DataTemplate DataType="{x:Type models:STATUS}">
         <StackPanel>
             <Label Content="NAZEV:" />
@@ -293,8 +350,6 @@
                 DisplayMemberPath="Nazev" />
         </StackPanel>
     </DataTemplate>
-
-
 
     <!-- DataTemplate for Operace -->
     <DataTemplate DataType="{x:Type models:OPERACE}">

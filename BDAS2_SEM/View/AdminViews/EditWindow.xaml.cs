@@ -1,6 +1,4 @@
-﻿// EditWindow.xaml.cs
-
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
@@ -9,6 +7,7 @@ using System.Windows;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace BDAS2_SEM.View.AdminViews
 {
@@ -44,6 +43,141 @@ namespace BDAS2_SEM.View.AdminViews
         public ObservableCollection<ADRESA> AdresaList { get; set; }
         public ObservableCollection<POZICE> PoziceList { get; set; }
         public ObservableCollection<TYP_LEK> TypLeks { get; set; }
+        public ObservableCollection<ROLE> AvailableRoles { get; set; }
+
+        private decimal? _castkaIn;
+        public decimal? CastkaIn
+        {
+            get => _castkaIn;
+            set
+            {
+                if (_castkaIn != value)
+                {
+                    _castkaIn = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime? _datumDate;
+        public DateTime? DatumDate
+        {
+            get => _datumDate;
+            set
+            {
+                if (_datumDate != value)
+                {
+                    _datumDate = value;
+                    OnPropertyChanged();
+                    UpdateFullDatum();
+                }
+            }
+        }
+
+        private string _datumTime;
+        public string DatumTime
+        {
+            get => _datumTime;
+            set
+            {
+                if (_datumTime != value)
+                {
+                    _datumTime = value;
+                    OnPropertyChanged();
+                    UpdateFullDatum();
+                }
+            }
+        }
+
+        // Властивості для управління типом оплати
+        private string _selectedPaymentMethod;
+        public string SelectedPaymentMethod
+        {
+            get => _selectedPaymentMethod;
+            set
+            {
+                if (_selectedPaymentMethod != value)
+                {
+                    _selectedPaymentMethod = value;
+                    OnPropertyChanged();
+                    UpdatePaymentMethodFlags();
+                }
+            }
+        }
+
+        private bool _isKartaMethod;
+        public bool IsKartaMethod
+        {
+            get => _isKartaMethod;
+            set
+            {
+                if (_isKartaMethod != value)
+                {
+                    _isKartaMethod = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool _isHotovostMethod;
+        public bool IsHotovostMethod
+        {
+            get => _isHotovostMethod;
+            set
+            {
+                if (_isHotovostMethod != value)
+                {
+                    _isHotovostMethod = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Властивості специфічні для картки
+        private decimal? _cardNumber;
+        public decimal? CardNumber
+        {
+            get => _cardNumber;
+            set
+            {
+                if (_cardNumber != value)
+                {
+                    _cardNumber = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        // Властивості специфічні для готівки
+        private decimal? _cashGiven;
+        public decimal? CashGiven
+        {
+            get => _cashGiven;
+            set
+            {
+                if (_cashGiven != value)
+                {
+                    _cashGiven = value;
+                    OnPropertyChanged();
+                    UpdateChange();
+                }
+            }
+        }
+
+        private decimal? _change;
+        public decimal? Change
+        {
+            get => _change;
+            set
+            {
+                if (_change != value)
+                {
+                    _change = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
 
         public EditWindowViewModel(object item, IServiceProvider serviceProvider)
         {
@@ -57,6 +191,92 @@ namespace BDAS2_SEM.View.AdminViews
             AdresaList = new ObservableCollection<ADRESA>();
             PoziceList = new ObservableCollection<POZICE>();
             TypLeks = new ObservableCollection<TYP_LEK>();
+            AvailableRoles = new ObservableCollection<ROLE>();
+
+            // Якщо Item це PLATBA, ініціалізуємо прапорці та підписуємося на PropertyChanged
+            if (Item is PLATBA platbaItem)
+            {
+                platbaItem.PropertyChanged += PlatbaItem_PropertyChanged;
+
+                // Ініціалізуємо властивості ViewModel на основі моделі PLATBA
+                DatumDate = platbaItem.Datum.Date;
+                DatumTime = platbaItem.Datum.ToString("HH:mm:ss");
+                SelectedPaymentMethod = platbaItem.TypPlatby;
+
+                // Ініціалізуємо специфічні поля залежно від типу оплати
+                if (platbaItem.TypPlatby.Equals("karta", StringComparison.OrdinalIgnoreCase))
+                {
+                    CardNumber = platbaItem.CisloKarty;
+                }
+                else if (platbaItem.TypPlatby.Equals("hotovost", StringComparison.OrdinalIgnoreCase))
+                {
+                    CashGiven = platbaItem.Prijato;
+                    Change = platbaItem.Vraceno;
+                }
+
+                UpdatePaymentMethodFlags(platbaItem.TypPlatby);
+            }
+
+            // Якщо Item це KARTA, ініціалізуємо відповідні властивості
+            if (Item is KARTA kartaItem)
+            {
+                CardNumber = kartaItem.CisloKarty;
+
+                if (!_isNewItem)
+                {
+                    var platbaRepo = _serviceProvider.GetService<IPlatbaRepository>();
+                    if (platbaRepo != null)
+                    {
+                        var platba = platbaRepo.GetPlatbaById(kartaItem.IdPlatba).Result;
+                        if (platba != null)
+                        {
+                            CastkaIn = platba.Castka;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void PlatbaItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PLATBA.TypPlatby))
+            {
+                if (sender is PLATBA platbaItem)
+                {
+                    UpdatePaymentMethodFlags(platbaItem.TypPlatby);
+                }
+            }
+        }
+
+        private void UpdatePaymentMethodFlags()
+        {
+            // Оновлюємо прапорці на основі вибраного типу оплати
+            IsKartaMethod = SelectedPaymentMethod.Equals("karta", StringComparison.OrdinalIgnoreCase);
+            IsHotovostMethod = SelectedPaymentMethod.Equals("hotovost", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void UpdatePaymentMethodFlags(string typPlatby)
+        {
+            IsKartaMethod = typPlatby.Equals("karta", StringComparison.OrdinalIgnoreCase);
+            IsHotovostMethod = typPlatby.Equals("hotovost", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void UpdateChange()
+        {
+            if (Item is PLATBA platbaItem)
+            {
+                platbaItem.Vraceno = CashGiven - platbaItem.Castka;
+                Change = platbaItem.Vraceno;
+            }
+        }
+
+        private void UpdateFullDatum()
+        {
+            // Якщо Item - PLATBA, то складаємо дату і час назад в одне поле
+            if (Item is PLATBA platbaItem && DatumDate.HasValue && TimeSpan.TryParse(DatumTime, out var time))
+            {
+                platbaItem.Datum = DatumDate.Value.Date + time;
+            }
         }
 
         public async void LoadComboBoxDataAsync()
@@ -66,6 +286,7 @@ namespace BDAS2_SEM.View.AdminViews
                 var adresaRepo = _serviceProvider.GetService<IAdresaRepository>();
                 var poziceRepo = _serviceProvider.GetService<IPoziceRepository>();
                 var typLekRepo = _serviceProvider.GetService<ITypLekRepository>();
+                var roleRepo = _serviceProvider.GetService<IRoleRepository>();
 
                 if (adresaRepo != null)
                 {
@@ -87,6 +308,13 @@ namespace BDAS2_SEM.View.AdminViews
                     foreach (var typLek in typLekItems)
                         TypLeks.Add(typLek);
                 }
+
+                if (roleRepo != null)
+                {
+                    var roleItems = await roleRepo.GetAllRoles();
+                    foreach (var role in roleItems)
+                        AvailableRoles.Add(role);
+                }
             }
             catch (Exception ex)
             {
@@ -98,10 +326,31 @@ namespace BDAS2_SEM.View.AdminViews
         {
             try
             {
-                // Копіюємо властивості з Item в OriginalItem
                 CopyProperties(Item, _originalItem);
 
-                // Виконуємо збереження залежно від типу об'єкта
+                // Якщо Item це PLATBA, встановлюємо додаткові поля
+                if (_originalItem is PLATBA platbaItem)
+                {
+                    // Переконайтеся, що всі специфічні поля встановлені
+                    platbaItem.TypPlatby = SelectedPaymentMethod;
+
+                    if (IsKartaMethod)
+                    {
+                        platbaItem.CisloKarty = CardNumber;
+                        platbaItem.Prijato = null;
+                        platbaItem.Vraceno = null;
+                    }
+                    else if (IsHotovostMethod)
+                    {
+                        platbaItem.Prijato = CashGiven;
+                        platbaItem.Vraceno = Change;
+                        platbaItem.CisloKarty = null;
+                    }
+
+                    // Оновлюємо дату та час
+                    UpdateFullDatum();
+                }
+
                 switch (_originalItem)
                 {
                     case ADRESA adresa:
@@ -151,23 +400,66 @@ namespace BDAS2_SEM.View.AdminViews
                         break;
 
                     case HOTOVOST hotovost:
+                        var platbaHotRepo = _serviceProvider.GetService<IPlatbaRepository>();
                         var hotovostRepo = _serviceProvider.GetService<IHotovostRepository>();
-                        if (hotovostRepo != null)
+                        if (platbaHotRepo != null && hotovostRepo != null)
                         {
                             if (_isNewItem)
-                                await hotovostRepo.AddHotovost(hotovost);
+                            {
+                                // Створюємо новий об'єкт PLATBA, якщо його ще немає
+                                var newPlatba = new PLATBA
+                                {
+                                    // Ініціалізуйте необхідні властивості PLATBA
+                                    Prijato = hotovost.Prijato,
+                                    Vraceno = hotovost.Vraceno,
+                                    TypPlatby = "hotovost",
+                                    Datum = DateTime.Now,
+                                    CisloKarty = null,
+                                    Castka = hotovost.Prijato - hotovost.Vraceno,
+                                    NavstevaId = null,
+                                    // Додайте інші властивості за потребою
+                                };
+
+                                // Вставляємо PLATBA і отримуємо його ID
+                                await platbaHotRepo.AddPlatba(newPlatba);
+
+                            }
                             else
-                                await hotovostRepo.UpdateHotovost(hotovost);
+                            {
+                                // Якщо це не новий елемент, оновлюємо PLATBA та HOTOVOST
+                                
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Помилка: Не вдалося отримати необхідні репозиторії.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
                         break;
 
+
                     case KARTA karta:
+                        var platbaKarRepo = _serviceProvider.GetService<IPlatbaRepository>();
                         var kartaRepo = _serviceProvider.GetService<IKartaRepository>();
                         if (kartaRepo != null)
                         {
                             if (_isNewItem)
-                                await kartaRepo.AddKarta(karta);
+                            {
+                                var newPlatba = new PLATBA
+                                {
+                                    // Ініціалізуйте необхідні властивості PLATBA
+                                    Prijato = null,
+                                    Vraceno = null,
+                                    TypPlatby = "karta",
+                                    Datum = DateTime.Now,
+                                    CisloKarty = karta.CisloKarty,
+                                    Castka = CastkaIn,
+                                    NavstevaId = null,
+                                    // Додайте інші властивості за потребою
+                                };
+
+                                await platbaKarRepo.AddPlatba(newPlatba);
+                            }
                             else
                                 await kartaRepo.UpdateKarta(karta);
                         }
@@ -283,6 +575,7 @@ namespace BDAS2_SEM.View.AdminViews
                         break;
 
                     case PLATBA platba:
+                        // Дата і час вже зібрані в UpdateFullDatum()
                         var platbaRepo = _serviceProvider.GetService<IPlatbaRepository>();
                         if (platbaRepo != null)
                         {
@@ -314,6 +607,18 @@ namespace BDAS2_SEM.View.AdminViews
                                 await priponaRepo.AddPripona(pripona);
                             else
                                 await priponaRepo.UpdatePripona(pripona);
+                        }
+
+                        break;
+
+                    case ROLE role:
+                        var roleRepo = _serviceProvider.GetService<IRoleRepository>();
+                        if (roleRepo != null)
+                        {
+                            if (_isNewItem)
+                                await roleRepo.AddRole(role);
+                            else
+                                await roleRepo.UpdateRole(role);
                         }
 
                         break;
@@ -467,6 +772,9 @@ namespace BDAS2_SEM.View.AdminViews
 
                 case TYP_LEK typLek:
                     return typLek.IdTypLek == 0;
+
+                case ROLE role:
+                    return role.IdRole == 0;
 
                 case STATUS status:
                     return status.IdStatus == 0;

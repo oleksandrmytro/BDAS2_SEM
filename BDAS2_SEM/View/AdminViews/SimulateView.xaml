@@ -53,7 +53,7 @@
                     <TextBlock Text="First Name" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="2" Text="Email" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
-                    <TextBlock Grid.Column="3" Text="Role" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="ROLE" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
                     <TextBlock Grid.Column="4" Text="Action" FontWeight="Bold" FontSize="14" HorizontalAlignment="Right"/>
                 </Grid>
             </Border>
@@ -74,7 +74,16 @@
                             <TextBlock Text="{Binding FirstName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="1" Text="{Binding LastName}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="2" Text="{Binding User.Email}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Column="3" Text="{Binding User.RoleUzivatel}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource RoleConverter}">
+                                        <Binding Path="User.RoleId"/>
+                                        <Binding Path="DataContext.AvailableRoles" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+
                             <Button Grid.Column="4" Content="Simulate" 
                                     Style="{StaticResource ModernButtonStyle}"
                                     Command="{Binding DataContext.SimulateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 

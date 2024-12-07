@@ -1,7 +1,6 @@
 ﻿// ViewModel/AuthVM.cs
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces; // Add this using directive
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.View;
@@ -168,11 +167,11 @@ namespace BDAS2_SEM.ViewModel
                         PACIENT pacient = await _authenticationService.GetPatientByUserId(user.Id);
                         ErrorMessage = "Login successful!";
 
-                        if (user.RoleUzivatel == Role.ADMIN)
+                        if (user.RoleId == 4)
                         {
                             _windowService.OpenAdminWindow();
                         }
-                        else if (user.RoleUzivatel == Role.PACIENT)
+                        else if (user.RoleId == 2)
                         {
                             bool isPatientDataComplete = await _authenticationService.IsPatientDataComplete(user.Id);
 

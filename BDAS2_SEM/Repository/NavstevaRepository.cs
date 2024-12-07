@@ -1,5 +1,5 @@
 ﻿using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum; // Include the Status enum
+// Include the Status enum
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;

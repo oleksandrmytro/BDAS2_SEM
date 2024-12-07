@@ -26,8 +26,6 @@
                 <TextBox Width="300" FontSize="16" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingFirstName, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditFirstNameCommand}">
-                    <!-- Замініть 'edit.png' на фактичний шлях до вашої іконки -->
-                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
 
@@ -39,7 +37,6 @@
                 <TextBox Width="300" FontSize="16" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingLastName, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditLastNameCommand}">
-                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
 
@@ -51,7 +48,6 @@
                 <TextBox Width="300" FontSize="16" Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingPhone, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditPhoneCommand}">
-                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
 
@@ -63,9 +59,32 @@
                 <TextBox Width="300" FontSize="16" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" 
                          Visibility="{Binding IsEditingEmail, Converter={StaticResource BoolToVisibilityConverter}}"/>
                 <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditEmailCommand}">
-                    <Image Source="Icons/edit.png" Width="20" Height="20"/>
                 </Button>
             </StackPanel>
+
+            <!-- Address -->
+            <StackPanel Orientation="Horizontal" Margin="0,15" VerticalAlignment="Center">
+                <TextBlock Text="Address" Width="200" FontSize="16" Foreground="Black" VerticalAlignment="Center"/>
+
+                <!-- ComboBox for selecting address -->
+                <ComboBox Width="300" FontSize="16"
+                          ItemsSource="{Binding AddressList}"
+                          SelectedItem="{Binding SelectedAddress, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="FullAddress"
+                          Visibility="{Binding IsEditingAddress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                <!-- Current address display -->
+                <TextBlock Text="{Binding SelectedAddress.FullAddress}" Width="300" FontSize="16" Foreground="Gray" VerticalAlignment="Center"
+                           Visibility="{Binding IsEditingAddress, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+
+                <!-- Button to toggle address editing -->
+                <Button Width="30" Height="30" Margin="10,0,0,0" Background="Transparent" Command="{Binding EditAddressCommand}"/>
+
+                <!-- Button to add new address -->
+                <Button Content="Add New" Width="80" Height="30" Margin="10,0,0,0" Background="LightGray"
+                        Command="{Binding AddAddressCommand}" Visibility="{Binding IsEditingAddress, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            </StackPanel>
+
         </StackPanel>
 
         <!-- Кнопка Зберегти Зміни -->

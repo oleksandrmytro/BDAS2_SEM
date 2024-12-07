@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using BDAS2_SEM.View;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -15,6 +17,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPacientRepository _pacientRepository;
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IPatientContextService _patientContextService;
+        private readonly IAdresaRepository _adresaRepository; // Репозиторій для адрес
 
         private PACIENT _pacient;
         private UZIVATEL_DATA _userData;
@@ -28,6 +31,35 @@ namespace BDAS2_SEM.ViewModel
         private bool _isEditingLastName;
         private bool _isEditingPhone;
         private bool _isEditingEmail;
+
+        // Нові властивості для адреси
+        private ObservableCollection<ADRESA> _addressList;
+        public ObservableCollection<ADRESA> AddressList
+        {
+            get => _addressList;
+            set
+            {
+                _addressList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ADRESA _selectedAddress;
+        public ADRESA SelectedAddress
+        {
+            get => _selectedAddress;
+            set
+            {
+                if (_selectedAddress != value)
+                {
+                    _selectedAddress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ICommand AddAddressCommand { get; }
+        public ICommand EditAddressCommand { get; }
 
         public string FirstName
         {
@@ -121,6 +153,17 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        private bool _isEditingAddress;
+        public bool IsEditingAddress
+        {
+            get => _isEditingAddress;
+            set
+            {
+                _isEditingAddress = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand EditFirstNameCommand { get; }
         public ICommand EditLastNameCommand { get; }
         public ICommand EditPhoneCommand { get; }
@@ -132,12 +175,14 @@ namespace BDAS2_SEM.ViewModel
             IWindowService windowService,
             IPatientContextService patientContextService,
             IPacientRepository pacientRepository,
-            IUzivatelDataRepository uzivatelDataRepository)
+            IUzivatelDataRepository uzivatelDataRepository,
+            IAdresaRepository adresaRepository) // Додайте репозиторій адрес
         {
             _windowService = windowService;
             _pacientRepository = pacientRepository;
             _uzivatelDataRepository = uzivatelDataRepository;
             _patientContextService = patientContextService;
+            _adresaRepository = adresaRepository;
 
             EditFirstNameCommand = new RelayCommand(_ => ToggleEditingFirstName());
             EditLastNameCommand = new RelayCommand(_ => ToggleEditingLastName());
@@ -146,7 +191,31 @@ namespace BDAS2_SEM.ViewModel
             SaveCommand = new RelayCommand(async _ => await SaveChanges());
             CancelCommand = new RelayCommand(_ => CancelEdit());
 
+            AddAddressCommand = new RelayCommand(async _ => await AddNewAddress());
+            EditAddressCommand = new RelayCommand(_ => ToggleEditingAddress());
+
+            AddressList = new ObservableCollection<ADRESA>();
+
             LoadData();
+        }
+
+        private void ToggleEditingAddress()
+        {
+            IsEditingAddress = !IsEditingAddress;
+
+            if (IsEditingAddress)
+            {
+                // Disable other edit modes if necessary
+                IsEditingFirstName = false;
+                IsEditingLastName = false;
+                IsEditingPhone = false;
+                IsEditingEmail = false;
+            }
+            else
+            {
+                // Reset the selected address if editing is canceled
+                SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == _pacient.AdresaId);
+            }
         }
 
         private async void LoadData()
@@ -156,11 +225,20 @@ namespace BDAS2_SEM.ViewModel
             _userData = await _uzivatelDataRepository.GetUzivatelById(userId);
             _pacient = await _pacientRepository.GetPacientByUserDataId(userId);
 
+            // Load the list of addresses first
+            await LoadAddressList();
+
             if (_pacient != null)
             {
                 FirstName = _pacient.Jmeno;
                 LastName = _pacient.Prijmeni;
                 PhoneNumber = _pacient.Telefon.ToString();
+
+                // Set the SelectedAddress to the user's address
+                if (_pacient.AdresaId != 0)
+                {
+                    SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == _pacient.AdresaId);
+                }
             }
 
             if (_userData != null)
@@ -172,6 +250,17 @@ namespace BDAS2_SEM.ViewModel
             OnPropertyChanged(nameof(LastName));
             OnPropertyChanged(nameof(PhoneNumber));
             OnPropertyChanged(nameof(Email));
+            OnPropertyChanged(nameof(SelectedAddress));
+        }
+
+        private async Task LoadAddressList()
+        {
+            var addresses = await _adresaRepository.GetAllAddresses();
+            AddressList.Clear();
+            foreach (var address in addresses)
+            {
+                AddressList.Add(address);
+            }
         }
 
         private void ToggleEditingFirstName()
@@ -246,6 +335,7 @@ namespace BDAS2_SEM.ViewModel
             IsEditingLastName = false;
             IsEditingPhone = false;
             IsEditingEmail = false;
+            IsEditingAddress = false;
             LoadData();
         }
 
@@ -265,6 +355,14 @@ namespace BDAS2_SEM.ViewModel
                     IsEditingLastName = false;
                 }
 
+                if (IsEditingAddress)
+                {
+                    _pacient.AdresaId = SelectedAddress?.IdAdresa ?? 0;
+                    IsEditingAddress = false;
+                }
+
+                await _pacientRepository.UpdatePacient(_pacient);
+
                 if (IsEditingPhone)
                 {
                     if (long.TryParse(PhoneNumber, out long phone))
@@ -279,7 +377,11 @@ namespace BDAS2_SEM.ViewModel
                     IsEditingPhone = false;
                 }
 
-                // Переконайтеся, що інші необхідні поля заповнені
+                // Оновлюємо адресу, якщо змінилася
+                if (_pacient.AdresaId != (SelectedAddress?.IdAdresa ?? 0))
+                {
+                    _pacient.AdresaId = SelectedAddress?.IdAdresa ?? 0;
+                }
 
                 await _pacientRepository.UpdatePacient(_pacient);
             }
@@ -289,14 +391,32 @@ namespace BDAS2_SEM.ViewModel
                 _userData.Email = Email;
                 IsEditingEmail = false;
 
-                // Переконайтеся, що інші необхідні поля заповнені
-
                 await _uzivatelDataRepository.UpdateUserData(_userData);
             }
 
             // Перезавантажуємо дані, щоб відобразити зміни
             LoadData();
         }
+
+        private async Task AddNewAddress()
+        {
+            // Відкриваємо вікно для додавання нової адреси з передачею колбеку
+            _windowService.OpenAddAddressWindow(async newAddress =>
+            {
+                if (newAddress != null)
+                {
+                    // Додаємо нову адресу до бази даних
+                    await _adresaRepository.AddAdresa(newAddress);
+
+                    // Додаємо нову адресу до списку
+                    AddressList.Add(newAddress);
+
+                    // Встановлюємо нову адресу як вибрану
+                    SelectedAddress = newAddress;
+                }
+            });
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

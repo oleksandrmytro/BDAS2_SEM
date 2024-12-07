@@ -1,5 +1,4 @@
 ﻿using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -14,12 +13,13 @@ namespace BDAS2_SEM.Repository
     {
         private readonly IUzivatelDataRepository _uzivatelRepository;
         private readonly IPacientRepository _pacientRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        public AuthenticationService(IUzivatelDataRepository uzivatelRepository, IPacientRepository pacientRepository)
+        public AuthenticationService(IUzivatelDataRepository uzivatelRepository, IPacientRepository pacientRepository, IRoleRepository roleRepository)
         {
             _uzivatelRepository = uzivatelRepository;
             _pacientRepository = pacientRepository;
-
+            _roleRepository = roleRepository;
         }
 
         public async Task<bool> RegisterUserAsync(string email, string password)

@@ -1,7 +1,6 @@
 ﻿// UpdateAppointmentVM.cs
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Model.Enum;
 using BDAS2_SEM.Repository.Interfaces;
 using System;
 using System.Collections.ObjectModel;

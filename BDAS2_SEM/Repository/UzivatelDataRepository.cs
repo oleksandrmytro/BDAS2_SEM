@@ -1,5 +1,4 @@
-﻿using BDAS2_SEM.Model.Enum;
-using BDAS2_SEM.Model;
+﻿using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
@@ -30,7 +29,7 @@ namespace BDAS2_SEM.Repository
                         ID_UZIVATEL_DATA AS Id, 
                         EMAIL AS Email,
                         HESLO AS Heslo,
-                        ROLE_ID_ROLE AS RoleUzivatel,
+                        ROLE_ID_ROLE AS RoleId,
                         ZAMESTNANEC_ID_C AS ZamestnanecId
                     FROM 
                         UZIVATEL_DATA 
@@ -90,13 +89,13 @@ namespace BDAS2_SEM.Repository
                 ID_UZIVATEL_DATA AS Id, 
                 EMAIL AS Email, 
                 HESLO AS Heslo, 
-                ROLE_ID_ROLE AS RoleUzivatel 
+                ROLE_ID_ROLE AS RoleId 
             FROM 
                 UZIVATEL_DATA 
             WHERE 
                 ROLE_ID_ROLE = :UndefinedRole";
 
-                var parameters = new { UndefinedRole = (int)Role.NEOVERENY };
+                var parameters = new { UndefinedRole = 1 };
                 var users = await db.QueryAsync<UZIVATEL_DATA>(sql, parameters);
                 return users;
             }
@@ -113,7 +112,7 @@ namespace BDAS2_SEM.Repository
                         heslo as Heslo,
                         PACIENT_ID_C as pacientId,
                         ZAMESTNANEC_ID_C as zamestnanecId,
-                        ROLE_ID_ROLE AS RoleUzivatel 
+                        ROLE_ID_ROLE AS RoleId 
                     FROM 
                         UZIVATEL_DATA 
                     WHERE 
@@ -131,7 +130,7 @@ namespace BDAS2_SEM.Repository
                     SELECT 
                         ID_UZIVATEL_DATA AS Id, 
                         EMAIL AS Email, 
-                        ROLE_ID_ROLE AS RoleUzivatel 
+                        ROLE_ID_ROLE AS RoleId 
                     FROM 
                         UZIVATEL_DATA 
                     WHERE 
@@ -154,7 +153,7 @@ namespace BDAS2_SEM.Repository
                 parameters.Add("p_heslo", userData.Heslo, DbType.String);
                 parameters.Add("p_pacient_id_c", userData.pacientId, DbType.Int32);
                 parameters.Add("p_zamestnanec_id_c", userData.zamestnanecId, DbType.Int32);
-                parameters.Add("p_role_id_role", (int?)userData.RoleUzivatel, DbType.Int32);
+                parameters.Add("p_role_id_role", (int?)userData.RoleId, DbType.Int32);
 
                 await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
             }
@@ -170,7 +169,7 @@ namespace BDAS2_SEM.Repository
                            heslo AS Heslo,
                            pacient_id_c AS pacientId,
                            zamestnanec_id_c AS zamestnanecId,
-                           ROLE_ID_ROLE AS RoleUzivatel
+                           ROLE_ID_ROLE AS RoleId
                     FROM UZIVATEL_DATA";
 
                 return await db.QueryAsync<UZIVATEL_DATA>(sqlQuery);
