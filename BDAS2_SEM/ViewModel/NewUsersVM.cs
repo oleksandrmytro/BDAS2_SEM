@@ -12,8 +12,34 @@ namespace BDAS2_SEM.ViewModel
 {
     public class NewUsersVM : INotifyPropertyChanged
     {
-        public ObservableCollection<UZIVATEL_DATA> NewUsers { get; set; }
-        public ObservableCollection<ROLE> AvailableRoles { get; set; }
+        private ObservableCollection<UZIVATEL_DATA> _newUsers;
+        public ObservableCollection<UZIVATEL_DATA> NewUsers
+        {
+            get { return _newUsers; }
+            set
+            {
+                if (_newUsers != value)
+                {
+                    _newUsers = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<ROLE> _availableRoles;
+        public ObservableCollection<ROLE> AvailableRoles
+        {
+            get { return _availableRoles; }
+            set
+            {
+                if (_availableRoles != value)
+                {
+                    _availableRoles = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ICommand AssignRoleCommand { get; }
 
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
@@ -28,14 +54,12 @@ namespace BDAS2_SEM.ViewModel
             AssignRoleCommand = new RelayCommand(AssignRole);
             LoadRolesAsync();
             LoadNewUsers();
-            
         }
 
         private async void LoadNewUsers()
         {
             var users = await _uzivatelDataRepository.GetUsersWithUndefinedRole();
             NewUsers = new ObservableCollection<UZIVATEL_DATA>(users);
-            OnPropertyChanged(nameof(NewUsers));
         }
 
         private async Task LoadRolesAsync()
@@ -43,6 +67,12 @@ namespace BDAS2_SEM.ViewModel
             var roles = await _roleRepository.GetAllRoles();
             AvailableRoles = new ObservableCollection<ROLE>(roles);
             OnPropertyChanged(nameof(AvailableRoles));
+
+            // Отладочный вывод
+            foreach (var role in AvailableRoles)
+            {
+                Console.WriteLine($"Role Loaded: {role.IdRole} - {role.Nazev}");
+            }
         }
 
         private async void AssignRole(object parameter)
@@ -57,13 +87,11 @@ namespace BDAS2_SEM.ViewModel
                         {
                             if (isSaved)
                             {
-                                //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleId);
                                 await _uzivatelDataRepository.UpdateUserData(user);
 
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
                                     NewUsers.Remove(user);
-                                    OnPropertyChanged(nameof(NewUsers));
                                 });
                             }
                             else
@@ -78,13 +106,11 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else
                     {
-                        //await _uzivatelDataRepository.UpdateUserRole(user.Id, user.RoleId);
                         await _uzivatelDataRepository.UpdateUserData(user);
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             NewUsers.Remove(user);
-                            OnPropertyChanged(nameof(NewUsers));
                         });
                     }
                 }
@@ -96,7 +122,7 @@ namespace BDAS2_SEM.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

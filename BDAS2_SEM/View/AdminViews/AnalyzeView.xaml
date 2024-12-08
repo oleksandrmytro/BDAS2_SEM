@@ -2,13 +2,13 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Resources>
-        <!-- Определение стиля для TextBlock -->
+        <!-- Define a style for TextBlock -->
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="Foreground" Value="#3D5170"/>
         </Style>
 
-        <!-- Определение стиля для TextBox -->
+        <!-- Define a style for TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="14"/>
@@ -18,7 +18,7 @@
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <!-- Определение стиля для Button -->
+        <!-- Define a style for Button -->
         <Style TargetType="Button">
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="14"/>
@@ -48,25 +48,25 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Для ComboBox -->
+            <!-- For ComboBox -->
             <RowDefinition Height="Auto"/>
-            <!-- Для DatePicker'ов -->
+            <!-- For DatePickers -->
             <RowDefinition Height="Auto"/>
-            <!-- Для ID менеджера -->
+            <!-- For Manager ID -->
             <RowDefinition Height="Auto"/>
-            <!-- Для кнопки -->
+            <!-- For Button -->
             <RowDefinition Height="Auto"/>
-            <!-- Для TextBox -->
+            <!-- For TextBox -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Заголовок -->
-        <TextBlock Grid.Row="0" Text="Анализ Данных" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="Data Analysis" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <!-- ComboBox для выбора процедуры -->
+        <!-- ComboBox for selecting procedure -->
         <ComboBox Grid.Row="1" 
                   x:Name="ProcedureComboBox" 
                   HorizontalAlignment="Stretch"
@@ -74,7 +74,7 @@
                   ItemsSource="{Binding Procedures}" 
                   SelectedItem="{Binding SelectedProcedure}"/>
 
-        <!-- Grid с DatePicker'ами -->
+        <!-- Grid with DatePickers -->
         <Grid Grid.Row="2" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -91,14 +91,14 @@
                         SelectedDate="{Binding EndDate}"/>
         </Grid>
 
-        <!-- Поле для ввода ID менеджера -->
+        <!-- Manager ID Input -->
         <Grid Grid.Row="3" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="ID менеджера:" 
+            <TextBlock Text="Manager ID:" 
                        VerticalAlignment="Center" 
                        Grid.Column="0"/>
             <TextBox Grid.Column="2" 
@@ -106,14 +106,14 @@
                      Text="{Binding ManagerId, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
 
-        <!-- Кнопка выполнения процедуры -->
+        <!-- Execute Button -->
         <Button Grid.Row="4" 
-                Content="Выполнить" 
+                Content="Execute" 
                 Width="150" 
                 HorizontalAlignment="Left" 
                 Command="{Binding ExecuteProcedureCommand}"/>
 
-        <!-- TextBox с прокруткой -->
+        <!-- Result TextBox with Scroll -->
         <ScrollViewer Grid.Row="5" 
                       VerticalScrollBarVisibility="Auto" 
                       HorizontalScrollBarVisibility="Auto">

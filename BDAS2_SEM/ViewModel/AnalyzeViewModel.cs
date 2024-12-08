@@ -133,20 +133,20 @@ namespace BDAS2_SEM.ViewModel
 
             ExecuteProcedureCommand = new RelayCommand(async _ => await ExecuteProcedureAsync(), CanExecuteProcedure);
 
-            // Установка начального SelectedProcedure
+            // Set the initial SelectedProcedure
             SelectedProcedure = Procedures.FirstOrDefault();
         }
 
         private bool CanExecuteProcedure(object parameter)
         {
-            // Здесь можно добавить логику для включения/отключения кнопки "Выполнить" 
-            // Например, проверку наличия необходимых данных для выбранной процедуры
+            // Add logic here to enable/disable the "Execute" button
+            // For example, check if the necessary data for the selected procedure is available
             return true;
         }
 
         public async Task ExecuteProcedureAsync()
         {
-            Result = string.Empty; // Очистка предыдущих результатов
+            Result = string.Empty; // Clear previous results
             MedicineExpenseResults = new ObservableCollection<MedicineExpenseResult>();
 
             switch (SelectedProcedure)
@@ -164,7 +164,7 @@ namespace BDAS2_SEM.ViewModel
                     await ExecuteAnalyzeMedicineExpensesAsync();
                     break;
                 default:
-                    Result = $"Процедура '{SelectedProcedure}' не реализована.";
+                    Result = $"Procedure '{SelectedProcedure}' is not implemented.";
                     break;
             }
         }
@@ -173,7 +173,7 @@ namespace BDAS2_SEM.ViewModel
         {
             if (!StartDate.HasValue || !EndDate.HasValue)
             {
-                Result = "Пожалуйста, выберите начальную и конечную даты.";
+                Result = "Please select the start and end dates.";
                 return;
             }
 
@@ -182,12 +182,12 @@ namespace BDAS2_SEM.ViewModel
                 var analysisResult = await _analyzeRepository.AnalyzeDiagnosesAndMedicines(StartDate.Value, EndDate.Value);
                 Result = analysisResult;
 
-                // Дополнительно вывод в консоль (опционально)
+                // Optional: Output to console
                 Console.WriteLine(analysisResult);
             }
             catch (Exception ex)
             {
-                Result = $"Ошибка при выполнении процедуры: {ex.Message}";
+                Result = $"Error executing procedure: {ex.Message}";
                 Console.WriteLine(Result);
             }
         }
@@ -196,7 +196,7 @@ namespace BDAS2_SEM.ViewModel
         {
             if (!ManagerId.HasValue || ManagerId <= 0)
             {
-                Result = "Пожалуйста, введите корректный ID менеджера.";
+                Result = "Please enter a valid manager ID.";
                 return;
             }
 
@@ -205,12 +205,12 @@ namespace BDAS2_SEM.ViewModel
                 var analysisResult = await _analyzeRepository.AnalyzeEmployeeHierarchy(ManagerId.Value);
                 Result = analysisResult;
 
-                // Дополнительно вывод в консоль (опционально)
+                // Optional: Output to console
                 Console.WriteLine(analysisResult);
             }
             catch (Exception ex)
             {
-                Result = $"Ошибка при выполнении процедуры: {ex.Message}";
+                Result = $"Error executing procedure: {ex.Message}";
                 Console.WriteLine(Result);
             }
         }
@@ -219,7 +219,7 @@ namespace BDAS2_SEM.ViewModel
         {
             if (!StartDate.HasValue || !EndDate.HasValue)
             {
-                Result = "Пожалуйста, выберите начальную и конечную даты.";
+                Result = "Please select the start and end dates.";
                 return;
             }
 
@@ -228,12 +228,12 @@ namespace BDAS2_SEM.ViewModel
                 var incomeResults = await _analyzeRepository.AnalyzeIncomeByPaymentType(StartDate.Value, EndDate.Value);
                 Result = incomeResults;
 
-                // Дополнительно вывод в консоль (опционально)
+                // Optional: Output to console
                 Console.WriteLine(incomeResults);
             }
             catch (Exception ex)
             {
-                Result = $"Ошибка при выполнении процедуры: {ex.Message}";
+                Result = $"Error executing procedure: {ex.Message}";
                 Console.WriteLine(Result);
             }
         }
@@ -245,15 +245,15 @@ namespace BDAS2_SEM.ViewModel
                 var expenseResults = await _analyzeRepository.AnalyzeMedicineExpenses();
                 Result = expenseResults;
 
-                // Парсинг строкового результата и заполнение коллекции для DataGrid
+                // Parse the string result and populate the collection for DataGrid
                 MedicineExpenseResults = ParseMedicineExpensesResults(expenseResults);
 
-                // Дополнительно вывод в консоль (опционально)
+                // Optional: Output to console
                 Console.WriteLine(expenseResults);
             }
             catch (Exception ex)
             {
-                Result = $"Ошибка при выполнении процедуры: {ex.Message}";
+                Result = $"Error executing procedure: {ex.Message}";
                 Console.WriteLine(Result);
             }
         }
@@ -266,7 +266,7 @@ namespace BDAS2_SEM.ViewModel
 
             foreach (var line in lines)
             {
-                // Пример строки:
+                // Example line:
                 // "Diagnosis ID: 65, Name: sdf, Total Expense: 37700, Medicine Count: 2, Avg Medicine Cost: 102, Min Medicine Cost: 52, Max Medicine Cost: 152, Medicines List: FDSe, KTR, Expense Category: High, Total Diagnoses: 43, Diagnoses without Medicines: 26"
 
                 var parts = line.Split(',');
@@ -316,8 +316,8 @@ namespace BDAS2_SEM.ViewModel
                     }
                     catch
                     {
-                        // Игнорируем строки с неправильным форматом
-                        // Возможно, стоит логировать эти случаи
+                        // Ignore lines with incorrect format
+                        // It might be worth logging these cases
                     }
                 }
             }

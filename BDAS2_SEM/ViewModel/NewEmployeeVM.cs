@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using BDAS2_SEM.Repository;
+using System.Threading.Tasks;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -19,6 +20,8 @@ namespace BDAS2_SEM.ViewModel
         private readonly IAdresaRepository _adresaRepository;
         private readonly IPoziceRepository _poziceRepository;
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
+        private readonly IOrdinaceRepository _ordinaceRepository;
+        private readonly IOrdinaceZamestnanecRepository _ordinaceZamestnanecRepository;
         private readonly UZIVATEL_DATA _userData;
         private readonly IWindowService _windowService;
         private readonly Action<bool> _onClosed;
@@ -26,6 +29,7 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<ADRESA> Addresses { get; set; }
         public ObservableCollection<ZAMESTNANEC> Supervisors { get; set; }
         public ObservableCollection<POZICE> Positions { get; set; }
+        public ObservableCollection<ORDINACE> Departments { get; set; }
 
         // Employee properties
         public string Jmeno { get; set; }
@@ -34,11 +38,13 @@ namespace BDAS2_SEM.ViewModel
         public int? NadrazenyZamestnanecId { get; set; }
         public int AdresaId { get; set; }
         public int PoziceId { get; set; }
+        public int SelectedDepartmentId { get; set; }
 
         // Commands
         public ICommand SaveCommand { get; }
         public ICommand AddAddressCommand { get; }
         public ICommand AddPositionCommand { get; }
+        public ICommand AddDepartmentCommand { get; }
 
         public NewEmployeeVM(UZIVATEL_DATA userData, IWindowService windowService, IServiceProvider serviceProvider, Action<bool> onClosed)
         {
@@ -50,14 +56,18 @@ namespace BDAS2_SEM.ViewModel
             _adresaRepository = serviceProvider.GetRequiredService<IAdresaRepository>();
             _poziceRepository = serviceProvider.GetRequiredService<IPoziceRepository>();
             _uzivatelDataRepository = serviceProvider.GetRequiredService<IUzivatelDataRepository>();
+            _ordinaceRepository = serviceProvider.GetRequiredService<IOrdinaceRepository>();
+            _ordinaceZamestnanecRepository = serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>();
 
             SaveCommand = new RelayCommand(Save);
             AddAddressCommand = new RelayCommand(AddAddress);
             AddPositionCommand = new RelayCommand(AddPosition);
+            AddDepartmentCommand = new RelayCommand(AddDepartment);
 
             LoadAddresses();
             LoadSupervisors();
             LoadPositions();
+            LoadDepartments();
         }
 
         private async void LoadAddresses()
@@ -81,6 +91,13 @@ namespace BDAS2_SEM.ViewModel
             OnPropertyChanged(nameof(Positions));
         }
 
+        private async void LoadDepartments()
+        {
+            var departments = await _ordinaceRepository.GetAllOrdinaces();
+            Departments = new ObservableCollection<ORDINACE>(departments);
+            OnPropertyChanged(nameof(Departments));
+        }
+
         private async void Save(object parameter)
         {
             var zamestnanec = new ZAMESTNANEC
@@ -94,26 +111,42 @@ namespace BDAS2_SEM.ViewModel
                 UserDataId = _userData.Id
             };
 
-            // Add Zamestnanec and get the new ID
-            int newZamestnanecId = await _zamestnanecRepository.AddZamestnanec(zamestnanec);
-
-            // Update UZIVATEL_DATA with the new Zamestnanec ID
-            _userData.zamestnanecId = newZamestnanecId;
-            await _uzivatelDataRepository.UpdateUserData(_userData);
-
-            _onClosed?.Invoke(true);
-
-            _windowService.CloseWindow(() =>
+            try
             {
-                foreach (Window window in Application.Current.Windows)
+                // Добавление Zamestnanec и получение нового ID
+                int newZamestnanecId = await _zamestnanecRepository.AddZamestnanec(zamestnanec);
+
+                // Обновление UZIVATEL_DATA с новым Zamestnanec ID
+                _userData.zamestnanecId = newZamestnanecId;
+                await _uzivatelDataRepository.UpdateUserData(_userData);
+
+                // Создание связи с отделением
+                var ordinaceZamestnanec = new ORDINACE_ZAMESTNANEC
                 {
-                    if (window is BDAS2_SEM.View.AdminViews.NewEmployeeWindow)
+                    OrdinaceId = this.SelectedDepartmentId,
+                    ZamestnanecId = newZamestnanecId
+                };
+                await _ordinaceZamestnanecRepository.AddOrdinaceZamestnanec(ordinaceZamestnanec);
+
+                _onClosed?.Invoke(true);
+
+                _windowService.CloseWindow(() =>
+                {
+                    foreach (Window window in Application.Current.Windows)
                     {
-                        window.Close();
-                        break;
+                        if (window is BDAS2_SEM.View.AdminViews.NewEmployeeWindow)
+                        {
+                            window.Close();
+                            break;
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибок
+                MessageBox.Show($"Произошла ошибка при сохранении сотрудника: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AddAddress(object parameter)
@@ -140,6 +173,19 @@ namespace BDAS2_SEM.ViewModel
             PoziceId = newPosition.IdPozice;
             OnPropertyChanged(nameof(Positions));
             OnPropertyChanged(nameof(PoziceId));
+        }
+
+        private void AddDepartment(object parameter)
+        {
+            //_windowService.OpenAddDepartmentWindow(OnDepartmentAdded);
+        }
+
+        private void OnDepartmentAdded(ORDINACE newDepartment)
+        {
+            Departments.Add(newDepartment);
+            SelectedDepartmentId = newDepartment.IdOrdinace;
+            OnPropertyChanged(nameof(Departments));
+            OnPropertyChanged(nameof(SelectedDepartmentId));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

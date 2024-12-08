@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BDAS2_SEM.Model;
+using System;
 using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository.Interfaces
@@ -9,5 +10,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<string> AnalyzeEmployeeHierarchy(int managerId);
         Task<string> AnalyzeIncomeByPaymentType(DateTime startDate, DateTime endDate);
         Task<string> AnalyzeMedicineExpenses();
+        Task<DoctorActivityResult> AnalyzeDoctorActivityAsync(int doctorId);
     }
 }

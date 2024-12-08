@@ -1,4 +1,6 @@
-﻿using BDAS2_SEM.Repository.Interfaces;
+﻿// Repository/AnalyzeRepository.cs
+using BDAS2_SEM.Model;
+using BDAS2_SEM.Repository.Interfaces;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System;
@@ -373,7 +375,78 @@ namespace BDAS2_SEM.Repository
             return resultBuilder.ToString();
         }
 
-        // Класс для маппинга данных
+        public async Task<DoctorActivityResult> AnalyzeDoctorActivityAsync(int doctorId)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+            DoctorActivityResult activityResult = null;
+
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                using (var command = new OracleCommand("analyze_doctor_activity_fn", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.BindByName = true;
+
+                    // Добавление входного параметра
+                    command.Parameters.Add("p_doctor_id", OracleDbType.Int32).Value = doctorId;
+
+                    // Параметр RETURN_VALUE для функции
+                    var refCursor = new OracleParameter("RETURN_VALUE", OracleDbType.RefCursor)
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(refCursor);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        // Выполнение функции
+                        await command.ExecuteNonQueryAsync();
+
+                        // Получение курсора
+                        using (var reader = ((OracleRefCursor)refCursor.Value).GetDataReader())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                activityResult = new DoctorActivityResult
+                                {
+                                    TotalVisits = reader["total_visits"] != DBNull.Value ? Convert.ToInt32(reader["total_visits"]) : 0,
+                                    LastVisitDate = reader["last_visit_date"] != DBNull.Value ? Convert.ToDateTime(reader["last_visit_date"]) : (DateTime?)null,
+                                    TotalOperations = reader["total_operations"] != DBNull.Value ? Convert.ToInt32(reader["total_operations"]) : 0,
+                                    LastOperationDate = reader["last_operation_date"] != DBNull.Value ? Convert.ToDateTime(reader["last_operation_date"]) : (DateTime?)null,
+                                    TotalMedicines = reader["total_medicines"] != DBNull.Value ? Convert.ToInt32(reader["total_medicines"]) : 0
+                                };
+                            }
+                            else
+                            {
+                                // Если данных нет
+                                return null;
+                            }
+                        }
+
+                        // Дополнительно вывод в консоль
+                        Console.WriteLine(resultBuilder.ToString());
+                    }
+                    catch (OracleException ex)
+                    {
+                        var errorMessage = $"Database error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = $"An error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                }
+            }
+
+            return activityResult;
+        }
+
+        // Класс для маппинга данных диагностики
         private class DiagnosisAnalysis
         {
             public int? DiagnosisId { get; set; }
@@ -381,5 +454,7 @@ namespace BDAS2_SEM.Repository
             public int VisitCount { get; set; }
             public string Medicines { get; set; }
         }
+
+        
     }
 }

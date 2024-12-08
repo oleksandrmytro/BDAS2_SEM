@@ -198,6 +198,14 @@ namespace BDAS2_SEM.ViewModel
                 if (TimeSpan.TryParseExact(SelectedTime, "hh\\:mm", CultureInfo.InvariantCulture, out TimeSpan time))
                 {
                     DateTime appointmentDateTime = SelectedDate.Value.Date + time;
+                    DateTime now = DateTime.Now;
+
+                    // Проверка на то, что выбранное время не в прошлом
+                    if (appointmentDateTime < now)
+                    {
+                        MessageBox.Show("Вибране часове слот вже минуло. Будь ласка, виберіть майбутній час.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
 
                     try
                     {

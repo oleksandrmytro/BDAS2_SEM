@@ -17,9 +17,38 @@ namespace BDAS2_SEM.ViewModel
         private readonly IWindowService _windowService;
         private readonly IPatientContextService _patientContextService;
 
-        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> PastAppointments { get; set; }
-        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> FutureAppointments { get; set; }
-        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> UnconfirmedAppointments { get; set; }
+        private ObservableCollection<NAVSTEVA_DOCTOR_VIEW> _pastAppointments;
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> PastAppointments
+        {
+            get => _pastAppointments;
+            set
+            {
+                _pastAppointments = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<NAVSTEVA_DOCTOR_VIEW> _futureAppointments;
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> FutureAppointments
+        {
+            get => _futureAppointments;
+            set
+            {
+                _futureAppointments = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<NAVSTEVA_DOCTOR_VIEW> _unconfirmedAppointments;
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> UnconfirmedAppointments
+        {
+            get => _unconfirmedAppointments;
+            set
+            {
+                _unconfirmedAppointments = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand BookAppointmentCommand { get; }
 
@@ -38,7 +67,6 @@ namespace BDAS2_SEM.ViewModel
             var currentPatient = _patientContextService.CurrentPatient;
             if (currentPatient == null)
             {
-                // Обработка случая, когда текущий пациент не установлен
                 return;
             }
 
@@ -54,7 +82,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 var appointmentDateTime = appointment.VisitDate;
 
-                if (appointment.NavstevaStatus == "očekávání")
+                if (appointment.NavstevaStatus.Trim().Equals("očekávání", StringComparison.OrdinalIgnoreCase))
                 {
                     UnconfirmedAppointments.Add(appointment);
                 }
@@ -68,9 +96,7 @@ namespace BDAS2_SEM.ViewModel
                 }
             }
 
-            OnPropertyChanged(nameof(PastAppointments));
-            OnPropertyChanged(nameof(FutureAppointments));
-            OnPropertyChanged(nameof(UnconfirmedAppointments));
+            // Уведомление уже происходит через сеттеры свойств
         }
 
         private void BookAppointment(object parameter)

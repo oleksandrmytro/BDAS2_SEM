@@ -123,7 +123,7 @@ namespace BDAS2_SEM.ViewModel
                     MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-
+        
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

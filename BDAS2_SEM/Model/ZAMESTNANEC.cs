@@ -132,6 +132,8 @@ namespace BDAS2_SEM.Model
             }
         }
 
+        public string FullName => $"{Jmeno} {Prijmeni}";
+
         // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

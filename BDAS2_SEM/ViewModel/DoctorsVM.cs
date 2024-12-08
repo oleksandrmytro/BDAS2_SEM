@@ -150,8 +150,16 @@ public class DoctorsVM : INotifyPropertyChanged
             }
 
             // Pass the doctor to AppointmentsVM
+            var mainTab = Tabs.FirstOrDefault(t => t.Name == "Main");
             var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
             var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
+            if (mainTab != null && mainTab.Content is MainDoctorView mainView)
+            {
+                if (mainView.DataContext is MainDoctorVM mainVM)
+                {
+                    mainVM.SetDoctor(_zamestnanec);
+                }
+            }
             if (appointmentsTab != null && appointmentsTab.Content is AppointmentsView appointmentsView)
             {
                 if (appointmentsView.DataContext is AppointmentsVM appointmentsVM)
@@ -166,6 +174,8 @@ public class DoctorsVM : INotifyPropertyChanged
                     diagnosesVM.SetDoctor(_zamestnanec);
                 }
             }
+            
+
 
             // Update the settings view with the current doctor
             var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
