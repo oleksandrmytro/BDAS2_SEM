@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
+        
 
         <Style x:Key="ModernButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="5"/>
@@ -31,7 +31,21 @@
     </UserControl.Resources>
 
     <Grid Background="#F0F4F8">
-        <Border  Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Для кнопки -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Кнопка Оновити -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Refresh" 
+                    Command="{Binding RefreshCommand}"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Width="100"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1">
             <StackPanel>
                 <TextBlock Text="Past Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
                 <Grid>
@@ -51,22 +65,22 @@
 
                     <!-- Header -->
                     <Border Grid.Row="0" Grid.ColumnSpan="5" Background="#007bff" CornerRadius="5,5,0,0">
-                        <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="*"/>
-                                <!-- New Column for Button -->
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Column="2" Text="Date" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Column="3" Text="Room" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
                             <TextBlock Grid.Column="4" Text="Action" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <!-- Header for Button -->
                         </Grid>
+                        </ScrollViewer>
                     </Border>
 
                     <!-- Data Rows -->
@@ -82,7 +96,6 @@
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="*"/>
-                                                <!-- New Column for Button -->
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding PACIENTJmeno}" Padding="10" HorizontalAlignment="Center"/>
                                             <TextBlock Grid.Column="1" Text="{Binding PACIENTPrijmeni}" Padding="10" HorizontalAlignment="Center"/>
@@ -97,7 +110,6 @@
                                             <Button Grid.Column="4" Content="Diagnosis" Style="{StaticResource ModernButtonStyle}" 
                                                     Command="{Binding DataContext.AssignDiagnosisCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                                     CommandParameter="{Binding}"/>
-                                            <!-- New Button -->
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -105,6 +117,7 @@
                         </ScrollViewer>
                     </Border>
                 </Grid>
+                <TextBlock Text="{Binding NoAppointmentsMessage}" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
             </StackPanel>
         </Border>
     </Grid>

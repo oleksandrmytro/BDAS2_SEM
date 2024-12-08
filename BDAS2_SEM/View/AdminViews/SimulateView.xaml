@@ -36,7 +36,7 @@
         <StackPanel Margin="10">
             <!-- Search TextBox -->
             <TextBox Width="200" Margin="0,0,0,10" 
-                      
+                     
                      Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
 
             <!-- Header Row -->
@@ -58,12 +58,20 @@
                 </Grid>
             </Border>
 
+            <!-- Refresh Button -->
+            <Button Content="Refresh Data" 
+                    Command="{Binding RefreshDataCommand}" 
+                    Style="{StaticResource ModernButtonStyle}" 
+                    Width="120" 
+                    Margin="0,0,0,10"/>
+
             <!-- ListView -->
             <ListView ItemsSource="{Binding Users}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="2*"/>
@@ -83,7 +91,6 @@
                                 </TextBlock.Text>
                             </TextBlock>
 
-
                             <Button Grid.Column="4" Content="Simulate" 
                                     Style="{StaticResource ModernButtonStyle}"
                                     Command="{Binding DataContext.SimulateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
@@ -97,5 +104,4 @@
             </ListView>
         </StackPanel>
     </Grid>
-
 </UserControl>

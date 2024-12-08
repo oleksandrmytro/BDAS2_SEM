@@ -6,13 +6,12 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using BDAS2_SEM.View.AdminViews;
-using BDAS2_SEM.Repository;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -61,17 +60,20 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        // Команди
+        public ICommand LoadUsersCommand => _loadUsersCommand ??= new RelayCommand<object>(async (o) => await LoadUsersAsync());
+        public ICommand SimulateCommand => _simulateCommand ??= new RelayCommand<dynamic>(async (dynamicUser) => await SimulateAsync(dynamicUser));
+        public ICommand RefreshDataCommand => _refreshDataCommand ??= new RelayCommand<object>(async (o) => await RefreshDataAsync());
+
+        private ICommand _loadUsersCommand;
+        private ICommand _simulateCommand;
+        private ICommand _refreshDataCommand;
 
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IZamestnanecRepository _zamestnanecRepository;
         private readonly IPacientRepository _pacientRepository;
         private readonly IWindowService _windowService;
-
-        private ICommand _loadUsersCommand;
-        public ICommand LoadUsersCommand => _loadUsersCommand ??= new RelayCommand(async (a) => await LoadUsersAsync());
-
-        private ICommand _simulateCommand;
-        public ICommand SimulateCommand => _simulateCommand ??= new RelayCommand<dynamic>(async (dynamicUser) => await SimulateAsync(dynamicUser));
+        private readonly IRoleRepository _roleRepository;
 
         public SimulateVM(
             IUzivatelDataRepository uzivatelDataRepository,
@@ -84,15 +86,19 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecRepository = zamestnanecRepository;
             _pacientRepository = pacientRepository;
             _windowService = windowService;
+            _roleRepository = roleRepository;
 
             Users = new ObservableCollection<dynamic>();
-            LoadRolesAsync(roleRepository);
+            AvailableRoles = new ObservableCollection<ROLE>();
+
+            // Ініціалізація даних
+            LoadRolesAsync();
             LoadUsersCommand.Execute(null);
         }
 
-        private async void LoadRolesAsync(IRoleRepository roleRepository)
+        private async Task LoadRolesAsync()
         {
-            var roles = await roleRepository.GetAllRoles();
+            var roles = await _roleRepository.GetAllRoles();
             AvailableRoles = new ObservableCollection<ROLE>(roles);
         }
 
@@ -128,7 +134,6 @@ namespace BDAS2_SEM.ViewModel
                         firstName = zamestnanec.Jmeno;
                         lastName = zamestnanec.Prijmeni;
 
-
                         dynamic dynamicUser = new ExpandoObject();
                         dynamicUser.User = user;
                         dynamicUser.FirstName = firstName;
@@ -136,7 +141,6 @@ namespace BDAS2_SEM.ViewModel
 
                         usersWithNames.Add(dynamicUser);
                     }
-
                 }
 
                 Users = usersWithNames;
@@ -150,8 +154,14 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Не вдалось завантажити користувачів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Не вдалося завантажити користувачів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async Task RefreshDataAsync()
+        {
+            await LoadRolesAsync();
+            await LoadUsersAsync();
         }
 
         private bool UserFilter(object item)
@@ -183,7 +193,6 @@ namespace BDAS2_SEM.ViewModel
                    || email.ToLower().Contains(search)
                    || roleName.ToLower().Contains(search);
         }
-
 
         private async Task SimulateAsync(dynamic dynamicUser)
         {
@@ -221,18 +230,6 @@ namespace BDAS2_SEM.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"Симуляція не вдалася: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CloseAdminWindow()
-        {
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window is AdminWindow)
-                {
-                    window.Close();
-                    break;
-                }
             }
         }
 

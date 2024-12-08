@@ -7,7 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using BDAS2_SEM.View;
+using System.Text;
+using Xceed.Wpf.Toolkit;
+using System.Linq;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -17,7 +21,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IPacientRepository _pacientRepository;
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IPatientContextService _patientContextService;
-        private readonly IAdresaRepository _adresaRepository; // Репозиторій для адрес
+        private readonly IAdresaRepository _adresaRepository;
 
         private PACIENT _pacient;
         private UZIVATEL_DATA _userData;
@@ -31,8 +35,31 @@ namespace BDAS2_SEM.ViewModel
         private bool _isEditingLastName;
         private bool _isEditingPhone;
         private bool _isEditingEmail;
+        private bool _isEditingPassword;
 
-        // Нові властивості для адреси
+        // Властивості пароля
+        private string _currentPassword;
+        public string CurrentPassword
+        {
+            get => _currentPassword;
+            set { _currentPassword = value; OnPropertyChanged(); }
+        }
+
+        private string _newPassword;
+        public string NewPassword
+        {
+            get => _newPassword;
+            set { _newPassword = value; OnPropertyChanged(); }
+        }
+
+        private string _confirmNewPassword;
+        public string ConfirmNewPassword
+        {
+            get => _confirmNewPassword;
+            set { _confirmNewPassword = value; OnPropertyChanged(); }
+        }
+
+        // Властивості адреси
         private ObservableCollection<ADRESA> _addressList;
         public ObservableCollection<ADRESA> AddressList
         {
@@ -153,6 +180,16 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        public bool IsEditingPassword
+        {
+            get => _isEditingPassword;
+            set
+            {
+                _isEditingPassword = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _isEditingAddress;
         public bool IsEditingAddress
         {
@@ -168,15 +205,17 @@ namespace BDAS2_SEM.ViewModel
         public ICommand EditLastNameCommand { get; }
         public ICommand EditPhoneCommand { get; }
         public ICommand EditEmailCommand { get; }
+        public ICommand EditPasswordCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand ChangePasswordCommand { get; }
 
         public PSettingsVM(
             IWindowService windowService,
             IPatientContextService patientContextService,
             IPacientRepository pacientRepository,
             IUzivatelDataRepository uzivatelDataRepository,
-            IAdresaRepository adresaRepository) // Додайте репозиторій адрес
+            IAdresaRepository adresaRepository)
         {
             _windowService = windowService;
             _pacientRepository = pacientRepository;
@@ -188,8 +227,10 @@ namespace BDAS2_SEM.ViewModel
             EditLastNameCommand = new RelayCommand(_ => ToggleEditingLastName());
             EditPhoneCommand = new RelayCommand(_ => ToggleEditingPhone());
             EditEmailCommand = new RelayCommand(_ => ToggleEditingEmail());
+            EditPasswordCommand = new RelayCommand(_ => ToggleEditingPassword());
             SaveCommand = new RelayCommand(async _ => await SaveChanges());
             CancelCommand = new RelayCommand(_ => CancelEdit());
+            ChangePasswordCommand = new RelayCommand(async _ => await ChangePassword());
 
             AddAddressCommand = new RelayCommand(async _ => await AddNewAddress());
             EditAddressCommand = new RelayCommand(_ => ToggleEditingAddress());
@@ -199,25 +240,6 @@ namespace BDAS2_SEM.ViewModel
             LoadData();
         }
 
-        private void ToggleEditingAddress()
-        {
-            IsEditingAddress = !IsEditingAddress;
-
-            if (IsEditingAddress)
-            {
-                // Disable other edit modes if necessary
-                IsEditingFirstName = false;
-                IsEditingLastName = false;
-                IsEditingPhone = false;
-                IsEditingEmail = false;
-            }
-            else
-            {
-                // Reset the selected address if editing is canceled
-                SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == _pacient.AdresaId);
-            }
-        }
-
         private async void LoadData()
         {
             int userId = _patientContextService.CurrentPatient.UserDataId;
@@ -225,7 +247,6 @@ namespace BDAS2_SEM.ViewModel
             _userData = await _uzivatelDataRepository.GetUzivatelById(userId);
             _pacient = await _pacientRepository.GetPacientByUserDataId(userId);
 
-            // Load the list of addresses first
             await LoadAddressList();
 
             if (_pacient != null)
@@ -234,7 +255,6 @@ namespace BDAS2_SEM.ViewModel
                 LastName = _pacient.Prijmeni;
                 PhoneNumber = _pacient.Telefon.ToString();
 
-                // Set the SelectedAddress to the user's address
                 if (_pacient.AdresaId != 0)
                 {
                     SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == _pacient.AdresaId);
@@ -269,14 +289,14 @@ namespace BDAS2_SEM.ViewModel
 
             if (IsEditingFirstName)
             {
-                // Вимикаємо інші поля редагування, якщо потрібно
                 IsEditingLastName = false;
                 IsEditingPhone = false;
                 IsEditingEmail = false;
+                IsEditingPassword = false;
+                IsEditingAddress = false;
             }
             else
             {
-                // Скидаємо значення, якщо редагування відмінено
                 FirstName = _pacient.Jmeno;
             }
         }
@@ -290,6 +310,8 @@ namespace BDAS2_SEM.ViewModel
                 IsEditingFirstName = false;
                 IsEditingPhone = false;
                 IsEditingEmail = false;
+                IsEditingPassword = false;
+                IsEditingAddress = false;
             }
             else
             {
@@ -306,6 +328,8 @@ namespace BDAS2_SEM.ViewModel
                 IsEditingFirstName = false;
                 IsEditingLastName = false;
                 IsEditingEmail = false;
+                IsEditingPassword = false;
+                IsEditingAddress = false;
             }
             else
             {
@@ -322,10 +346,51 @@ namespace BDAS2_SEM.ViewModel
                 IsEditingFirstName = false;
                 IsEditingLastName = false;
                 IsEditingPhone = false;
+                IsEditingPassword = false;
+                IsEditingAddress = false;
             }
             else
             {
                 Email = _userData.Email;
+            }
+        }
+
+        private void ToggleEditingPassword()
+        {
+            IsEditingPassword = !IsEditingPassword;
+
+            if (IsEditingPassword)
+            {
+                IsEditingFirstName = false;
+                IsEditingLastName = false;
+                IsEditingPhone = false;
+                IsEditingEmail = false;
+                IsEditingAddress = false;
+            }
+            else
+            {
+                // Скидаємо поля пароля при відміні редагування
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmNewPassword = string.Empty;
+            }
+        }
+
+        private void ToggleEditingAddress()
+        {
+            IsEditingAddress = !IsEditingAddress;
+
+            if (IsEditingAddress)
+            {
+                IsEditingFirstName = false;
+                IsEditingLastName = false;
+                IsEditingPhone = false;
+                IsEditingEmail = false;
+                IsEditingPassword = false;
+            }
+            else
+            {
+                SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == _pacient.AdresaId);
             }
         }
 
@@ -335,6 +400,7 @@ namespace BDAS2_SEM.ViewModel
             IsEditingLastName = false;
             IsEditingPhone = false;
             IsEditingEmail = false;
+            IsEditingPassword = false;
             IsEditingAddress = false;
             LoadData();
         }
@@ -355,14 +421,6 @@ namespace BDAS2_SEM.ViewModel
                     IsEditingLastName = false;
                 }
 
-                if (IsEditingAddress)
-                {
-                    _pacient.AdresaId = SelectedAddress?.IdAdresa ?? 0;
-                    IsEditingAddress = false;
-                }
-
-                await _pacientRepository.UpdatePacient(_pacient);
-
                 if (IsEditingPhone)
                 {
                     if (long.TryParse(PhoneNumber, out long phone))
@@ -371,52 +429,108 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else
                     {
-                        // Обробка некоректного введення номера телефону
-                        _pacient.Telefon = 1;
+                        MessageBox.Show("Невірний формат номера телефону.");
+                        return;
                     }
                     IsEditingPhone = false;
                 }
 
-                // Оновлюємо адресу, якщо змінилася
-                if (_pacient.AdresaId != (SelectedAddress?.IdAdresa ?? 0))
+                if (IsEditingAddress)
                 {
                     _pacient.AdresaId = SelectedAddress?.IdAdresa ?? 0;
+                    IsEditingAddress = false;
                 }
 
                 await _pacientRepository.UpdatePacient(_pacient);
             }
 
-            if (_userData != null && IsEditingEmail)
+            if (_userData != null)
             {
-                _userData.Email = Email;
-                IsEditingEmail = false;
+                if (IsEditingEmail)
+                {
+                    _userData.Email = Email;
+                    IsEditingEmail = false;
+                    await _uzivatelDataRepository.UpdateUserData(_userData);
+                }
 
-                await _uzivatelDataRepository.UpdateUserData(_userData);
+                if (IsEditingPassword)
+                {
+                    await ChangePassword();
+                    IsEditingPassword = false;
+                }
             }
 
-            // Перезавантажуємо дані, щоб відобразити зміни
             LoadData();
+        }
+
+        private async Task ChangePassword()
+        {
+            try
+            {
+                string oldPassword1 = HashPassword("123");
+                if (string.IsNullOrEmpty(CurrentPassword))
+                {
+                    MessageBox.Show("Будь ласка, введіть поточний пароль.");
+                    return;
+                }
+
+                if (_userData.Heslo != HashPassword(CurrentPassword))
+                {
+                    MessageBox.Show("Поточний пароль невірний.");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(NewPassword))
+                {
+                    MessageBox.Show("Будь ласка, введіть новий пароль.");
+                    return;
+                }
+
+                if (NewPassword != ConfirmNewPassword)
+                {
+                    MessageBox.Show("Новий пароль та підтвердження не співпадають.");
+                    return;
+                }
+
+                string newPasswordHash = HashPassword(NewPassword);
+                string oldPassword = HashPassword(_userData.Heslo);
+                _userData.Heslo = newPasswordHash;
+                await _uzivatelDataRepository.UpdateUserData(_userData);
+
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmNewPassword = string.Empty;
+
+                MessageBox.Show("Пароль успішно змінено.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Сталася помилка: {ex.Message}");
+            }
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
         }
 
         private async Task AddNewAddress()
         {
-            // Відкриваємо вікно для додавання нової адреси з передачею колбеку
             _windowService.OpenAddAddressWindow(async newAddress =>
             {
                 if (newAddress != null)
                 {
-                    // Додаємо нову адресу до бази даних
                     await _adresaRepository.AddAdresa(newAddress);
-
-                    // Додаємо нову адресу до списку
                     AddressList.Add(newAddress);
-
-                    // Встановлюємо нову адресу як вибрану
                     SelectedAddress = newAddress;
                 }
             });
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

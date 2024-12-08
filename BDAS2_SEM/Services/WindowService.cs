@@ -97,7 +97,7 @@ namespace BDAS2_SEM.Services
             closeAction?.Invoke();
         }
 
-        public void OpenAssignAppointmentWindow(NAVSTEVA navsteva, Action<NAVSTEVA> onClose)
+        public async void OpenAssignAppointmentWindowAsync(NAVSTEVA navsteva, Action<NAVSTEVA> onClose)
         {
             var viewModel = new AssignAppointmentVM(navsteva, _serviceProvider.GetRequiredService<IMistnostRepository>(), _serviceProvider.GetRequiredService<INavstevaRepository>(),
                 _serviceProvider.GetRequiredService<IOrdinaceZamestnanecRepository>(), _serviceProvider.GetRequiredService<IDoctorContextService>());

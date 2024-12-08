@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -41,6 +42,7 @@ namespace BDAS2_SEM.ViewModel
         }
 
         public ICommand AssignRoleCommand { get; }
+        public ICommand RefreshDataCommand { get; }
 
         private readonly IUzivatelDataRepository _uzivatelDataRepository;
         private readonly IRoleRepository _roleRepository;
@@ -52,6 +54,7 @@ namespace BDAS2_SEM.ViewModel
             _windowService = windowService;
             _roleRepository = roleRepository;
             AssignRoleCommand = new RelayCommand(AssignRole);
+            RefreshDataCommand = new RelayCommand(RefreshData);
             LoadRolesAsync();
             LoadNewUsers();
         }
@@ -68,7 +71,7 @@ namespace BDAS2_SEM.ViewModel
             AvailableRoles = new ObservableCollection<ROLE>(roles);
             OnPropertyChanged(nameof(AvailableRoles));
 
-            // Отладочный вывод
+            // Debug output
             foreach (var role in AvailableRoles)
             {
                 Console.WriteLine($"Role Loaded: {role.IdRole} - {role.Nazev}");
@@ -119,6 +122,12 @@ namespace BDAS2_SEM.ViewModel
                     MessageBox.Show("Please select a role before assigning.", "ROLE Not Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+        }
+
+        private async void RefreshData(object parameter)
+        {
+            LoadNewUsers();
+            await LoadRolesAsync();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
