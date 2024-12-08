@@ -1,15 +1,12 @@
-﻿// ViewModel/DDiagnosesVM.cs
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Repository;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +26,7 @@ namespace BDAS2_SEM.ViewModel
         private string _noAppointmentsMessage;
 
         public ICommand AssignDiagnosisCommand { get; }
+        public ICommand RefreshCommand { get; } // Новa команда
 
         public DDiagnosesVM(IServiceProvider serviceProvider, IWindowService windowService)
         {
@@ -40,28 +38,8 @@ namespace BDAS2_SEM.ViewModel
 
             PastAppointments = new ObservableCollection<dynamic>();
 
-            AssignDiagnosisCommand = new RelayCommand(AssignDiagnosis);
-        }
-
-        private void AssignDiagnosis(object parameter)
-        {
-            if (parameter != null)
-            {
-                dynamic appointment = parameter;
-                NAVSTEVA navsteva = new NAVSTEVA
-                {
-                    IdNavsteva = (int)appointment.IdNavsteva,
-                    PacientId = (int)appointment.PacientId,
-                    StatusId = (int)appointment.StatusId,
-                    Datum = appointment.Datum,
-                    MistnostId = appointment.MistnostId
-                };
-                // Відкриваємо вікно без колбеку
-                _windowService.OpenAssignDiagnosisWindow(navsteva, _doctor.IdZamestnanec);
-
-                // Після закриття вікна оновлюємо дані
-                LoadAppointments();
-            }
+            AssignDiagnosisCommand = new RelayCommand<object>(async (param) => await AssignDiagnosisAsync(param));
+            RefreshCommand = new RelayCommand<object>(async (param) => await LoadAppointmentsAsync());
         }
 
         public ObservableCollection<dynamic> PastAppointments { get; set; }
@@ -82,10 +60,10 @@ namespace BDAS2_SEM.ViewModel
         public void SetDoctor(ZAMESTNANEC doctor)
         {
             _doctor = doctor;
-            LoadAppointments();
+            LoadAppointmentsAsync();
         }
 
-        private async void LoadAppointments()
+        private async Task LoadAppointmentsAsync()
         {
             var appointments = await _navstevaRepository.GetAppointmentsByDoctorId(_doctor.IdZamestnanec);
             PastAppointments.Clear();
@@ -99,16 +77,16 @@ namespace BDAS2_SEM.ViewModel
 
                     if (status.Equals(4) && appointment.Datum < DateTime.Now)
                     {
-                        // Load diagnoses for this appointment
+                        // Завантаження діагнозів для цієї зустрічі
                         var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync(appointment.IdNavsteva);
 
-                        // Collect diagnosis names
+                        // Збирання назв діагнозів
                         List<string> diagnozyList = diagnozy.Select(d => d.Nazev).ToList();
 
-                        // Get room information
+                        // Отримання інформації про кімнату
                         var mistnost = await _mistnostRepository.GetMistnostById(appointment.MistnostId);
 
-                        // Create anonymous object with room info
+                        // Створення анонімного об'єкта з інформацією про кімнату
                         var appointmentWithDiagnozy = new
                         {
                             appointment.IdNavsteva,
@@ -119,7 +97,7 @@ namespace BDAS2_SEM.ViewModel
                             PACIENTJmeno = pacient.FirstName,
                             PACIENTPrijmeni = pacient.LastName,
                             Diagnozy = diagnozyList,
-                            MISTNOST = mistnost?.Cislo ?? null
+                            MISTNOST = mistnost?.Cislo ?? (object)null
                         };
 
                         PastAppointments.Add(appointmentWithDiagnozy);
@@ -134,6 +112,26 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
+        private async Task AssignDiagnosisAsync(object parameter)
+        {
+            if (parameter != null)
+            {
+                dynamic appointment = parameter;
+                NAVSTEVA navsteva = new NAVSTEVA
+                {
+                    IdNavsteva = (int)appointment.IdNavsteva,
+                    PacientId = (int)appointment.PacientId,
+                    StatusId = (int)appointment.StatusId,
+                    Datum = appointment.Datum,
+                    MistnostId = (int?)appointment.MistnostId
+                };
+                // Відкриваємо вікно без колбеку
+                _windowService.OpenAssignDiagnosisWindow(navsteva, _doctor.IdZamestnanec);
+
+                // Після закриття вікна оновлюємо дані
+                await LoadAppointmentsAsync();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using BDAS2_SEM.Model;
@@ -10,6 +11,9 @@ using System.IO;
 using System.Threading.Tasks;
 using BDAS2_SEM.Services.Interfaces;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
+using System.Text;
+using System.Linq;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -30,6 +34,7 @@ namespace BDAS2_SEM.ViewModel
         private bool _isEditingPhone;
         private bool _isEditingEmail;
         private bool _isEditingAddress;
+        private bool _isEditingPassword;
 
         // Properties for address editing
         private ObservableCollection<ADRESA> _addressList;
@@ -52,9 +57,33 @@ namespace BDAS2_SEM.ViewModel
             set { _isEditingAddress = value; OnPropertyChanged(); }
         }
 
-        // Commands for address editing
-        public ICommand EditAddressCommand { get; }
-        public ICommand AddAddressCommand { get; }
+        // Properties for password change
+        private string _currentPassword;
+        public string CurrentPassword
+        {
+            get => _currentPassword;
+            set { _currentPassword = value; OnPropertyChanged(); }
+        }
+
+        private string _newPassword;
+        public string NewPassword
+        {
+            get => _newPassword;
+            set { _newPassword = value; OnPropertyChanged(); }
+        }
+
+        private string _confirmNewPassword;
+        public string ConfirmNewPassword
+        {
+            get => _confirmNewPassword;
+            set { _confirmNewPassword = value; OnPropertyChanged(); }
+        }
+
+        public bool IsEditingPassword
+        {
+            get => _isEditingPassword;
+            set { _isEditingPassword = value; OnPropertyChanged(); }
+        }
 
         // Existing properties
         private string _firstName;
@@ -109,7 +138,6 @@ namespace BDAS2_SEM.ViewModel
             set { _isEditingEmail = value; OnPropertyChanged(); }
         }
 
-
         // Commands
         public ICommand EditFirstNameCommand { get; }
         public ICommand ToggleEditLastNameCommand { get; }
@@ -117,6 +145,13 @@ namespace BDAS2_SEM.ViewModel
         public ICommand EditEmailCommand { get; }
         public ICommand AddOrChangeImageCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand ToggleEditingPasswordCommand { get; }
+        public ICommand ChangePasswordCommand { get; }
+        public ICommand CancelPasswordChangeCommand { get; }
+
+        // Commands for address editing
+        public ICommand EditAddressCommand { get; }
+        public ICommand AddAddressCommand { get; }
 
         public DSettingsVM(
             IZamestnanecRepository zamestnanecRepository,
@@ -141,11 +176,16 @@ namespace BDAS2_SEM.ViewModel
             EditEmailCommand = new RelayCommand(ToggleEditEmail);
             AddOrChangeImageCommand = new RelayCommand(async _ => await AddOrChangeImage());
             SaveCommand = new RelayCommand(async _ => await SaveChanges());
+            ToggleEditingPasswordCommand = new RelayCommand(ToggleEditingPassword);
+            ChangePasswordCommand = new RelayCommand(async _ => await ChangePassword());
+            CancelPasswordChangeCommand = new RelayCommand(CancelPasswordChange);
 
-            EditAddressCommand = new RelayCommand(_ => ToggleEditingAddress());
+            EditAddressCommand = new RelayCommand(ToggleEditingAddress);
             AddAddressCommand = new RelayCommand(async _ => await AddNewAddress());
 
             AddressList = new ObservableCollection<ADRESA>();
+
+            LoadDoctorData();
         }
 
         public void SetDoctor(ZAMESTNANEC doctor)
@@ -208,6 +248,7 @@ namespace BDAS2_SEM.ViewModel
                 OnPropertyChanged(nameof(SelectedAddress));
             }
         }
+
         private async Task LoadAddressList()
         {
             var addresses = await _adresaRepository.GetAllAddresses();
@@ -332,6 +373,7 @@ namespace BDAS2_SEM.ViewModel
                 IsEditingPhone = false;
                 IsEditingEmail = false;
                 IsEditingAddress = false;
+                IsEditingPassword = false;
             }
             catch (Exception ex)
             {
@@ -345,6 +387,7 @@ namespace BDAS2_SEM.ViewModel
             IsEditingLastName = false;
             IsEditingPhone = false;
             IsEditingEmail = false;
+            IsEditingPassword = false;
         }
 
         private void ToggleEditLastName(object parameter)
@@ -353,6 +396,7 @@ namespace BDAS2_SEM.ViewModel
             IsEditingFirstName = false;
             IsEditingPhone = false;
             IsEditingEmail = false;
+            IsEditingPassword = false;
         }
 
         private void ToggleEditPhone(object parameter)
@@ -361,6 +405,7 @@ namespace BDAS2_SEM.ViewModel
             IsEditingFirstName = false;
             IsEditingLastName = false;
             IsEditingEmail = false;
+            IsEditingPassword = false;
         }
 
         private void ToggleEditEmail(object parameter)
@@ -369,20 +414,40 @@ namespace BDAS2_SEM.ViewModel
             IsEditingFirstName = false;
             IsEditingLastName = false;
             IsEditingPhone = false;
+            IsEditingPassword = false;
         }
 
-        private void ToggleEditingAddress()
+        private void ToggleEditingAddress(object parameter)
         {
             IsEditingAddress = !IsEditingAddress;
             IsEditingFirstName = false;
             IsEditingLastName = false;
             IsEditingPhone = false;
             IsEditingEmail = false;
+            IsEditingPassword = false;
 
             if (!IsEditingAddress)
             {
                 // Reset to the original address if editing is canceled
                 SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == Doctor.AdresaId);
+            }
+        }
+
+        private void ToggleEditingPassword(object parameter)
+        {
+            IsEditingPassword = !IsEditingPassword;
+            IsEditingFirstName = false;
+            IsEditingLastName = false;
+            IsEditingPhone = false;
+            IsEditingEmail = false;
+            IsEditingAddress = false;
+
+            if (!IsEditingPassword)
+            {
+                // Reset password fields if editing is canceled
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmNewPassword = string.Empty;
             }
         }
 
@@ -398,6 +463,69 @@ namespace BDAS2_SEM.ViewModel
                     SelectedAddress = newAddress;
                 }
             });
+        }
+
+        private async Task ChangePassword()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(CurrentPassword))
+                {
+                    MessageBox.Show("Будь ласка, введіть поточний пароль.");
+                    return;
+                }
+
+                if (_userData.Heslo != HashPassword(CurrentPassword))
+                {
+                    MessageBox.Show("Поточний пароль невірний.");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(NewPassword))
+                {
+                    MessageBox.Show("Будь ласка, введіть новий пароль.");
+                    return;
+                }
+
+                if (NewPassword != ConfirmNewPassword)
+                {
+                    MessageBox.Show("Новий пароль та підтвердження не співпадають.");
+                    return;
+                }
+
+                string newPasswordHash = HashPassword(NewPassword);
+                _userData.Heslo = newPasswordHash;
+                await _uzivatelDataRepository.UpdateUserData(_userData);
+
+                CurrentPassword = string.Empty;
+                NewPassword = string.Empty;
+                ConfirmNewPassword = string.Empty;
+
+                MessageBox.Show("Пароль успішно змінено.");
+                IsEditingPassword = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Сталася помилка: {ex.Message}");
+            }
+        }
+
+        private void CancelPasswordChange(object parameter)
+        {
+            IsEditingPassword = false;
+            CurrentPassword = string.Empty;
+            NewPassword = string.Empty;
+            ConfirmNewPassword = string.Empty;
+        }
+
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
         }
 
         // INotifyPropertyChanged Implementation
