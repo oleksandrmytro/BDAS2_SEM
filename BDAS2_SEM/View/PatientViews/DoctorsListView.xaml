@@ -55,8 +55,18 @@
 
     <Grid>
         <StackPanel Margin="10">
-            <!-- Search Box -->
-            <TextBox Width="200" Margin="0,0,0,10" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+            <!-- Search Box and Refresh Button -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,10">
+                <!-- Search Box -->
+                <TextBox Width="200" Margin="0,0,10,0" 
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Кнопка Оновити -->
+                <Button Content="Refresh" 
+                        Command="{Binding RefreshCommand}"
+                        Style="{StaticResource ModernButtonStyle}"
+                        Width="100"/>
+            </StackPanel>
 
             <!-- Header Row -->
             <Border Background="#007bff" Padding="10" Margin="0,0,0,5" CornerRadius="5">
@@ -92,7 +102,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.Column="0" Source="{Binding Avatar, Converter={StaticResource ByteArrayToImageConverter}}" Width="50" Height="50" Margin="0,0,10,0"/>
+                            <Image Grid.Column="0" 
+                                   Source="{Binding Avatar, Converter={StaticResource ByteArrayToImageConverter}}" 
+                                   Width="50" Height="50" Margin="0,0,10,0"/>
                             <TextBlock Grid.Column="1" Text="{Binding FirstName}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="2" Text="{Binding Surname}" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Column="3" Text="{Binding Phone}" VerticalAlignment="Center" FontSize="14"/>

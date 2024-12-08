@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:BDAS2_SEM.View.PatientViews"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
     <UserControl.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
 
@@ -31,9 +32,17 @@
     </UserControl.Resources>
 
     <Grid Background="#F0F4F8">
-        <Border Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1" Effect="{StaticResource ShadowEffect}">
+        <Border Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1">
             <StackPanel>
-                <TextBlock Text="Past Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+                    <TextBlock Text="Past Diagnoses" FontSize="18" FontWeight="Bold" Foreground="#3d5170" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <!-- Кнопка "Оновити" -->
+                    <Button Content="Refresh" Command="{Binding RefreshCommand}" 
+                            Style="{StaticResource ModernButtonStyle}"
+                            Width="100"
+                            Padding="10,5"
+                            />
+                </StackPanel>
                 <Grid>
                     <!-- Grid Definitions -->
                     <Grid.RowDefinitions>
@@ -44,7 +53,6 @@
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
-                        <!-- Удален один столбец -->
                     </Grid.ColumnDefinitions>
 
                     <!-- Header -->

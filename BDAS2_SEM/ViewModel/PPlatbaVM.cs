@@ -1,7 +1,5 @@
-﻿// ViewModel/PPlatbaVM.cs
-using BDAS2_SEM.Commands;
+﻿using BDAS2_SEM.Commands;
 using BDAS2_SEM.Model;
-using BDAS2_SEM.Repository;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.View.PatientViews;
@@ -46,6 +44,7 @@ namespace BDAS2_SEM.ViewModel
         }
 
         public ICommand PayIndividualPaymentCommand { get; }
+        public ICommand RefreshCommand { get; }
 
         public PPlatbaVM(IPDiagnosesRepository ipdDiagnosesRepository, IPatientContextService patientContextService, IPlatbaRepository platbaRepository, INavstevaRepository navstevaRepository)
         {
@@ -55,9 +54,11 @@ namespace BDAS2_SEM.ViewModel
             _platbaRepository = platbaRepository;
             _navstevaRepository = navstevaRepository;
 
-            // Ініціалізація команди
+            // Ініціалізація команд
             PayIndividualPaymentCommand = new RelayCommand<PDiagnosesDetail>(async (diagnosis) => await ExecutePayIndividualPaymentAsync(diagnosis), CanExecutePayIndividualPayment);
+            RefreshCommand = new AsyncRelayCommand(LoadDiagnosesAsync);
 
+            // Ініціалізація завантаження призначень
             LoadDiagnosesAsync();
         }
 
@@ -145,11 +146,13 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        private async void LoadDiagnosesAsync()
+        private async Task LoadDiagnosesAsync(object parameter = null)
         {
             var currentPatient = _patientContextService.CurrentPatient;
             if (currentPatient == null)
             {
+                Diagnoses = new ObservableCollection<PDiagnosesDetail>();
+                TotalPayment = 0;
                 return;
             }
 

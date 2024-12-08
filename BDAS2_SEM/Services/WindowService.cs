@@ -161,6 +161,14 @@ namespace BDAS2_SEM.Services
             addPositionWindow.ShowDialog();
         }
 
+        public void OpenAddDepartmentWindow(Action<ORDINACE> onPositionAdded)
+        {
+            var addDepartmentWindow = new AddDepartmentWindow();
+            var addDepartmentVM = new AddDepartmentVM(onPositionAdded, this, _serviceProvider.GetRequiredService<IOrdinaceRepository>());
+            addDepartmentWindow.DataContext = addDepartmentVM;
+            addDepartmentWindow.ShowDialog();
+        }
+
         public void OpenPatientWindow(PACIENT pacient)
         {
             var patientContextService = _serviceProvider.GetRequiredService<IPatientContextService>();

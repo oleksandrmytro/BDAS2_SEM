@@ -74,6 +74,11 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="10">
 
+                <Button Content="Refresh" 
+                        Command="{Binding RefreshCommand}" 
+                        Style="{StaticResource ModernButtonStyle}" 
+                        Margin="200,10,200,10"/>
+
                 <!-- Adresa Table -->
                 <Expander Header="Adresa" IsExpanded="False">
                     <StackPanel>
@@ -224,6 +229,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_DIAGNOZA" Binding="{Binding IdDiagnoza}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="POPIS" Binding="{Binding Popis}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
@@ -269,6 +275,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_ORDINACE" Binding="{Binding IdOrdinace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -313,6 +320,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_UZIVATEL_DATA" Binding="{Binding Id}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="EMAIL">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
@@ -402,6 +410,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CASTKA" Binding="{Binding Castka}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP_PLATBY" Binding="{Binding TypPlatby}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
@@ -445,10 +454,9 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="PRIJATO" Binding="{Binding Prijato}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="VRACENO" Binding="{Binding Vraceno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
-
-                                
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
@@ -470,13 +478,12 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PLATBA" Binding="{Binding IdPlatba}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CISLO_KARTY" Binding="{Binding CisloKarty}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
                 </Expander>
-
-
 
                 <!-- Pacient Table -->
                 <Expander Header="Pacient" IsExpanded="False">
@@ -495,6 +502,7 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PACIENT" Binding="{Binding IdPacient}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="JMENO" Binding="{Binding Jmeno}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="PRIJMENI" Binding="{Binding Prijmeni}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
 
@@ -569,7 +577,6 @@
                     </StackPanel>
                 </Expander>
 
-
                 <!-- Pozice Table -->
                 <Expander Header="Pozice" IsExpanded="False">
                     <StackPanel>
@@ -587,6 +594,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_POZICE" Binding="{Binding IdPozice}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -632,6 +640,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_PRIPONA" Binding="{Binding IdPripona}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP" Binding="{Binding Typ}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -676,6 +685,7 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_ROLE" Binding="{Binding IdRole}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -720,6 +730,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_STATUS" Binding="{Binding IdStatus}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -764,6 +775,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_TYP_LEK" Binding="{Binding IdTypLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -808,6 +820,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_LEK" Binding="{Binding IdLek}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="MNOZSTVI" Binding="{Binding Mnozstvi}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CENA" Binding="{Binding Cena}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
@@ -866,6 +879,7 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_OPERACE" Binding="{Binding IdOperace}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV" Binding="{Binding Nazev}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DATUM" Binding="{Binding Datum, StringFormat=dd.MM.yyyy}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="ČAS" Binding="{Binding Datum, StringFormat=HH:mm:ss}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
@@ -896,7 +910,6 @@
                     </StackPanel>
                 </Expander>
 
-
                 <!-- Navsteva Table -->
                 <Expander Header="Navsteva" IsExpanded="False">
                     <StackPanel>
@@ -914,6 +927,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_NAVSTEVA" Binding="{Binding IdNavsteva}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="DATUM" Binding="{Binding Datum}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="MISTNOST">
                                     <DataGridTextColumn.Binding>
@@ -1020,6 +1034,7 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_MISTNOST" Binding="{Binding IdMistnost}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="CISLO" Binding="{Binding Cislo}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTemplateColumn Header="Update">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -1064,6 +1079,7 @@
                                   CanUserAddRows="False"
                                   HeadersVisibility="Column">
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID_BLOB" Binding="{Binding IdBlob}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="NAZEV_SOUBORU" Binding="{Binding NazevSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="TYP_SOUBORU" Binding="{Binding TypSouboru}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />
                                 <DataGridTextColumn Header="OBSAH" Binding="{Binding Obsah}" ElementStyle="{StaticResource WrappingTextBlockStyle}" />

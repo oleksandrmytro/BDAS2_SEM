@@ -12,6 +12,7 @@ namespace BDAS2_SEM.Model
         private int? nadrazenyZamestnanecId;
         private int adresaId;
         private int poziceId;
+        private int _ordinaceId;
         private int userDataId;
         private int blobId; // Новое свойство
 
@@ -23,6 +24,19 @@ namespace BDAS2_SEM.Model
                 if (idZamestnanec != value)
                 {
                     idZamestnanec = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int OrdinaceId
+        {
+            get => _ordinaceId;
+            set
+            {
+                if (_ordinaceId != value)
+                {
+                    _ordinaceId = value;
                     OnPropertyChanged();
                 }
             }

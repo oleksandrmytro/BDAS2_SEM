@@ -51,18 +51,23 @@ namespace BDAS2_SEM.ViewModel
         }
 
         public ICommand BookAppointmentCommand { get; }
+        public ICommand RefreshCommand { get; }
 
-        public PAppointmentsVM(IWindowService windowService, IPatientContextService patientContextService, INavstevaDoctorViewRepository navstevaDoctorViewRepository)
+        public PAppointmentsVM(
+            IWindowService windowService,
+            IPatientContextService patientContextService,
+            INavstevaDoctorViewRepository navstevaDoctorViewRepository)
         {
             _windowService = windowService;
             _patientContextService = patientContextService;
             _navstevaDoctorViewRepository = navstevaDoctorViewRepository;
 
-            BookAppointmentCommand = new RelayCommand(BookAppointment);
-            LoadAppointments();
+            BookAppointmentCommand = new AsyncRelayCommand(BookAppointmentAsync);
+            RefreshCommand = new AsyncRelayCommand(RefreshAppointmentsAsync);
+            LoadAppointmentsAsync();
         }
 
-        private async void LoadAppointments()
+        private async Task LoadAppointmentsAsync()
         {
             var currentPatient = _patientContextService.CurrentPatient;
             if (currentPatient == null)
@@ -96,13 +101,18 @@ namespace BDAS2_SEM.ViewModel
                 }
             }
 
-            // Уведомление уже происходит через сеттеры свойств
+            // Повідомлення про зміни відбувається через сеттери властивостей
         }
 
-        private void BookAppointment(object parameter)
+        private async Task BookAppointmentAsync(object parameter)
         {
             _windowService.OpenDoctorsListWindow();
-            LoadAppointments();
+            await LoadAppointmentsAsync();
+        }
+
+        private async Task RefreshAppointmentsAsync(object parameter)
+        {
+            await LoadAppointmentsAsync();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

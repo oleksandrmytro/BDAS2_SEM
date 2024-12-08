@@ -15,6 +15,7 @@ namespace BDAS2_SEM.Services.Interfaces
         void OpenNewPatientWindow(UZIVATEL_DATA userData, Action<bool> onClosed);
         void OpenAddAddressWindow(Action<ADRESA> onAddressAdded);
         void OpenAddPositionWindow(Action<POZICE> onPositionAdded);
+        void OpenAddDepartmentWindow(Action<ORDINACE> onPositionAdded);
         void OpenPatientWindow(PACIENT pacient);
         void OpenDoctorWindow(ZAMESTNANEC zamestnanec);
         void CloseWindow(Action closeAction);
