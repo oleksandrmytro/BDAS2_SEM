@@ -25,18 +25,21 @@ namespace BDAS2_SEM.Services
 
         public void OpenViewDiagnosisWindow(NAVSTEVA navsteva)
         {
-            var viewDiagnosisWindow = new ViewDiagnosisWindow
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                DataContext = new VMDiagnosis(
-                    _serviceProvider.GetRequiredService<INavstevaRepository>(),           // 1
-                    _serviceProvider.GetRequiredService<IDiagnozaRepository>(),           // 2
-                    _serviceProvider.GetRequiredService<ILekRepository>(),                // 3
-                    _serviceProvider.GetRequiredService<ILekDiagnozaRepository>(),        // 4 (LekDiagnozaRepository)
-                    _serviceProvider.GetRequiredService<INavstevaDiagnozaRepository>(),   // 5 (NavstevaDiagnozaRepository)
-                    _serviceProvider.GetRequiredService<IOperaceRepository>(),            // 6
-                    navsteva)                                                             // 7
-            };
-            viewDiagnosisWindow.Show();
+                var viewDiagnosisWindow = new ViewDiagnosisWindow
+                {
+                    DataContext = new VMDiagnosis(
+                        _serviceProvider.GetRequiredService<INavstevaRepository>(),
+                        _serviceProvider.GetRequiredService<IDiagnozaRepository>(),
+                        _serviceProvider.GetRequiredService<ILekRepository>(),
+                        _serviceProvider.GetRequiredService<ILekDiagnozaRepository>(),
+                        _serviceProvider.GetRequiredService<INavstevaDiagnozaRepository>(),
+                        _serviceProvider.GetRequiredService<IOperaceRepository>(),
+                        navsteva)
+                };
+                viewDiagnosisWindow.Show();
+            });
         }
 
         public void OpenEditPatientWindow(PACIENT patient)

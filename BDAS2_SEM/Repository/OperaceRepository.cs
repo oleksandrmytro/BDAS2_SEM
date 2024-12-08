@@ -83,6 +83,23 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        public async Task<OPERACE> GetOperaceByDiagnozaId(int diagnozaId)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                var query = @"
+            SELECT 
+                ID_OPERACE AS IdOperace, 
+                NAZEV AS Nazev, 
+                DATUM AS Datum, 
+                DIAGNOZA_ID_DIAGNOZA AS DiagnozaId 
+            FROM OPERACE
+            WHERE DIAGNOZA_ID_DIAGNOZA = :diagnozaId";
+
+                return await db.QueryFirstOrDefaultAsync<OPERACE>(query, new { diagnozaId });
+            }
+        }
+
         public async Task DeleteOperace(int id)
         {
             using (var db = new OracleConnection(_connectionString))

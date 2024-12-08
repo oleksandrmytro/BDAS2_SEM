@@ -45,32 +45,20 @@ public class ZamestnanecRepository : IZamestnanecRepository
     {
         using (var db = new OracleConnection(connectionString))
         {
-            var sql = @"
-                    UPDATE ZAMESTNANEC 
-                    SET 
-                        Jmeno = :Jmeno, 
-                        Prijmeni = :Prijmeni, 
-                        Telefon = :Telefon, 
-                        ZAMESTNANEC_ID_ZAMESTNANEC = :NadrazenyZamestnanecId, 
-                        ADRESA_ID_ADRESA = :AdresaId, 
-                        POZICE_ID_POZICE = :PoziceId,  
-                        UZIVATEL_DATA_ID_UZIVATEL_DATA = :UserDataId,
-                        BLOB_ID = :BlobId
-                    WHERE 
-                        ID_ZAMESTNANEC = :IdZamestnanec";
+            var procedureName = "manage_zamestnanec";
 
             var parameters = new DynamicParameters();
-            parameters.Add("Jmeno", zamestnanec.Jmeno, DbType.String);
-            parameters.Add("Prijmeni", zamestnanec.Prijmeni, DbType.String);
-            parameters.Add("Telefon", zamestnanec.Telefon, DbType.Int64);
-            parameters.Add("NadrazenyZamestnanecId", zamestnanec.NadrazenyZamestnanecId, DbType.Int32);
-            parameters.Add("AdresaId", zamestnanec.AdresaId, DbType.Int32);
-            parameters.Add("PoziceId", zamestnanec.PoziceId, DbType.Int32);
-            parameters.Add("UserDataId", zamestnanec.UserDataId, DbType.Int32);
-            parameters.Add("BlobId", zamestnanec.BlobId, DbType.Int32);
-            parameters.Add("IdZamestnanec", zamestnanec.IdZamestnanec, DbType.Int32);
+            parameters.Add("p_action", "UPDATE", DbType.String);
+            parameters.Add("p_id_zamestnanec", zamestnanec.IdZamestnanec, DbType.Int32);
+            parameters.Add("p_jmeno", zamestnanec.Jmeno, DbType.String);
+            parameters.Add("p_prijmeni", zamestnanec.Prijmeni, DbType.String);
+            parameters.Add("p_telefon", zamestnanec.Telefon, DbType.Int64);
+            parameters.Add("p_zamestnanec_id", zamestnanec.NadrazenyZamestnanecId, DbType.Int32);
+            parameters.Add("p_adresa_id", zamestnanec.AdresaId, DbType.Int32);
+            parameters.Add("p_pozice_id", zamestnanec.PoziceId, DbType.Int32);
+            parameters.Add("p_uzivatel_data_id", zamestnanec.UserDataId, DbType.Int32);
 
-            await db.ExecuteAsync(sql, parameters);
+            await db.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
         }
     }
 

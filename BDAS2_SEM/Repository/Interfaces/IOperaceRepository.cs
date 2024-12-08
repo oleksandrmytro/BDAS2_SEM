@@ -14,5 +14,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<OPERACE> GetOperaceById(int id);
         Task<IEnumerable<OPERACE>> GetAllOperaces();
         Task DeleteOperace(int id);
+        Task<OPERACE> GetOperaceByDiagnozaId(int diagnozaId);
     }
 }
