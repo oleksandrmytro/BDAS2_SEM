@@ -986,6 +986,7 @@ namespace BDAS2_SEM.ViewModel
                     case BLOB_TABLE blobTable:
                         await _blobTableRepository.DeleteBlob(blobTable.IdBlob);
                         BlobTable.Remove(blobTable);
+
                         break;
 
                     case ORDINACE_ZAMESTNANEC ordinaceZamestnanec:

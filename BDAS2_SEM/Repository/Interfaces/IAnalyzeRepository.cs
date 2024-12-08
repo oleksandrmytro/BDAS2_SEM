@@ -11,5 +11,8 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<string> AnalyzeIncomeByPaymentType(DateTime startDate, DateTime endDate);
         Task<string> AnalyzeMedicineExpenses();
         Task<DoctorActivityResult> AnalyzeDoctorActivityAsync(int doctorId);
+        Task<string> AnalyzeEmployeeEfficiency(int employeeId);
+        Task<string> AnalyzeTopEmployeesEfficiency();
+        Task<string> AnalyzeTopPayingPatients(DateTime startDate, DateTime endDate, int topCount);
     }
 }

@@ -128,7 +128,10 @@ namespace BDAS2_SEM.ViewModel
                 "ANALYZE_DIAGNOSES_AND_MEDICINES",
                 "ANALYZE_EMPLOYEE_HIERARCHY",
                 "ANALYZE_INCOME_BY_PAYMENT_TYPE",
-                "ANALYZE_MEDICINE_EXPENSES"
+                "ANALYZE_MEDICINE_EXPENSES",
+                "ANALYZE_EMPLOYEE_EFFICIENCY", // Новая процедура
+                "ANALYZE_TOP_EMPLOYEES_EFFICIENCY", // Новая процедура
+                "ANALYZE_TOP_PAYING_PATIENTS" // Новая процедура
             };
 
             ExecuteProcedureCommand = new RelayCommand(async _ => await ExecuteProcedureAsync(), CanExecuteProcedure);
@@ -162,6 +165,15 @@ namespace BDAS2_SEM.ViewModel
                     break;
                 case "ANALYZE_MEDICINE_EXPENSES":
                     await ExecuteAnalyzeMedicineExpensesAsync();
+                    break;
+                case "ANALYZE_EMPLOYEE_EFFICIENCY": // Новая процедура
+                    await ExecuteAnalyzeEmployeeEfficiencyAsync();
+                    break;
+                case "ANALYZE_TOP_EMPLOYEES_EFFICIENCY": // Новая процедура
+                    await ExecuteAnalyzeTopEmployeesEfficiencyAsync();
+                    break;
+                case "ANALYZE_TOP_PAYING_PATIENTS": // Новая процедура
+                    await ExecuteAnalyzeTopPayingPatientsAsync();
                     break;
                 default:
                     Result = $"Procedure '{SelectedProcedure}' is not implemented.";
@@ -323,6 +335,70 @@ namespace BDAS2_SEM.ViewModel
             }
 
             return results;
+        }
+
+        private async Task ExecuteAnalyzeEmployeeEfficiencyAsync()
+        {
+            if (!ManagerId.HasValue || ManagerId <= 0)
+            {
+                Result = "Please enter a valid employee ID.";
+                return;
+            }
+
+            try
+            {
+                var efficiencyResult = await _analyzeRepository.AnalyzeEmployeeEfficiency(ManagerId.Value);
+                Result = efficiencyResult;
+
+                // Optional: Output to console
+                Console.WriteLine(efficiencyResult);
+            }
+            catch (Exception ex)
+            {
+                Result = $"Error executing procedure: {ex.Message}";
+                Console.WriteLine(Result);
+            }
+        }
+
+        private async Task ExecuteAnalyzeTopEmployeesEfficiencyAsync()
+        {
+            try
+            {
+                var efficiencyResult = await _analyzeRepository.AnalyzeTopEmployeesEfficiency();
+                Result = efficiencyResult;
+
+                // Optional: Output to console
+                Console.WriteLine(efficiencyResult);
+            }
+            catch (Exception ex)
+            {
+                Result = $"Error executing procedure: {ex.Message}";
+                Console.WriteLine(Result);
+            }
+        }
+
+        private async Task ExecuteAnalyzeTopPayingPatientsAsync()
+        {
+            if (!StartDate.HasValue || !EndDate.HasValue)
+            {
+                Result = "Please select the start and end dates.";
+                return;
+            }
+
+            try
+            {
+                var topCount = 5; // Например, топ 5 пациентов
+                var topPayingPatientsResult = await _analyzeRepository.AnalyzeTopPayingPatients(StartDate.Value, EndDate.Value, topCount);
+                Result = topPayingPatientsResult;
+
+                // Optional: Output to console
+                Console.WriteLine(topPayingPatientsResult);
+            }
+            catch (Exception ex)
+            {
+                Result = $"Error executing procedure: {ex.Message}";
+                Console.WriteLine(Result);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

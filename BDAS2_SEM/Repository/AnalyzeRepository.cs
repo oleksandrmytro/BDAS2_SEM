@@ -446,6 +446,231 @@ namespace BDAS2_SEM.Repository
             return activityResult;
         }
 
+        public async Task<string> AnalyzeEmployeeEfficiency(int employeeId)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                using (var command = new OracleCommand("Analyze_Employee_Efficiency", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.BindByName = true;
+
+                    // Добавление входного параметра
+                    command.Parameters.Add("p_employee_id", OracleDbType.Int32).Value = employeeId;
+
+                    // Добавление выходного параметра - SYS_REFCURSOR
+                    var refCursor = new OracleParameter("RETURN_VALUE", OracleDbType.RefCursor)
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(refCursor);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        // Выполнение функции
+                        await command.ExecuteNonQueryAsync();
+
+                        // Получение курсора
+                        using (var reader = ((OracleRefCursor)refCursor.Value).GetDataReader())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                int employeeIdValue = reader.IsDBNull(reader.GetOrdinal("employee_id"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("employee_id"));
+
+                                string employeeName = reader.IsDBNull(reader.GetOrdinal("employee_name"))
+                                    ? "N/A"
+                                    : reader.GetString(reader.GetOrdinal("employee_name"));
+
+                                int totalVisits = reader.IsDBNull(reader.GetOrdinal("total_visits"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("total_visits"));
+
+                                int totalOperations = reader.IsDBNull(reader.GetOrdinal("total_operations"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("total_operations"));
+
+                                decimal avgInteractionDays = reader.IsDBNull(reader.GetOrdinal("avg_interaction_days"))
+                                    ? 0
+                                    : reader.GetDecimal(reader.GetOrdinal("avg_interaction_days"));
+
+                                resultBuilder.AppendLine($"Employee ID: {employeeIdValue}, Name: {employeeName}, Total Visits: {totalVisits}, Total Operations: {totalOperations}, Avg Interaction Days: {avgInteractionDays}");
+                            }
+
+                            // Дополнительно вывод в консоль
+                            Console.WriteLine(resultBuilder.ToString());
+                        }
+                    }
+                    catch (OracleException ex)
+                    {
+                        var errorMessage = $"Database error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = $"An error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                }
+            }
+
+            return resultBuilder.ToString();
+        }
+
+        public async Task<string> AnalyzeTopEmployeesEfficiency()
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                using (var command = new OracleCommand("Analyze_Top_Employees_Efficiency", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.BindByName = true;
+
+                    // Добавление выходного параметра - SYS_REFCURSOR
+                    var refCursor = new OracleParameter("RETURN_VALUE", OracleDbType.RefCursor)
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(refCursor);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        // Выполнение функции
+                        await command.ExecuteNonQueryAsync();
+
+                        // Получение курсора
+                        using (var reader = ((OracleRefCursor)refCursor.Value).GetDataReader())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                int employeeId = reader.IsDBNull(reader.GetOrdinal("employee_id"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("employee_id"));
+
+                                string employeeName = reader.IsDBNull(reader.GetOrdinal("employee_name"))
+                                    ? "N/A"
+                                    : reader.GetString(reader.GetOrdinal("employee_name"));
+
+                                int totalVisits = reader.IsDBNull(reader.GetOrdinal("total_visits"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("total_visits"));
+
+                                int totalOperations = reader.IsDBNull(reader.GetOrdinal("total_operations"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("total_operations"));
+
+                                int rank = reader.IsDBNull(reader.GetOrdinal("rank"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("rank"));
+
+                                resultBuilder.AppendLine($"Rank: {rank}, Employee ID: {employeeId}, Name: {employeeName}, Total Visits: {totalVisits}, Total Operations: {totalOperations}");
+                            }
+
+                            // Дополнительно вывод в консоль
+                            Console.WriteLine(resultBuilder.ToString());
+                        }
+                    }
+                    catch (OracleException ex)
+                    {
+                        var errorMessage = $"Database error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = $"An error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                }
+            }
+
+            return resultBuilder.ToString();
+        }
+
+        public async Task<string> AnalyzeTopPayingPatients(DateTime startDate, DateTime endDate, int topCount)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                using (var command = new OracleCommand("Analyze_Top_Paying_Patients", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.BindByName = true;
+
+                    // Добавление входных параметров
+                    command.Parameters.Add("p_start_date", OracleDbType.Date).Value = startDate;
+                    command.Parameters.Add("p_end_date", OracleDbType.Date).Value = endDate;
+                    command.Parameters.Add("p_top_count", OracleDbType.Int32).Value = topCount;
+
+                    // Добавление выходного параметра - SYS_REFCURSOR
+                    var refCursor = new OracleParameter("RETURN_VALUE", OracleDbType.RefCursor)
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(refCursor);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        // Выполнение функции
+                        await command.ExecuteNonQueryAsync();
+
+                        // Получение курсора
+                        using (var reader = ((OracleRefCursor)refCursor.Value).GetDataReader())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                int patientId = reader.IsDBNull(reader.GetOrdinal("patient_id"))
+                                    ? 0
+                                    : reader.GetInt32(reader.GetOrdinal("patient_id"));
+
+                                string patientName = reader.IsDBNull(reader.GetOrdinal("patient_name"))
+                                    ? "N/A"
+                                    : reader.GetString(reader.GetOrdinal("patient_name"));
+
+                                decimal totalPaid = reader.IsDBNull(reader.GetOrdinal("total_paid"))
+                                    ? 0
+                                    : reader.GetDecimal(reader.GetOrdinal("total_paid"));
+
+                                resultBuilder.AppendLine($"Patient ID: {patientId}, Name: {patientName}, Total Paid: {totalPaid}");
+                            }
+
+                            // Дополнительно вывод в консоль
+                            Console.WriteLine(resultBuilder.ToString());
+                        }
+                    }
+                    catch (OracleException ex)
+                    {
+                        var errorMessage = $"Database error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = $"An error occurred: {ex.Message}";
+                        resultBuilder.AppendLine(errorMessage);
+                        Console.WriteLine(errorMessage);
+                    }
+                }
+            }
+
+            return resultBuilder.ToString();
+        }
+
         // Класс для маппинга данных диагностики
         private class DiagnosisAnalysis
         {

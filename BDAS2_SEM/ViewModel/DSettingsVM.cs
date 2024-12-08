@@ -264,14 +264,14 @@ namespace BDAS2_SEM.ViewModel
                         PriponaId = pripona.IdPripona // Set the PRIPONA ID
                     };
 
-                    if (Doctor.BlobId != 0)
+                    int oldBlob = Doctor.BlobId;
+
+                    if (oldBlob != 1)
                     {
-                        // Update existing blob
-                        blob.IdBlob = Doctor.BlobId;
-                        await _blobRepository.UpdateBlob(blob);
+                        await _zamestnanecRepository.UpdateEmployeeBlob(Doctor.IdZamestnanec, 1);
+                        await _blobRepository.DeleteBlob(oldBlob); // Delete old blob
                     }
-                    else
-                    {
+                    
                         // Add new blob
                         int newBlobId = await _blobRepository.AddBlob(blob);
                         Doctor.BlobId = newBlobId;
@@ -279,7 +279,8 @@ namespace BDAS2_SEM.ViewModel
                         // Call the stored procedure to update zamestnanec's BlobId
                         await _zamestnanecRepository.UpdateEmployeeBlob(Doctor.IdZamestnanec, newBlobId);
                         await _zamestnanecRepository.UpdateZamestnanec(Doctor); // Optional: ensure ViewModel is updated
-                    }
+                        LoadDoctorData();
+                    
 
                     // Optionally, notify the user of success
                 }
@@ -292,6 +293,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 // Handle other exceptions
             }
+  
         }
 
         private async Task SaveChanges()
