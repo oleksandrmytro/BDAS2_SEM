@@ -54,6 +54,7 @@ namespace BDAS2_SEM.ViewModel
         public ICommand DeleteCommand { get; }
         public ICommand InsertCommand { get; }
 
+        public ICommand RefreshCommand { get; }
         public ObservableCollection<ADRESA> Adresa { get; set; } = new ObservableCollection<ADRESA>();
         public ObservableCollection<BLOB_TABLE> BlobTable { get; set; } = new ObservableCollection<BLOB_TABLE>();
         public ObservableCollection<DIAGNOZA> Diagnosis { get; set; } = new ObservableCollection<DIAGNOZA>();
@@ -564,6 +565,7 @@ namespace BDAS2_SEM.ViewModel
             EditCommand = new RelayCommand(EditItem);
             DeleteCommand = new RelayCommand(ExecuteDelete);
             InsertCommand = new RelayCommand<Type>(ExecuteInsert);
+            RefreshCommand = new RelayCommand(RefreshData);
 
             _adresaView = CollectionViewSource.GetDefaultView(Adresa);
             _adresaView.Filter = AdresaFilter;
@@ -638,6 +640,11 @@ namespace BDAS2_SEM.ViewModel
             _navstevaDiagnozaView = CollectionViewSource.GetDefaultView(NavstevaDiagnoza);
             _navstevaDiagnozaView.Filter = NavstevaDiagnozaFilter;
 
+            LoadDataAsync();
+        }
+
+        private void RefreshData(object obj)
+        {
             LoadDataAsync();
         }
 

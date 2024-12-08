@@ -177,7 +177,7 @@ namespace BDAS2_SEM.ViewModel
 
         private void AddDepartment(object parameter)
         {
-            //_windowService.OpenAddDepartmentWindow(OnDepartmentAdded);
+            _windowService.OpenAddDepartmentWindow(OnDepartmentAdded);
         }
 
         private void OnDepartmentAdded(ORDINACE newDepartment)

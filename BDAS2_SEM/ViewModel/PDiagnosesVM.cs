@@ -17,9 +17,19 @@ namespace BDAS2_SEM.ViewModel
         private readonly IWindowService _windowService;
         private readonly IPatientContextService _patientContextService;
 
-        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> PastAppointments { get; set; }
+        private ObservableCollection<NAVSTEVA_DOCTOR_VIEW> _pastAppointments;
+        public ObservableCollection<NAVSTEVA_DOCTOR_VIEW> PastAppointments
+        {
+            get => _pastAppointments;
+            set
+            {
+                _pastAppointments = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand ViewDiagnosisCommand { get; }
+        public ICommand RefreshCommand { get; }
 
         public PDiagnosesVM(
             IWindowService windowService,
@@ -30,16 +40,20 @@ namespace BDAS2_SEM.ViewModel
             _patientContextService = patientContextService;
             _navstevaDoctorViewRepository = navstevaDoctorViewRepository;
 
-            ViewDiagnosisCommand = new RelayCommand(ViewDiagnosis);
-            LoadPastAppointments();
+            ViewDiagnosisCommand = new AsyncRelayCommand(ViewDiagnosisAsync);
+            RefreshCommand = new AsyncRelayCommand(LoadPastAppointmentsAsync);
+
+            // Ініціалізація завантаження призначень
+            LoadPastAppointmentsAsync();
         }
 
-        private async void LoadPastAppointments()
+        private async Task LoadPastAppointmentsAsync(object parameter = null)
         {
             var currentPatient = _patientContextService.CurrentPatient;
             if (currentPatient == null)
             {
-                // Обработка случая, когда текущий пациент не установлен
+                // Обробка випадку, коли поточний пацієнт не встановлений
+                PastAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
                 return;
             }
 
@@ -47,7 +61,7 @@ namespace BDAS2_SEM.ViewModel
             var allAppointments = await _navstevaDoctorViewRepository.GetNavstevaDoctorViewByPatientId(pacientId);
             var now = DateTime.Now;
 
-            PastAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
+            var pastAppointmentsList = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
 
             foreach (var appointment in allAppointments)
             {
@@ -55,14 +69,14 @@ namespace BDAS2_SEM.ViewModel
 
                 if (appointmentDateTime < now)
                 {
-                    PastAppointments.Add(appointment);
+                    pastAppointmentsList.Add(appointment);
                 }
             }
 
-            OnPropertyChanged(nameof(PastAppointments));
+            PastAppointments = pastAppointmentsList;
         }
 
-        private void ViewDiagnosis(object parameter)
+        private async Task ViewDiagnosisAsync(object parameter)
         {
             if (parameter is NAVSTEVA_DOCTOR_VIEW appointment)
             {
@@ -74,7 +88,8 @@ namespace BDAS2_SEM.ViewModel
                     DoktorJmeno = appointment.DoctorFullName
                 };
 
-                _windowService.OpenViewDiagnosisWindow(navsteva);
+                // Відкриття вікна діагнозу асинхронно, якщо необхідно
+                await Task.Run(() => _windowService.OpenViewDiagnosisWindow(navsteva));
             }
         }
 

@@ -44,6 +44,7 @@ namespace BDAS2_SEM.View.AdminViews
         public ObservableCollection<POZICE> PoziceList { get; set; }
         public ObservableCollection<TYP_LEK> TypLeks { get; set; }
         public ObservableCollection<ROLE> AvailableRoles { get; set; }
+        public ObservableCollection<ORDINACE> OrdinaceList { get; set; }
 
         private decimal? _castkaIn;
         public decimal? CastkaIn
@@ -192,6 +193,7 @@ namespace BDAS2_SEM.View.AdminViews
             PoziceList = new ObservableCollection<POZICE>();
             TypLeks = new ObservableCollection<TYP_LEK>();
             AvailableRoles = new ObservableCollection<ROLE>();
+            OrdinaceList = new ObservableCollection<ORDINACE>();
 
             // Якщо Item це PLATBA, ініціалізуємо прапорці та підписуємося на PropertyChanged
             if (Item is PLATBA platbaItem)
@@ -287,6 +289,7 @@ namespace BDAS2_SEM.View.AdminViews
                 var poziceRepo = _serviceProvider.GetService<IPoziceRepository>();
                 var typLekRepo = _serviceProvider.GetService<ITypLekRepository>();
                 var roleRepo = _serviceProvider.GetService<IRoleRepository>();
+                var ordinRepo = _serviceProvider.GetService<IOrdinaceRepository>();
 
                 if (adresaRepo != null)
                 {
@@ -314,6 +317,15 @@ namespace BDAS2_SEM.View.AdminViews
                     var roleItems = await roleRepo.GetAllRoles();
                     foreach (var role in roleItems)
                         AvailableRoles.Add(role);
+                }
+
+                if (ordinRepo != null)
+                {
+                    var ordinaces = await ordinRepo.GetAllOrdinaces();
+                    foreach (var ordin in ordinaces)
+                    {
+                        OrdinaceList.Add(ordin);
+                    }
                 }
             }
             catch (Exception ex)

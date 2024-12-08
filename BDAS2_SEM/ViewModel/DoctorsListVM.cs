@@ -2,6 +2,7 @@
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Services.Interfaces;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -22,9 +23,19 @@ namespace BDAS2_SEM.ViewModel
         private readonly IWindowService _windowService;
 
         private ObservableCollection<DOCTOR_INFO> _allDoctors;
-        public ObservableCollection<DOCTOR_INFO> Doctors { get; set; }
+        private ObservableCollection<DOCTOR_INFO> _doctors;
+        public ObservableCollection<DOCTOR_INFO> Doctors
+        {
+            get => _doctors;
+            set
+            {
+                _doctors = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand CreateAppointmentCommand { get; }
-        public ICommand SearchCommand { get; }
+        public ICommand RefreshCommand { get; }
 
         private string _searchText;
         public string SearchText
@@ -34,6 +45,7 @@ namespace BDAS2_SEM.ViewModel
             {
                 _searchText = value;
                 OnPropertyChanged();
+                // Викликаємо фільтрацію автоматично при зміні тексту
                 FilterDoctors();
             }
         }
@@ -51,12 +63,16 @@ namespace BDAS2_SEM.ViewModel
             _zamestnanecNavstevaRepository = zamestnanecNavstevaRepository;
             _windowService = windowService;
 
+            Doctors = new ObservableCollection<DOCTOR_INFO>();
+            _allDoctors = new ObservableCollection<DOCTOR_INFO>();
+
             CreateAppointmentCommand = new RelayCommand(CreateAppointment);
-            SearchCommand = new RelayCommand(_ => FilterDoctors());
-            LoadDoctors();
+            RefreshCommand = new AsyncRelayCommand(RefreshDoctorsAsync);
+
+            LoadDoctorsAsync();
         }
 
-        // Конструктор по умолчанию для XAML
+        // Конструктор по замовчуванню для XAML
         public DoctorsListVM() : this(
             App.ServiceProvider.GetRequiredService<IDoctorInfoRepository>(),
             App.ServiceProvider.GetRequiredService<IPatientContextService>(),
@@ -66,16 +82,25 @@ namespace BDAS2_SEM.ViewModel
         {
         }
 
-        private async void LoadDoctors()
+        private async Task LoadDoctorsAsync()
         {
-            var doctors = await _doctorInfoRepository.GetAllDoctors();
-            _allDoctors = new ObservableCollection<DOCTOR_INFO>(doctors);
-            Doctors = new ObservableCollection<DOCTOR_INFO>(_allDoctors);
-            OnPropertyChanged(nameof(Doctors));
+            try
+            {
+                var doctors = await _doctorInfoRepository.GetAllDoctors();
+                _allDoctors = new ObservableCollection<DOCTOR_INFO>(doctors);
+                Doctors = new ObservableCollection<DOCTOR_INFO>(_allDoctors);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при завантаженні лікарів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void FilterDoctors()
         {
+            if (_allDoctors == null)
+                return;
+
             if (string.IsNullOrWhiteSpace(SearchText))
             {
                 Doctors = new ObservableCollection<DOCTOR_INFO>(_allDoctors);
@@ -85,13 +110,17 @@ namespace BDAS2_SEM.ViewModel
                 var filteredDoctors = _allDoctors.Where(d =>
                     (d.FirstName != null && d.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                     (d.Surname != null && d.Surname.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) || // Конвертація до string
                     (d.Department != null && d.Department.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
                 Doctors = new ObservableCollection<DOCTOR_INFO>(filteredDoctors);
             }
-            OnPropertyChanged(nameof(Doctors));
+        }
+
+        private async Task RefreshDoctorsAsync(object parameter)
+        {
+            await LoadDoctorsAsync();
         }
 
         private async void CreateAppointment(object parameter)
@@ -109,21 +138,27 @@ namespace BDAS2_SEM.ViewModel
                         StatusId = 3
                     };
 
-                    var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
-                    newAppointment.IdNavsteva = newAppointmentId;
-
-                    var zamestnanecNavsteva = new ZAMESTNANEC_NAVSTEVA
+                    try
                     {
-                        ZamestnanecId = selectedDoctor.DoctorId, // Используем DoctorId вместо AvatarId
-                        NavstevaId = newAppointmentId
-                    };
+                        var newAppointmentId = await _navstevaRepository.AddNavsteva(newAppointment);
+                        newAppointment.IdNavsteva = newAppointmentId;
 
-                    await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
+                        var zamestnanecNavsteva = new ZAMESTNANEC_NAVSTEVA
+                        {
+                            ZamestnanecId = selectedDoctor.DoctorId, // Використовуємо DoctorId
+                            NavstevaId = newAppointmentId
+                        };
 
-                    MessageBox.Show("Appointment successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
+
+                        MessageBox.Show("Запис успішно створено!", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Помилка при створенні запису: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
-        
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

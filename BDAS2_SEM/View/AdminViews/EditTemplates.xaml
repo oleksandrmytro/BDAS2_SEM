@@ -110,6 +110,15 @@
             SelectedValue="{Binding PoziceId, UpdateSourceTrigger=PropertyChanged}" 
             Margin="0,5"/>
 
+            <!-- Доданий ComboBox для Ordinace -->
+            <Label Content="ORDINACE:" />
+            <ComboBox 
+            ItemsSource="{Binding DataContext.OrdinaceList, RelativeSource={RelativeSource AncestorType=Window}}" 
+            DisplayMemberPath="Nazev" 
+            SelectedValuePath="IdOrdinace"
+            SelectedValue="{Binding OrdinaceId, UpdateSourceTrigger=PropertyChanged}" 
+            Margin="0,5"/>
+
             <Label Content="UZIVATEL_DATA_ID_UZIVATEL_DATA:" />
             <TextBox Text="{Binding UserDataId, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
