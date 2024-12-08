@@ -7,8 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        
-
         <Style x:Key="ModernButtonStyle" TargetType="Button">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="Padding" Value="10,5"/>
@@ -33,7 +31,7 @@
     <Grid Background="#F0F4F8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Для кнопки -->
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -45,6 +43,7 @@
                     Width="100"/>
         </StackPanel>
 
+        <!-- Past Appointments -->
         <Border Grid.Row="1" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1">
             <StackPanel>
                 <TextBlock Text="Past Appointments" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
@@ -60,26 +59,25 @@
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
-                        <!-- New Column for Button -->
                     </Grid.ColumnDefinitions>
 
                     <!-- Header -->
                     <Border Grid.Row="0" Grid.ColumnSpan="5" Background="#007bff" CornerRadius="5,5,0,0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="2" Text="Date" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="3" Text="Room" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                            <TextBlock Grid.Column="4" Text="Action" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
-                        </Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="2" Text="Date" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="3" Text="Room" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="4" Text="Action" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            </Grid>
                         </ScrollViewer>
                     </Border>
 
@@ -118,6 +116,83 @@
                     </Border>
                 </Grid>
                 <TextBlock Text="{Binding NoAppointmentsMessage}" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Diagnoses -->
+        <Border Grid.Row="2" Background="White" CornerRadius="10" Margin="10" Padding="10" BorderBrush="#e1e5eb" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="Diagnoses" FontSize="18" FontWeight="Bold" Foreground="#3d5170" Margin="0,0,0,15" HorizontalAlignment="Center"/>
+                <Grid>
+                    <!-- Grid Definitions -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Header -->
+                    <Border Grid.Row="0" Grid.ColumnSpan="5" Background="#007bff" CornerRadius="5,5,0,0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="First Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="1" Text="Last Name" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="2" Text="Diagnosis" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="3" Text="Date" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                                <TextBlock Grid.Column="4" Text="Room" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="10"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </Border>
+
+                    <!-- Data Rows -->
+                    <Border Grid.Row="1" Grid.ColumnSpan="5" Background="White" CornerRadius="0,0,5,5" BorderBrush="#e1e5eb" BorderThickness="1,0,1,1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Diagnoses}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding PACIENTJmeno}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding PACIENTPrijmeni}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding DIAGNOZA}" Padding="10" HorizontalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Padding="10" HorizontalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0:dd.MM.yyyy HH:mm}">
+                                                        <Binding Path="Datum"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="4" Text="{Binding MISTNOST}" Padding="10" HorizontalAlignment="Center"/>
+                                            <Button Grid.Column="4" Content="View" Style="{StaticResource ModernButtonStyle}" 
+                                                    Command="{Binding DataContext.ViewDiagnosisCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+                <TextBlock Text="{Binding NoDiagnosesMessage}" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
             </StackPanel>
         </Border>
     </Grid>

@@ -14,5 +14,6 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<LEK_DIAGNOZA> GetLekDiagnoza(int diagnozaId, int lekId);
         Task<IEnumerable<LEK_DIAGNOZA>> GetAllLekDiagnoza();
         Task DeleteLekDiagnoza(int diagnozaId, int lekId);
-    }
+        Task<IEnumerable<LEK>> GetLeksByDiagnozaId(int diagnozaId);
+        }
 }

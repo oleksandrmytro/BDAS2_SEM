@@ -82,6 +82,21 @@ namespace BDAS2_SEM.Repository
                 return await db.QueryAsync<LEK_DIAGNOZA>(sqlQuery);
             }
         }
+        public async Task<IEnumerable<LEK>> GetLeksByDiagnozaId(int diagnozaId)
+        {
+            using (var db = new OracleConnection(_connectionString))
+            {
+                var sql = @"
+                    SELECT l.*
+                    FROM LEK l
+                    INNER JOIN LEK_DIAGNOZA ld ON l.ID_LEK = ld.LEK_ID_LEK
+                    WHERE ld.DIAGNOZA_ID_DIAGNOZA = :DiagnozaId";
+
+                var parameters = new { DiagnozaId = diagnozaId };
+
+                return await db.QueryAsync<LEK>(sql, parameters);
+            }
+        }
 
         // Метод для видалення зв'язку між ліком та діагнозом
         public async Task DeleteLekDiagnoza(int diagnozaId, int lekId)

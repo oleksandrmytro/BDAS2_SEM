@@ -10,6 +10,7 @@ using System.Windows.Input;
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 using BDAS2_SEM.Commands;
+using BDAS2_SEM.Repository;
 
 namespace BDAS2_SEM.ViewModel
 {
@@ -19,6 +20,7 @@ namespace BDAS2_SEM.ViewModel
         private readonly IDiagnozaRepository _diagnozaRepository;
         private readonly ILekRepository _lekRepository;
         private readonly INavstevaDiagnozaRepository _navstevaDiagnozaRepository;
+        private readonly ILekDiagnozaRepository _lekDiagnozaRepository; // Добавлено
         private readonly IOperaceRepository _operaceRepository;
         private NAVSTEVA _appointment;
 
@@ -133,12 +135,14 @@ namespace BDAS2_SEM.ViewModel
             INavstevaRepository navstevaRepository,
             IDiagnozaRepository diagnozaRepository,
             ILekRepository lekRepository,
+            ILekDiagnozaRepository lekDiagnozaRepository,
             INavstevaDiagnozaRepository navstevaDiagnozaRepository,
             IOperaceRepository operaceRepository,
             NAVSTEVA appointment)
         {
             _navstevaRepository = navstevaRepository;
             _diagnozaRepository = diagnozaRepository;
+            _lekDiagnozaRepository = lekDiagnozaRepository;
             _lekRepository = lekRepository;
             _navstevaDiagnozaRepository = navstevaDiagnozaRepository;
             _operaceRepository = operaceRepository;
@@ -163,23 +167,19 @@ namespace BDAS2_SEM.ViewModel
                         NewDiagnozaNazev = diagnoza.Nazev;
                         NewDiagnozaPopis = diagnoza.Popis;
                         Console.WriteLine($"Loaded Diagnosis: {NewDiagnozaNazev}, {NewDiagnozaPopis}");
+
+                        // Загрузка лекарств, связанных с диагнозом
+                        var lekDiagnozy = await _lekDiagnozaRepository.GetLeksByDiagnozaId(diagnoza.IdDiagnoza);
+                        SelectedLeks.Clear();
+                        foreach (var lek in lekDiagnozy)
+                        {
+                            SelectedLeks.Add(lek);
+                        }
                     }
                 }
 
-                var operace = await _operaceRepository.GetOperaceById(_appointment.IdNavsteva);
-                if (operace != null)
-                {
-                    NewOperationName = operace.Nazev;
-                    NewOperationDate = operace.Datum;
-                    NewOperationTimeString = operace.Datum.ToString("HH:mm:ss");
-                    Console.WriteLine($"Loaded Operation: {NewOperationName}, {NewOperationDate}, {NewOperationTimeString}");
-                }
+                // Загрузка данных операции (опущено для краткости)
 
-                var leky = await _lekRepository.GetAllLeks();
-                foreach (var lek in leky)
-                {
-                    SelectedLeks.Add(lek);
-                }
             }
             catch (Exception ex)
             {
