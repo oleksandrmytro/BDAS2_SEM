@@ -31,7 +31,6 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<POZICE> Positions { get; set; }
         public ObservableCollection<ORDINACE> Departments { get; set; }
 
-        // Employee properties
         public string Jmeno { get; set; }
         public string Prijmeni { get; set; }
         public long Telefon { get; set; }
@@ -40,7 +39,6 @@ namespace BDAS2_SEM.ViewModel
         public int PoziceId { get; set; }
         public int SelectedDepartmentId { get; set; }
 
-        // Commands
         public ICommand SaveCommand { get; }
         public ICommand AddAddressCommand { get; }
         public ICommand AddPositionCommand { get; }
@@ -113,14 +111,11 @@ namespace BDAS2_SEM.ViewModel
 
             try
             {
-                // Добавление Zamestnanec и получение нового ID
                 int newZamestnanecId = await _zamestnanecRepository.AddZamestnanec(zamestnanec);
 
-                // Обновление UZIVATEL_DATA с новым Zamestnanec ID
                 _userData.zamestnanecId = newZamestnanecId;
                 await _uzivatelDataRepository.UpdateUserData(_userData);
 
-                // Создание связи с отделением
                 var ordinaceZamestnanec = new ORDINACE_ZAMESTNANEC
                 {
                     OrdinaceId = this.SelectedDepartmentId,
@@ -144,8 +139,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                // Обработка ошибок
-                MessageBox.Show($"Произошла ошибка при сохранении сотрудника: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"An error occurred when saving an employee: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

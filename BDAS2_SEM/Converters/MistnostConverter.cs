@@ -3,12 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace BDAS2_SEM.Converters
 {
+    // Převádí ID místnosti a seznam místností na číslo místnosti.
     public class MistnostConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

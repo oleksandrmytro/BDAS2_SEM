@@ -110,7 +110,7 @@ namespace BDAS2_SEM.ViewModel
             }
             else
             {
-                MessageBox.Show("Не вдалося знайти ординатуру для даного лікаря.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("We could not find a residency for this doctor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace BDAS2_SEM.ViewModel
 
                     if (availableRoomsAndTimes == null || !availableRoomsAndTimes.Any())
                     {
-                        MessageBox.Show("Немає доступних кімнат для вибраної дати.", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("No rooms available for the selected date", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
 
@@ -149,7 +149,7 @@ namespace BDAS2_SEM.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Помилка при отриманні доступних кімнат: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error when getting available rooms: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace BDAS2_SEM.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Помилка при отриманні доступного часу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error when getting available time: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -200,10 +200,9 @@ namespace BDAS2_SEM.ViewModel
                     DateTime appointmentDateTime = SelectedDate.Value.Date + time;
                     DateTime now = DateTime.Now;
 
-                    // Проверка на то, что выбранное время не в прошлом
                     if (appointmentDateTime < now)
                     {
-                        MessageBox.Show("Вибране часове слот вже минуло. Будь ласка, виберіть майбутній час.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("The selected time slot has already expired. Please select a future time.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
@@ -225,28 +224,28 @@ namespace BDAS2_SEM.ViewModel
                             }
                             else
                             {
-                                MessageBox.Show("Не вдалося знайти кімнату з вказаним номером.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("The room with the specified number could not be found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         else
                         {
-                            MessageBox.Show("Обраний часовий слот вже зайнятий. Будь ласка, виберіть інший час.", "Часовий слот недоступний", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("The selected time slot is already taken. Please select another time.", "Time slot not available", MessageBoxButton.OK, MessageBoxImage.Warning);
                             await LoadAvailableRoomsAndTimesAsync();
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Помилка при збереженні запису: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error saving a record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Неправильний формат часу. Будь ласка, виберіть коректний час.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("The time format is incorrect. Please select the correct time.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Будь ласка, виберіть дату, час та кімнату.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please select a date, time and room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

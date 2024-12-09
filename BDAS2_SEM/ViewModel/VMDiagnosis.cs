@@ -167,7 +167,6 @@ namespace BDAS2_SEM.ViewModel
                         NewDiagnozaPopis = diagnoza.Popis;
                         Console.WriteLine($"Loaded Diagnosis: {NewDiagnozaNazev}, {NewDiagnozaPopis}");
 
-                        // Загрузка лекарств, связанных с диагнозом
                         var lekDiagnozy = await _lekDiagnozaRepository.GetLeksByDiagnozaId(diagnoza.IdDiagnoza);
                         SelectedLeks.Clear();
                         foreach (var lek in lekDiagnozy)
@@ -175,7 +174,6 @@ namespace BDAS2_SEM.ViewModel
                             SelectedLeks.Add(lek);
                         }
 
-                        // Загрузка данных операции, связанной с диагнозом
                         var operace = await _operaceRepository.GetOperaceByDiagnozaId(diagnoza.IdDiagnoza);
                         if (operace != null)
                         {
@@ -187,7 +185,6 @@ namespace BDAS2_SEM.ViewModel
                         }
                         else
                         {
-                            // Если операции нет, очищаем поля
                             NewOperationName = string.Empty;
                             NewOperationDate = null;
                             NewOperationTime = null;

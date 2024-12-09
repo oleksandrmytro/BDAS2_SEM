@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
 {
+
+    /// <summary>
+    /// Třída `AnalyzeRepository` poskytuje metody pro analýzu dat v databázi.
+    /// Používá uložené procedury pro zpracování diagnóz, léků, efektivity zaměstnanců a dalších analýz.
+    /// </summary>
     public class AnalyzeRepository : IAnalyzeRepository
     {
         private readonly string _connectionString;
@@ -20,6 +25,10 @@ namespace BDAS2_SEM.Repository
             _connectionString = connectionString;
         }
 
+
+        /// <summary>
+        /// Analyzuje diagnózy a předepsané léky v zadaném časovém období.
+        /// </summary>
         public async Task<string> AnalyzeDiagnosesAndMedicines(DateTime startDate, DateTime endDate)
         {
             StringBuilder resultBuilder = new StringBuilder();
@@ -118,6 +127,10 @@ namespace BDAS2_SEM.Repository
             return resultBuilder.ToString();
         }
 
+
+        /// <summary>
+        /// Analyzuje hierarchii zaměstnanců podle manažera.
+        /// </summary>
         public async Task<string> AnalyzeEmployeeHierarchy(int managerId)
         {
             StringBuilder resultBuilder = new StringBuilder();
@@ -200,6 +213,10 @@ namespace BDAS2_SEM.Repository
             return resultBuilder.ToString();
         }
 
+
+        /// <summary>
+        /// Analyzuje příjmy podle typu platby v zadaném časovém období.
+        /// </summary>
         public async Task<string> AnalyzeIncomeByPaymentType(DateTime startDate, DateTime endDate)
         {
             StringBuilder resultBuilder = new StringBuilder();
@@ -279,6 +296,10 @@ namespace BDAS2_SEM.Repository
             return resultBuilder.ToString();
         }
 
+
+        /// <summary>
+        /// Analyzuje výdaje na léky podle diagnóz.
+        /// </summary>
         public async Task<string> AnalyzeMedicineExpenses()
         {
             // Реализация метода для процедуры ANALYZE_MEDICINE_EXPENSES
@@ -671,6 +692,80 @@ namespace BDAS2_SEM.Repository
             return resultBuilder.ToString();
         }
 
+
+
+        public async Task<string> GroupPatientsByAge()
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            using (var connection = new OracleConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    using (var command = new OracleCommand("group_patients_by_age", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.BindByName = true;
+
+                        // Добавление выходного параметра - SYS_REFCURSOR
+                        var refCursor = new OracleParameter("RETURN_VALUE", OracleDbType.RefCursor)
+                        {
+                            Direction = ParameterDirection.ReturnValue
+                        };
+                        command.Parameters.Add(refCursor);
+
+                        try
+                        {
+                            // Выполнение функции
+                            await command.ExecuteNonQueryAsync();
+
+                            // Получение курсора
+                            using (var reader = ((OracleRefCursor)refCursor.Value).GetDataReader())
+                            {
+                                while (await reader.ReadAsync())
+                                {
+                                    string ageGroup = reader.IsDBNull(reader.GetOrdinal("age_group"))
+                                        ? "N/A"
+                                        : reader.GetString(reader.GetOrdinal("age_group"));
+
+                                    int patientCount = reader.IsDBNull(reader.GetOrdinal("patient_count"))
+                                        ? 0
+                                        : reader.GetInt32(reader.GetOrdinal("patient_count"));
+
+                                    resultBuilder.AppendLine($"Age Group: {ageGroup}, Patient Count: {patientCount}");
+                                }
+
+                                // Дополнительно вывод в консоль
+                                Console.WriteLine(resultBuilder.ToString());
+                            }
+
+                            // Подтверждение транзакции
+                            transaction.Commit();
+                        }
+                        catch (OracleException ex)
+                        {
+                            // Откат транзакции в случае ошибки
+                            transaction.Rollback();
+                            var errorMessage = $"Database error occurred: {ex.Message}";
+                            resultBuilder.AppendLine(errorMessage);
+                            Console.WriteLine(errorMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Откат транзакции в случае ошибки
+                            transaction.Rollback();
+                            var errorMessage = $"An error occurred: {ex.Message}";
+                            resultBuilder.AppendLine(errorMessage);
+                            Console.WriteLine(errorMessage);
+                        }
+                    }
+                }
+            }
+
+            return resultBuilder.ToString();
+        }
+
         // Класс для маппинга данных диагностики
         private class DiagnosisAnalysis
         {
@@ -678,8 +773,6 @@ namespace BDAS2_SEM.Repository
             public string DiagnosisName { get; set; }
             public int VisitCount { get; set; }
             public string Medicines { get; set; }
-        }
-
-        
+        }  
     }
 }

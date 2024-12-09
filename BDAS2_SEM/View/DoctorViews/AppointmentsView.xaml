@@ -88,16 +88,6 @@
                                                 <TextBlock Grid.Column="0" Text="{Binding PACIENTJMENO}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 <TextBlock Grid.Column="1" Text="{Binding PACIENTPRIJMENI}" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                                    <Button Content="Accept"
-                                                            Command="{Binding DataContext.AcceptAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource ModernButtonStyle}"
-                                                            Margin="5"/>
-                                                    <Button Content="Cancel"
-                                                            Command="{Binding DataContext.CancelAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                            CommandParameter="{Binding}"
-                                                            Style="{StaticResource ModernButtonStyle}"
-                                                            Margin="5"/>
                                                     <Button Content="Assign"
                                                             Command="{Binding DataContext.AssignAppointmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                             CommandParameter="{Binding}"

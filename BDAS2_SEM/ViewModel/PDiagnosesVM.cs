@@ -43,7 +43,6 @@ namespace BDAS2_SEM.ViewModel
             ViewDiagnosisCommand = new AsyncRelayCommand(ViewDiagnosisAsync);
             RefreshCommand = new AsyncRelayCommand(LoadPastAppointmentsAsync);
 
-            // Ініціалізація завантаження призначень
             LoadPastAppointmentsAsync();
         }
 
@@ -52,7 +51,6 @@ namespace BDAS2_SEM.ViewModel
             var currentPatient = _patientContextService.CurrentPatient;
             if (currentPatient == null)
             {
-                // Обробка випадку, коли поточний пацієнт не встановлений
                 PastAppointments = new ObservableCollection<NAVSTEVA_DOCTOR_VIEW>();
                 return;
             }
@@ -87,8 +85,6 @@ namespace BDAS2_SEM.ViewModel
                     PacientId = appointment.PacientId,
                     DoktorJmeno = appointment.DoctorFullName
                 };
-
-                // Відкриття вікна діагнозу асинхронно, якщо необхідно
                 await Task.Run(() => _windowService.OpenViewDiagnosisWindow(navsteva));
             }
         }

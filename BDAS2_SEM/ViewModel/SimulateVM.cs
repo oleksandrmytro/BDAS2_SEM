@@ -26,7 +26,6 @@ namespace BDAS2_SEM.ViewModel
                 _users = value;
                 OnPropertyChanged();
 
-                // Налаштовуємо фільтрацію
                 var view = CollectionViewSource.GetDefaultView(_users);
                 if (view != null)
                 {
@@ -44,7 +43,6 @@ namespace BDAS2_SEM.ViewModel
                 _searchQuery = value;
                 OnPropertyChanged();
 
-                // Оновлюємо фільтр при зміні пошукового запиту
                 CollectionViewSource.GetDefaultView(Users)?.Refresh();
             }
         }
@@ -59,8 +57,6 @@ namespace BDAS2_SEM.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        // Команди
         public ICommand LoadUsersCommand => _loadUsersCommand ??= new RelayCommand<object>(async (o) => await LoadUsersAsync());
         public ICommand SimulateCommand => _simulateCommand ??= new RelayCommand<dynamic>(async (dynamicUser) => await SimulateAsync(dynamicUser));
         public ICommand RefreshDataCommand => _refreshDataCommand ??= new RelayCommand<object>(async (o) => await RefreshDataAsync());
@@ -91,7 +87,6 @@ namespace BDAS2_SEM.ViewModel
             Users = new ObservableCollection<dynamic>();
             AvailableRoles = new ObservableCollection<ROLE>();
 
-            // Ініціалізація даних
             LoadRolesAsync();
             LoadUsersCommand.Execute(null);
         }
@@ -145,7 +140,6 @@ namespace BDAS2_SEM.ViewModel
 
                 Users = usersWithNames;
 
-                // Налаштовуємо фільтр після встановлення Users
                 var view = CollectionViewSource.GetDefaultView(Users);
                 if (view != null)
                 {
@@ -154,7 +148,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Не вдалося завантажити користувачів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Unable to upload users: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -179,7 +173,6 @@ namespace BDAS2_SEM.ViewModel
             string lastName = dynamicUser.LastName ?? "";
             string email = dynamicUser.User.Email ?? "";
 
-            // Знаходимо назву ролі
             string roleName = "Unknown Role";
             if (dynamicUser.User.RoleId is int roleId && AvailableRoles != null)
             {
@@ -223,13 +216,13 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else
                     {
-                        MessageBox.Show("Роль користувача не підтримується для симуляції.", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("User role is not supported for simulation.", "Information.", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Симуляція не вдалася: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"The simulation failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

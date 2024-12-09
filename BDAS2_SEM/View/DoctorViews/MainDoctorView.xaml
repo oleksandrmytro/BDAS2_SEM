@@ -17,41 +17,41 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
-        <TextBlock Grid.Row="0" Text="Активность Врача" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Doctor Activity" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
 
-        <!-- Информация о враче -->
+        <!-- Doctor Information -->
         <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20" BorderBrush="#e1e5eb" BorderThickness="1" 
                 Effect="{StaticResource ShadowEffect}" Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="Имя:" FontWeight="Bold"/>
+                <TextBlock Text="First Name:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding FirstName}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Фамилия:" FontWeight="Bold"/>
+                <TextBlock Text="Last Name:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding LastName}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Телефон:" FontWeight="Bold"/>
+                <TextBlock Text="Phone:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding Phone}" FontSize="16" Foreground="#3d5170"/>
             </StackPanel>
         </Border>
 
-        <!-- Раздел с необходимой статистикой -->
+        <!-- Statistics Section -->
         <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="20" BorderBrush="#e1e5eb" BorderThickness="1" 
                 Effect="{StaticResource ShadowEffect}">
             <StackPanel>
-                <TextBlock Text="Всего посещений:" FontWeight="Bold"/>
+                <TextBlock Text="Total Visits:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding TotalVisits}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Дата последнего посещения:" FontWeight="Bold"/>
+                <TextBlock Text="Last Visit Date:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding LastVisitDate, StringFormat={}{0:dd.MM.yyyy}}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Всего операций:" FontWeight="Bold"/>
+                <TextBlock Text="Total Operations:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding TotalOperations}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Дата последней операции:" FontWeight="Bold"/>
+                <TextBlock Text="Last Operation Date:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding LastOperationDate, StringFormat={}{0:dd.MM.yyyy}}" FontSize="16" Foreground="#3d5170" Margin="0,0,0,10"/>
 
-                <TextBlock Text="Всего назначенных лекарств:" FontWeight="Bold"/>
+                <TextBlock Text="Total Prescribed Medicines:" FontWeight="Bold"/>
                 <TextBlock Text="{Binding TotalMedicines}" FontSize="16" Foreground="#3d5170"/>
             </StackPanel>
         </Border>

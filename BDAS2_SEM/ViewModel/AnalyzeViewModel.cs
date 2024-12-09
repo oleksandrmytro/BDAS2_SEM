@@ -131,7 +131,8 @@ namespace BDAS2_SEM.ViewModel
                 "ANALYZE_MEDICINE_EXPENSES",
                 "ANALYZE_EMPLOYEE_EFFICIENCY", // Новая процедура
                 "ANALYZE_TOP_EMPLOYEES_EFFICIENCY", // Новая процедура
-                "ANALYZE_TOP_PAYING_PATIENTS" // Новая процедура
+                "ANALYZE_TOP_PAYING_PATIENTS", // Новая процедура
+                "GROUP_PATIENTS_BY_AGE" // Новая процедура
             };
 
             ExecuteProcedureCommand = new RelayCommand(async _ => await ExecuteProcedureAsync(), CanExecuteProcedure);
@@ -174,6 +175,9 @@ namespace BDAS2_SEM.ViewModel
                     break;
                 case "ANALYZE_TOP_PAYING_PATIENTS": // Новая процедура
                     await ExecuteAnalyzeTopPayingPatientsAsync();
+                    break;
+                case "GROUP_PATIENTS_BY_AGE": // Новая процедура
+                    await ExecuteGroupPatientsByAgeAsync();
                     break;
                 default:
                     Result = $"Procedure '{SelectedProcedure}' is not implemented.";
@@ -400,6 +404,26 @@ namespace BDAS2_SEM.ViewModel
                 Console.WriteLine(Result);
             }
         }
+
+        private async Task ExecuteGroupPatientsByAgeAsync()
+        {
+            try
+            {
+                var groupResult = await _analyzeRepository.GroupPatientsByAge();
+                Result = groupResult;
+
+                // Optional: Output to console
+                Console.WriteLine(groupResult);
+            }
+            catch (Exception ex)
+            {
+                Result = $"Error executing procedure: {ex.Message}";
+                Console.WriteLine(Result);
+            }
+        }
+
+       
+    
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

@@ -100,8 +100,6 @@ namespace BDAS2_SEM.ViewModel
                     FutureAppointments.Add(appointment);
                 }
             }
-
-            // Повідомлення про зміни відбувається через сеттери властивостей
         }
 
         private async Task BookAppointmentAsync(object parameter)

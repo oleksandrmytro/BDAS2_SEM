@@ -37,7 +37,6 @@ namespace BDAS2_SEM.ViewModel
         private bool _isEditingEmail;
         private bool _isEditingPassword;
 
-        // Властивості пароля
         private string _currentPassword;
         public string CurrentPassword
         {
@@ -59,7 +58,6 @@ namespace BDAS2_SEM.ViewModel
             set { _confirmNewPassword = value; OnPropertyChanged(); }
         }
 
-        // Властивості адреси
         private ObservableCollection<ADRESA> _addressList;
         public ObservableCollection<ADRESA> AddressList
         {
@@ -369,7 +367,6 @@ namespace BDAS2_SEM.ViewModel
             }
             else
             {
-                // Скидаємо поля пароля при відміні редагування
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;
@@ -470,25 +467,25 @@ namespace BDAS2_SEM.ViewModel
                 string oldPassword1 = HashPassword("123");
                 if (string.IsNullOrEmpty(CurrentPassword))
                 {
-                    MessageBox.Show("Будь ласка, введіть поточний пароль.");
+                    MessageBox.Show("Please enter your current password.");
                     return;
                 }
 
                 if (_userData.Heslo != HashPassword(CurrentPassword))
                 {
-                    MessageBox.Show("Поточний пароль невірний.");
+                    MessageBox.Show("Current password is incorrect.");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(NewPassword))
                 {
-                    MessageBox.Show("Будь ласка, введіть новий пароль.");
+                    MessageBox.Show("Please enter a new password.");
                     return;
                 }
 
                 if (NewPassword != ConfirmNewPassword)
                 {
-                    MessageBox.Show("Новий пароль та підтвердження не співпадають.");
+                    MessageBox.Show("New password and confirmation do not match.");
                     return;
                 }
 
@@ -501,11 +498,11 @@ namespace BDAS2_SEM.ViewModel
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;
 
-                MessageBox.Show("Пароль успішно змінено.");
+                MessageBox.Show("Password successfully changed.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Сталася помилка: {ex.Message}");
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
 

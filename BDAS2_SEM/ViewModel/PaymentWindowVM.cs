@@ -130,7 +130,7 @@ namespace BDAS2_SEM.ViewModel
         public PaymentWindowVM(decimal amount)
         {
             Amount = amount;
-            SelectedPaymentMethod = "karta"; // За замовчуванням
+            SelectedPaymentMethod = "karta"; 
             ConfirmPaymentCommand = new RelayCommand(ConfirmPayment);
             CancelCommand = new RelayCommand(Cancel);
         }
@@ -166,7 +166,7 @@ namespace BDAS2_SEM.ViewModel
                 if (cash >= Amount)
                 {
                     decimal changeAmount = cash - Amount;
-                    Change = $"{changeAmount:N2}"; // Формат валюти
+                    Change = $"{changeAmount:N2}"; 
                 }
                 else
                 {
@@ -183,30 +183,27 @@ namespace BDAS2_SEM.ViewModel
         {
             if (SelectedPaymentMethod == "karta")
             {
-                // Перевірка введених даних картки
                 if (string.IsNullOrWhiteSpace(CardNumber) || string.IsNullOrWhiteSpace(Expiry) || string.IsNullOrWhiteSpace(CVV))
                 {
-                    MessageBox.Show("Будь ласка, заповніть всі поля картки.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please fill in all fields of the card.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                // Додайте додаткову валідацію при необхідності
                 CloseWindowEvent?.Invoke(this, true);
             }
             else if (SelectedPaymentMethod == "hotovost")
             {
-                // Перевірка суми готівки
                 if (decimal.TryParse(CashGiven, out decimal cashGiven))
                 {
                     if (cashGiven < Amount)
                     {
-                        MessageBox.Show("Сума готівки недостатня для оплати.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("The amount of cash is not enough to pay.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
                     CloseWindowEvent?.Invoke(this, true);
                 }
                 else
                 {
-                    MessageBox.Show("Введіть коректну суму готівки.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Enter the correct amount of cash.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }

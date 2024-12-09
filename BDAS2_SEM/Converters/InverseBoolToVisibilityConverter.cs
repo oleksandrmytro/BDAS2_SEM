@@ -6,6 +6,7 @@ using System.Windows.Data;
 namespace BDAS2_SEM.Converters
 {
     [ValueConversion(typeof(bool), typeof(Visibility))]
+    // Převádí hodnoty bool na opačnou viditelnost (Visibility).
     public class InverseBoolToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

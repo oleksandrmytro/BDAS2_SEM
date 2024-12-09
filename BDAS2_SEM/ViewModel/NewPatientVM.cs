@@ -35,7 +35,6 @@ public class NewPatientVM : INotifyPropertyChanged
 
     public ObservableCollection<ADRESA> Addresses { get; set; }
 
-    // Властивості пацієнта з модифікованими сеттерами
     private string _jmeno;
     public string Jmeno
     {
@@ -190,7 +189,6 @@ public class NewPatientVM : INotifyPropertyChanged
         OnPropertyChanged(nameof(AdresaId));
     }
 
-    // Реалізація INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {

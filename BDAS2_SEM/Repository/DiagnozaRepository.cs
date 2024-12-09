@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
 {
+
+    /// <summary>
+    /// Třída `DiagnozaRepository` spravuje přístup k tabulce `DIAGNOZA` v databázi Oracle.
+    /// Poskytuje CRUD operace (Create, Read, Update, Delete) pro správu diagnóz.
+    /// </summary>
     public class DiagnozaRepository : IDiagnozaRepository
     {
         private readonly string _connectionString;

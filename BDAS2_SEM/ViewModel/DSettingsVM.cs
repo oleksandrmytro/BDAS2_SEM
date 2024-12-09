@@ -57,7 +57,6 @@ namespace BDAS2_SEM.ViewModel
             set { _isEditingAddress = value; OnPropertyChanged(); }
         }
 
-        // Properties for password change
         private string _currentPassword;
         public string CurrentPassword
         {
@@ -85,7 +84,6 @@ namespace BDAS2_SEM.ViewModel
             set { _isEditingPassword = value; OnPropertyChanged(); }
         }
 
-        // Existing properties
         private string _firstName;
         public string FirstName
         {
@@ -138,7 +136,6 @@ namespace BDAS2_SEM.ViewModel
             set { _isEditingEmail = value; OnPropertyChanged(); }
         }
 
-        // Commands
         public ICommand EditFirstNameCommand { get; }
         public ICommand ToggleEditLastNameCommand { get; }
         public ICommand EditPhoneCommand { get; }
@@ -149,7 +146,6 @@ namespace BDAS2_SEM.ViewModel
         public ICommand ChangePasswordCommand { get; }
         public ICommand CancelPasswordChangeCommand { get; }
 
-        // Commands for address editing
         public ICommand EditAddressCommand { get; }
         public ICommand AddAddressCommand { get; }
 
@@ -193,8 +189,6 @@ namespace BDAS2_SEM.ViewModel
             _doctor = doctor;
             LoadDoctorData();
         }
-
-        // Properties
         public ZAMESTNANEC Doctor
         {
             get => _doctor;
@@ -204,8 +198,6 @@ namespace BDAS2_SEM.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        // Methods
         private async void LoadDoctorData()
         {
             if (_doctor != null)
@@ -225,7 +217,6 @@ namespace BDAS2_SEM.ViewModel
                         SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == Doctor.AdresaId);
                     }
 
-                    // Load image if BlobId is set
                     if (Doctor.BlobId != 0)
                     {
                         var blob = await _blobRepository.GetBlobById(Doctor.BlobId);
@@ -240,7 +231,6 @@ namespace BDAS2_SEM.ViewModel
 
                 Email = _userData.Email;
 
-                // Notify property changes
                 OnPropertyChanged(nameof(FirstName));
                 OnPropertyChanged(nameof(LastName));
                 OnPropertyChanged(nameof(PhoneNumber));
@@ -273,10 +263,7 @@ namespace BDAS2_SEM.ViewModel
                     byte[] imageData = File.ReadAllBytes(openFileDialog.FileName);
                     _updateAvatarAction?.Invoke(imageData);
 
-                    // Get file extension
                     string extension = Path.GetExtension(openFileDialog.FileName).ToLower();
-
-                    // Determine the PRIPONA type based on the file extension
                     string priponaTyp = extension switch
                     {
                         ".png" => "png",
@@ -285,7 +272,6 @@ namespace BDAS2_SEM.ViewModel
                         _ => "UNKNOWN"
                     };
 
-                    // Get or create PRIPONA
                     var pripona = await _priponaRepository.GetPriponaByTyp(priponaTyp);
                     if (pripona == null)
                     {
@@ -302,7 +288,7 @@ namespace BDAS2_SEM.ViewModel
                         DatumModifikace = DateTime.Now,
                         OperaceProvedl = $"{_doctor.Jmeno} {_doctor.Prijmeni}",
                         PopisOperace = "Adding avatar",
-                        PriponaId = pripona.IdPripona // Set the PRIPONA ID
+                        PriponaId = pripona.IdPripona 
                     };
 
                     int oldBlob = Doctor.BlobId;
@@ -310,20 +296,15 @@ namespace BDAS2_SEM.ViewModel
                     if (oldBlob != 1)
                     {
                         await _zamestnanecRepository.UpdateEmployeeBlob(Doctor.IdZamestnanec, 1);
-                        await _blobRepository.DeleteBlob(oldBlob); // Delete old blob
+                        await _blobRepository.DeleteBlob(oldBlob); 
                     }
                     
-                        // Add new blob
                         int newBlobId = await _blobRepository.AddBlob(blob);
                         Doctor.BlobId = newBlobId;
 
-                        // Call the stored procedure to update zamestnanec's BlobId
                         await _zamestnanecRepository.UpdateEmployeeBlob(Doctor.IdZamestnanec, newBlobId);
-                        await _zamestnanecRepository.UpdateZamestnanec(Doctor); // Optional: ensure ViewModel is updated
+                        await _zamestnanecRepository.UpdateZamestnanec(Doctor); 
                         LoadDoctorData();
-                    
-
-                    // Optionally, notify the user of success
                 }
             }
             catch (Oracle.ManagedDataAccess.Client.OracleException ex) when (ex.Number == 2291)
@@ -343,7 +324,6 @@ namespace BDAS2_SEM.ViewModel
             {
                 if (Doctor != null)
                 {
-                    // Update Doctor properties with values from the ViewModel
                     Doctor.Jmeno = FirstName;
                     Doctor.Prijmeni = LastName;
 
@@ -353,10 +333,9 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else
                     {
-                        Doctor.Telefon = 0; // Or handle invalid input accordingly
+                        Doctor.Telefon = 0;
                     }
 
-                    // Update the Doctor's AdresaId with the SelectedAddress
                     Doctor.AdresaId = SelectedAddress?.IdAdresa ?? 0;
 
                     await _zamestnanecRepository.UpdateZamestnanec(Doctor);
@@ -364,7 +343,6 @@ namespace BDAS2_SEM.ViewModel
 
                 if (_userData != null)
                 {
-                    // Update user data properties
                     _userData.Email = Email;
                     await _uzivatelDataRepository.UpdateUserData(_userData);
                 }
@@ -430,7 +408,6 @@ namespace BDAS2_SEM.ViewModel
 
             if (!IsEditingAddress)
             {
-                // Reset to the original address if editing is canceled
                 SelectedAddress = AddressList.FirstOrDefault(a => a.IdAdresa == Doctor.AdresaId);
             }
         }
@@ -446,7 +423,6 @@ namespace BDAS2_SEM.ViewModel
 
             if (!IsEditingPassword)
             {
-                // Reset password fields if editing is canceled
                 CurrentPassword = string.Empty;
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;
@@ -455,7 +431,6 @@ namespace BDAS2_SEM.ViewModel
 
         private async Task AddNewAddress()
         {
-            // Assuming OpenAddAddressWindow accepts a callback for the new address
             _windowService.OpenAddAddressWindow(async newAddress =>
             {
                 if (newAddress != null)
@@ -473,25 +448,25 @@ namespace BDAS2_SEM.ViewModel
             {
                 if (string.IsNullOrEmpty(CurrentPassword))
                 {
-                    MessageBox.Show("Будь ласка, введіть поточний пароль.");
+                    MessageBox.Show("Please enter your current password.");
                     return;
                 }
 
                 if (_userData.Heslo != HashPassword(CurrentPassword))
                 {
-                    MessageBox.Show("Поточний пароль невірний.");
+                    MessageBox.Show("Current password is incorrect.");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(NewPassword))
                 {
-                    MessageBox.Show("Будь ласка, введіть новий пароль.");
+                    MessageBox.Show("Please enter a new password.");
                     return;
                 }
 
                 if (NewPassword != ConfirmNewPassword)
                 {
-                    MessageBox.Show("Новий пароль та підтвердження не співпадають.");
+                    MessageBox.Show("New password and confirmation do not match.");
                     return;
                 }
 
@@ -503,12 +478,12 @@ namespace BDAS2_SEM.ViewModel
                 NewPassword = string.Empty;
                 ConfirmNewPassword = string.Empty;
 
-                MessageBox.Show("Пароль успішно змінено.");
+                MessageBox.Show("Password successfully changed.");
                 IsEditingPassword = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Сталася помилка: {ex.Message}");
+                MessageBox.Show($"An error occurred: {ex.Message}");
             }
         }
 
@@ -530,7 +505,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // INotifyPropertyChanged Implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

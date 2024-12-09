@@ -93,18 +93,13 @@ namespace BDAS2_SEM.ViewModel
                 {
                     var pacient = await _navstevaRepository.GetPatientNameByAppointmentId(appointment.IdNavsteva);
                     var status = (int)appointment.StatusId;
-
-                    // Получение информации о комнате
                     var mistnost = await _mistnostRepository.GetMistnostById(appointment.MistnostId);
-
-                    // Загрузка диагнозов для этой встречи
                     var diagnozy = await _navstevaDiagnozaRepository.GetDiagnozyByNavstevaIdAsync(appointment.IdNavsteva);
 
                     if (appointment.Datum < DateTime.Now)
                     {
                         if (diagnozy.Any())
                         {
-                            // Если диагнозы есть, добавляем встречу в список с назначенными диагнозами
                             var appointmentWithDiagnosis = new
                             {
                                 appointment.IdNavsteva,
@@ -122,7 +117,6 @@ namespace BDAS2_SEM.ViewModel
                         }
                         else
                         {
-                            // Если диагнозов нет, добавляем встречу в список с еще незаполненными диагнозами
                             var appointmentWithDiagnozy = new
                             {
                                 appointment.IdNavsteva,
@@ -141,13 +135,13 @@ namespace BDAS2_SEM.ViewModel
                     }
                 }
 
-                NoAppointmentsMessage = PastAppointments.Any() ? string.Empty : "Лікар не має пройдених зустрічей.";
-                NoDiagnosesMessage = Diagnoses.Any() ? string.Empty : "Лікар не має призначених діагнозів.";
+                NoAppointmentsMessage = PastAppointments.Any() ? string.Empty : "The doctor has no past appointments.";
+                NoDiagnosesMessage = Diagnoses.Any() ? string.Empty : "The doctor has no assigned diagnoses.";
             }
             else
             {
-                NoAppointmentsMessage = "Лікар не має пройдених зустрічей.";
-                NoDiagnosesMessage = "Лікар не має призначених діагнозів.";
+                NoAppointmentsMessage = "The doctor has no past appointments.";
+                NoDiagnosesMessage = "The doctor has no assigned diagnoses.";
             }
         }
 
@@ -164,10 +158,8 @@ namespace BDAS2_SEM.ViewModel
                     Datum = appointment.Datum,
                     MistnostId = (int?)appointment.MistnostId
                 };
-                // Открываем окно назначения диагноза
                 _windowService.OpenAssignDiagnosisWindow(navsteva, _doctor.IdZamestnanec);
 
-                // После закрытия окна обновляем данные
                 await LoadAppointmentsAsync();
             }
         }
@@ -186,7 +178,6 @@ namespace BDAS2_SEM.ViewModel
                     MistnostId = (int?)appointment.MistnostId
                 };
 
-                // Открываем окно просмотра диагноза
                 _windowService.OpenViewDiagnosisWindow(navsteva);
             }
         }

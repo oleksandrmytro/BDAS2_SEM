@@ -13,6 +13,7 @@ namespace BDAS2_SEM.Repository.Interfaces
         Task<DoctorActivityResult> AnalyzeDoctorActivityAsync(int doctorId);
         Task<string> AnalyzeEmployeeEfficiency(int employeeId);
         Task<string> AnalyzeTopEmployeesEfficiency();
+        Task<string> GroupPatientsByAge();
         Task<string> AnalyzeTopPayingPatients(DateTime startDate, DateTime endDate, int topCount);
     }
 }

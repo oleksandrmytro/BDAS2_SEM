@@ -13,9 +13,6 @@ namespace BDAS2_SEM.ViewModel
         private ZAMESTNANEC _doctor;
         private readonly IAnalyzeRepository _analyzeRepository;
 
-        // Свойства для отображения информации о враче
-
-
         public void SetDoctor(ZAMESTNANEC doctor)
         {
             if (doctor == null) throw new ArgumentNullException(nameof(doctor));
@@ -71,7 +68,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // Свойства для привязки активности в UI
         private int _totalVisits;
         public int TotalVisits
         {
@@ -160,9 +156,6 @@ namespace BDAS2_SEM.ViewModel
         {
             if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             _analyzeRepository = serviceProvider.GetRequiredService<IAnalyzeRepository>();
-
-
-            // Загрузка данных активности врача
         }
 
         private async Task LoadDoctorActivityDataAsync()
@@ -171,34 +164,31 @@ namespace BDAS2_SEM.ViewModel
 
             try
             {
-                // Вызов метода, возвращающего DoctorActivityResult
                 DoctorActivityResult activityResult = await _analyzeRepository.AnalyzeDoctorActivityAsync(doctorId);
 
                 if (activityResult != null)
                 {
-                    // Присвоение значений свойствам для UI
                     TotalVisits = activityResult.TotalVisits;
                     LastVisitDate = activityResult.LastVisitDate;
                     TotalOperations = activityResult.TotalOperations;
                     LastOperationDate = activityResult.LastOperationDate;
                     TotalMedicines = activityResult.TotalMedicines;
-                    
-                    // Формирование полного текста результата, если необходимо
-                    AnalysisResult = $"Анализ активности врача завершён успешно.\n" +
-                                     $"Всего посещений: {TotalVisits}\n" +
-                                     $"Дата последнего посещения: {LastVisitDate?.ToString("dd.MM.yyyy") ?? "N/A"}\n" +
-                                     $"Всего операций: {TotalOperations}\n" +
-                                     $"Дата последней операции: {LastOperationDate?.ToString("dd.MM.yyyy") ?? "N/A"}\n" +
-                                     $"Всего назначенных лекарств: {TotalMedicines}";
+
+                    AnalysisResult = $"Physician activity analysis completed successfully.\n" +
+                                     $"Total visits: {TotalVisits}\n" +
+                                     $"Date of last visit: {LastVisitDate?.ToString("dd.MM.yyyy") ?? "N/A"}\n" +
+                                     $"Total operations: {TotalOperations}\n" +
+                                     $"Date of last operation: {LastOperationDate?.ToString("dd.MM.yyyy") ?? "N/A"}\n" +
+                                     $"Total prescribed medicines: {TotalMedicines}";
                 }
                 else
                 {
-                    AnalysisResult = "Данные отсутствуют.";
+                    AnalysisResult = "No data available.";
                 }
             }
             catch (Exception ex)
             {
-                AnalysisResult = $"Ошибка при загрузке данных активности: {ex.Message}";
+                AnalysisResult = $"Error when loading activity data: {ex.Message}";
             }
         }
 

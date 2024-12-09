@@ -67,7 +67,6 @@ namespace BDAS2_SEM.ViewModel
             LoadPatientInfo();
         }
 
-        // Конструктор по умолчанию для XAML
         public PatientsVM() : this(
             App.ServiceProvider.GetRequiredService<IServiceProvider>(),
             App.ServiceProvider.GetRequiredService<IPatientContextService>())
@@ -85,7 +84,6 @@ namespace BDAS2_SEM.ViewModel
                 new TabItemVM {
                     Name = "Diagnoses",
                     Content = _serviceProvider.GetRequiredService<PDiagnosesView>()
-
                 },
                 new TabItemVM
                 {

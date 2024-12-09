@@ -25,10 +25,8 @@ public class DoctorsVM : INotifyPropertyChanged
     private readonly IZamestnanecRepository _zamestnanecRepository;
     private readonly IPriponaRepository _priponaRepository;
 
-    // Collection of tabs to display in the navigation panel
     public ObservableCollection<TabItemVM> Tabs { get; set; }
 
-    // Currently selected tab
     private TabItemVM _selectedTab;
     public TabItemVM SelectedTab
     {
@@ -40,7 +38,6 @@ public class DoctorsVM : INotifyPropertyChanged
         }
     }
 
-    // Full name of the employee for display
     private string _employeeName;
     public string EmployeeName
     {
@@ -52,7 +49,6 @@ public class DoctorsVM : INotifyPropertyChanged
         }
     }
 
-    // Employee image for display
     private ImageSource _employeeImage;
     public ImageSource EmployeeImage
     {
@@ -67,8 +63,6 @@ public class DoctorsVM : INotifyPropertyChanged
             }
         }
     }
-
-    // Command to handle logout action
     public ICommand LogoutCommand { get; }
 
     public DoctorsVM(IServiceProvider serviceProvider)
@@ -79,11 +73,9 @@ public class DoctorsVM : INotifyPropertyChanged
         _zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
         InitializeTabs();
 
-        // Initialize commands
         LogoutCommand = new RelayCommand(Logout);
     }
 
-    // Initialize the tabs displayed in the navigation panel
     private void InitializeTabs()
     {
         Tabs = new ObservableCollection<TabItemVM>
@@ -103,7 +95,6 @@ public class DoctorsVM : INotifyPropertyChanged
                 Name = "Diagnoses",
                 Content = _serviceProvider.GetRequiredService<DDiagnosesView>()
             },
-            // Settings Tab
             new TabItemVM
             {
                 Name = "Settings",
@@ -114,7 +105,6 @@ public class DoctorsVM : INotifyPropertyChanged
         SelectedTab = Tabs.FirstOrDefault();
     }
 
-        // Create the settings view and pass the necessary dependencies 
         private DSettingsView CreateSettingsView()
         {
             var zamestnanecRepository = _serviceProvider.GetRequiredService<IZamestnanecRepository>();
@@ -128,7 +118,6 @@ public class DoctorsVM : INotifyPropertyChanged
             return new DSettingsView(settingsVM);
         }
 
-    // Set the employee (doctor) information
     public async void SetEmployee(ZAMESTNANEC zamestnanec)
     {
         try
@@ -139,7 +128,6 @@ public class DoctorsVM : INotifyPropertyChanged
 
             _doctorContextService.CurrentDoctor = zamestnanec;
 
-            // Load the employee image
             if (_zamestnanec.BlobId != 0)
             {
                 await LoadEmployeeImage(_zamestnanec.BlobId);
@@ -149,7 +137,6 @@ public class DoctorsVM : INotifyPropertyChanged
                 EmployeeImage = null;
             }
 
-            // Pass the doctor to AppointmentsVM
             var mainTab = Tabs.FirstOrDefault(t => t.Name == "Main");
             var appointmentsTab = Tabs.FirstOrDefault(t => t.Name == "Appointments");
             var diagnosesTab = Tabs.FirstOrDefault(t => t.Name == "Diagnoses");
@@ -175,9 +162,6 @@ public class DoctorsVM : INotifyPropertyChanged
                 }
             }
             
-
-
-            // Update the settings view with the current doctor
             var settingsTab = Tabs.FirstOrDefault(t => t.Name == "Settings");
             if (settingsTab != null && settingsTab.Content is DSettingsView settingsView)
             {
@@ -192,8 +176,6 @@ public class DoctorsVM : INotifyPropertyChanged
             Console.WriteLine($"Error setting employee: {ex.Message}");
         }
     }
-
-    // Load the employee image from the database
     private async Task LoadEmployeeImage(int blobId)
     {
         try
@@ -233,8 +215,6 @@ public class DoctorsVM : INotifyPropertyChanged
             EmployeeImage = null;
         }
     }
-
-    // Logout command implementation
     private void Logout(object obj)
     {
         var authWindow = _serviceProvider.GetRequiredService<AuthWindow>();
@@ -242,7 +222,6 @@ public class DoctorsVM : INotifyPropertyChanged
         authWindow.Show();
     }
 
-    // Implementation of INotifyPropertyChanged
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)

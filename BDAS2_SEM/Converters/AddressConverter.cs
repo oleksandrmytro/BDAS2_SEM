@@ -10,8 +10,10 @@ using System.Windows.Data;
 
 namespace BDAS2_SEM.Converters
 {
+    // Třída AddressConverter převádí ID adresy a seznam adres na čitelný formát adresy.
     public class AddressConverter : IMultiValueConverter
     {
+        // Metoda Convert převádí vstupní hodnoty na formátovanou adresu.
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2)
@@ -31,6 +33,7 @@ namespace BDAS2_SEM.Converters
             return $"{adresa.Ulice} {adresa.CisloPopisne}, {adresa.Mesto}, {adresa.Stat}";
         }
 
+        // Metoda ConvertBack není implementována, protože zpětný převod není potřeba.
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

@@ -26,7 +26,6 @@ namespace BDAS2_SEM.ViewModel
         private NAVSTEVA _appointment;
         private int _employeeId;
 
-        // Diagnosis Properties
         private string _newDiagnozaNazev;
         public string NewDiagnozaNazev
         {
@@ -56,7 +55,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // Operation Properties
         private string _newOperationName;
         public string NewOperationName
         {
@@ -223,7 +221,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при завантаженні діагнозів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error when uploading diagnoses: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -240,7 +238,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при завантаженні ліків: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error when uploading medication: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -265,7 +263,7 @@ namespace BDAS2_SEM.ViewModel
             bool isDiagnosisValid = SelectedDiagnoza != null || !string.IsNullOrWhiteSpace(NewDiagnozaNazev);
             bool isOperationValid = !string.IsNullOrWhiteSpace(NewOperationName) && NewOperationDate.HasValue && NewOperationTime.HasValue;
 
-            return isDiagnosisValid; // You can adjust this condition based on your requirements
+            return isDiagnosisValid; 
         }
 
         private async Task AssignDiagnosis()
@@ -279,7 +277,7 @@ namespace BDAS2_SEM.ViewModel
 
                 if (SelectedDiagnoza == null)
                 {
-                    MessageBox.Show("Будь ласка, виберіть або введіть діагноз.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Please select or enter a diagnosis.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -320,18 +318,13 @@ namespace BDAS2_SEM.ViewModel
                     await _operaceZamestnanecRepository.AddOperaceZamestnanec(operaceZamestnanec);
                 }
 
-                // Optionally, update the appointment status
-                // For example, set status to "Completed"
-                //_appointment.StatusId = (int)Status.Completed;
-                //await _navstevaRepository.UpdateNavsteva(_appointment);
-
-                MessageBox.Show("Діагноз, ліки та операція успішно призначені.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Diagnosis, medication and surgery successfully prescribed.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 CloseWindow();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при призначенні даних: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error when assigning data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -360,7 +353,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при додаванні діагнозу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error when adding a diagnosis: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -381,7 +374,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // Method to update Datum when date or time changes
         private void UpdateDatum()
         {
             if (NewOperationDate.HasValue && NewOperationTime.HasValue)
@@ -410,7 +402,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // IDataErrorInfo Implementation for Validation
         public string this[string columnName]
         {
             get
@@ -424,7 +415,7 @@ namespace BDAS2_SEM.ViewModel
                     }
                     else if (!TimeSpan.TryParseExact(NewOperationTimeString, new[] { @"hh\:mm", @"hh\:mm\:ss" }, CultureInfo.InvariantCulture, out _))
                     {
-                        result = "Неправильний формат часу. Використовуйте HH:MM або HH:MM:SS.";
+                        result = "The time format is incorrect. Use HH:MM or HH:MM:SS.";
                     }
                 }
                 else if (columnName == nameof(NewOperationName))
@@ -438,7 +429,7 @@ namespace BDAS2_SEM.ViewModel
                 {
                     if (!NewOperationDate.HasValue)
                     {
-                        result = "Дата операції є обов'язковою.";
+                        result = "The date of the transaction is mandatory.";
                     }
                 }
                 return result;

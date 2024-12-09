@@ -81,7 +81,6 @@ namespace BDAS2_SEM.ViewModel
         public ObservableCollection<ZAMESTNANEC_NAVSTEVA> ZamestnanecNavsteva { get; set; } = new ObservableCollection<ZAMESTNANEC_NAVSTEVA>();
         public ObservableCollection<ZAMESTNANEC> Zamestnanec { get; set; } = new ObservableCollection<ZAMESTNANEC>();
 
-        // Пошукові властивості
         private string _adresaSearchText;
         public string AdresaSearchText
         {
@@ -902,7 +901,7 @@ namespace BDAS2_SEM.ViewModel
         {
             if (item == null) return;
 
-            var result = MessageBox.Show("Ви впевнені, що хочете видалити цей запис?", "Підтвердження", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = MessageBox.Show("Are you sure you want to delete this entry?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes) return;
 
             try
@@ -1040,7 +1039,7 @@ namespace BDAS2_SEM.ViewModel
                 }
                 LoadDataAsync();
 
-                MessageBox.Show("Запис успішно видалено.");
+                MessageBox.Show("Record successfully deleted.");
             }
             catch (Exception ex)
             {

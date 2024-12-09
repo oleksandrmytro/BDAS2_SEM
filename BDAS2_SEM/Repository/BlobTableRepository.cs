@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
 {
+
+    /// <summary>
+    /// Třída `BlobTableRepository` implementuje přístup k tabulce BLOB_TABLE v databázi Oracle.
+    /// Umožňuje CRUD operace s binárními daty (např. soubory).
+    /// </summary>
     public class BlobTableRepository : IBlobTableRepository
     {
         private readonly string _connectionString;
@@ -17,6 +22,10 @@ namespace BDAS2_SEM.Repository
             _connectionString = connectionString;
         }
 
+
+        /// <summary>
+        /// Načítá záznam z tabulky BLOB_TABLE podle ID.
+        /// </summary>
         public async Task<BLOB_TABLE> GetBlobById(int id)
         {
             using (var db = new OracleConnection(_connectionString))
@@ -38,6 +47,10 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+
+        /// <summary>
+        /// Přidává nový záznam do tabulky BLOB_TABLE pomocí uložené procedury.
+        /// </summary>
         public async Task<int> AddBlob(BLOB_TABLE blob)
         {
             using (var db = new OracleConnection(_connectionString))
@@ -82,7 +95,9 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-
+        /// <summary>
+        /// Aktualizuje existující záznam v tabulce BLOB_TABLE.
+        /// </summary>
         public async Task UpdateBlob(BLOB_TABLE blob)
         {
             using (var db = new OracleConnection(_connectionString))
@@ -123,7 +138,9 @@ namespace BDAS2_SEM.Repository
             }
         }
 
-
+        /// <summary>
+        /// Odstraňuje záznam z tabulky BLOB_TABLE podle ID.
+        /// </summary>
         public async Task DeleteBlob(int id)
         {
             using (var db = new OracleConnection(_connectionString))
@@ -133,6 +150,9 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        /// <summary>
+        /// Načítá všechny záznamy z tabulky BLOB_TABLE.
+        /// </summary>
         public async Task<IEnumerable<BLOB_TABLE>> GetAllBlobTables()
         {
             using (var db = new OracleConnection(_connectionString))

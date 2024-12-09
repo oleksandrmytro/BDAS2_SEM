@@ -74,23 +74,20 @@
         </Style.Triggers>
     </Style>
 
-    <!-- DataTemplate for ListBoxItem -->
     <DataTemplate x:Key="TabHeaderTemplate">
         <TextBlock Text="{Binding Name}" />
     </DataTemplate>
 
-    <!-- Оновлений стиль для ListBoxItem для відображення як бічні вкладки в стилі Shards Dashboard -->
     <Style x:Key="TabListBoxItemStyle" TargetType="ListBoxItem">
-        <!-- Основні властивості стилю -->
         <Setter Property="Background" Value="#f8f9fa"/>
-        <!-- Світліший фон для всієї панелі -->
+
         <Setter Property="Foreground" Value="#3d5170"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Height" Value="50"/>
-        <!-- Збільшено висоту вкладок -->
+
         <Setter Property="Margin" Value="0,0,0,0"/>
-        <!-- Видалено відступи між вкладками, щоб вони були плотно один до одного -->
+
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -118,17 +115,17 @@
                         </Border>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!-- Триггер для вибраної вкладки -->
+
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="SideBorder" Property="Background" Value="#007bff"/>
                             <Setter Property="Foreground" Value="#007bff"/>
                             <Setter TargetName="SelectionBorder" Property="Background" Value="#e9ecef"/>
-                            <!-- Світліший фон для вибраної вкладки -->
+
                             <Setter Property="FontWeight" Value="Bold"/>
-                            <!-- Жирний шрифт для вибраної вкладки -->
+ 
                         </Trigger>
 
-                        <!-- Триггер для наведення на невибрану вкладку -->
+
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True"/>
@@ -144,7 +141,7 @@
         </Setter>
     </Style>
 
-    <!-- Style for Delete Button (Red Circular) -->
+
     <Style x:Key="DeleteButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>

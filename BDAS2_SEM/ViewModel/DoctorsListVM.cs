@@ -45,7 +45,6 @@ namespace BDAS2_SEM.ViewModel
             {
                 _searchText = value;
                 OnPropertyChanged();
-                // Викликаємо фільтрацію автоматично при зміні тексту
                 FilterDoctors();
             }
         }
@@ -92,7 +91,7 @@ namespace BDAS2_SEM.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка при завантаженні лікарів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error when uploading doctors: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -110,7 +109,7 @@ namespace BDAS2_SEM.ViewModel
                 var filteredDoctors = _allDoctors.Where(d =>
                     (d.FirstName != null && d.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                     (d.Surname != null && d.Surname.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
-                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) || // Конвертація до string
+                    (d.Phone.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)) || 
                     (d.Department != null && d.Department.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
@@ -145,17 +144,17 @@ namespace BDAS2_SEM.ViewModel
 
                         var zamestnanecNavsteva = new ZAMESTNANEC_NAVSTEVA
                         {
-                            ZamestnanecId = selectedDoctor.DoctorId, // Використовуємо DoctorId
+                            ZamestnanecId = selectedDoctor.DoctorId,
                             NavstevaId = newAppointmentId
                         };
 
                         await _zamestnanecNavstevaRepository.AddZamestnanecNavsteva(zamestnanecNavsteva);
 
-                        MessageBox.Show("Запис успішно створено!", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Record successfully created!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Помилка при створенні запису: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error creating a record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }

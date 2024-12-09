@@ -5,6 +5,7 @@ using System.Windows.Data;
 
 namespace BDAS2_SEM.Converters
 {
+    // Převádí hodnotu null na Visibility a podporuje inverzi.
     public class NullToVisibilityConverter : IValueConverter
     {
         public bool Invert { get; set; } = false;

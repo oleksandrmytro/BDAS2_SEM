@@ -5,6 +5,7 @@ using BDAS2_SEM.Repository.Interfaces; // Add this using directive
 using BDAS2_SEM.Services.Interfaces;
 using BDAS2_SEM.View;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -164,6 +165,12 @@ namespace BDAS2_SEM.ViewModel
                     var user = await _authenticationService.LoginAsync(Email, Heslo);
                     if (user != null)
                     {
+                        if (user.RoleId == 1)
+                        {
+                            ErrorMessage = "Your account has not been approved yet. Please wait for approval.";
+                            return;
+                        }
+
                         PACIENT pacient = await _authenticationService.GetPatientByUserId(user.Id);
                         ErrorMessage = "Login successful!";
 
@@ -181,6 +188,7 @@ namespace BDAS2_SEM.ViewModel
                                 {
                                     if (isSaved)
                                     {
+                                        pacient = await _authenticationService.GetPatientByUserId(user.Id);
                                         _windowService.OpenPatientWindow(pacient);
                                         CloseAuthWindow();
                                     }
@@ -195,14 +203,14 @@ namespace BDAS2_SEM.ViewModel
                                 _windowService.OpenPatientWindow(pacient);
                             }
                         }
-                        else // Handle other roles, such as employees
+                        else 
                         {
                             if (user.zamestnanecId.HasValue)
                             {
                                 var zamestnanec = await _zamestnanecRepository.GetZamestnanecById(user.zamestnanecId.Value);
                                 if (zamestnanec != null)
                                 {
-                                    if (zamestnanec.PoziceId == 1 || zamestnanec.PoziceId == 4) // Hlavní lékař or Lékař
+                                    if (zamestnanec.PoziceId == 1 || zamestnanec.PoziceId == 4) 
                                     {
                                         _windowService.OpenDoctorWindow(zamestnanec);
                                     }
@@ -220,8 +228,7 @@ namespace BDAS2_SEM.ViewModel
                             }
                             else
                             {
-                                // Handle users without ZamestnanecId if necessary
-                                ErrorMessage = "User is not associated with any employee record.";
+                                ErrorMessage = "User is not associated with any record.";
                             }
                         }
 
@@ -253,7 +260,6 @@ namespace BDAS2_SEM.ViewModel
 
         private bool IsValidEmail(string email)
         {
-            // You can enhance this with a more robust email validation
             return email.Contains("@");
         }
 
@@ -265,13 +271,11 @@ namespace BDAS2_SEM.ViewModel
             ErrorMessage = string.Empty;
         }
 
-        // Implementation of INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-            // Invoke RaiseCanExecuteChanged when properties change
             if (propertyName == nameof(Email) ||
                 propertyName == nameof(Heslo) ||
                 propertyName == nameof(ConfirmPassword) ||

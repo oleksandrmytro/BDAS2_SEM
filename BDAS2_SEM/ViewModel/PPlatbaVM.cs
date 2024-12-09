@@ -54,17 +54,14 @@ namespace BDAS2_SEM.ViewModel
             _platbaRepository = platbaRepository;
             _navstevaRepository = navstevaRepository;
 
-            // Ініціалізація команд
             PayIndividualPaymentCommand = new RelayCommand<PDiagnosesDetail>(async (diagnosis) => await ExecutePayIndividualPaymentAsync(diagnosis), CanExecutePayIndividualPayment);
             RefreshCommand = new AsyncRelayCommand(LoadDiagnosesAsync);
 
-            // Ініціалізація завантаження призначень
             LoadDiagnosesAsync();
         }
 
         private bool CanExecutePayIndividualPayment(PDiagnosesDetail diagnosis)
         {
-            // Команда доступна, якщо статус не "Оплачено" (припустимо, StatusIdStatus != 2)
             return diagnosis != null && diagnosis.StatusIdStatus != 2;
         }
 
@@ -73,7 +70,6 @@ namespace BDAS2_SEM.ViewModel
             if (diagnosis == null || diagnosis.StatusIdStatus == 2)
                 return;
 
-            // Відкриття вікна PaymentWindow
             var paymentWindow = new PaymentWindow(diagnosis.TotalCost);
             var paymentWindowVM = (PaymentWindowVM)paymentWindow.DataContext;
 
@@ -83,7 +79,6 @@ namespace BDAS2_SEM.ViewModel
             {
                 try
                 {
-                    // Залежно від обраного методу оплати, встановлюємо відповідні параметри
                     string typPlatby = paymentWindowVM.SelectedPaymentMethod;
                     long? cisloKarty = null;
                     decimal? prijato = null;
@@ -91,12 +86,10 @@ namespace BDAS2_SEM.ViewModel
 
                     if (typPlatby == "karta")
                     {
-                        // Логіка для оплати карткою
                         cisloKarty = long.Parse(paymentWindowVM.CardNumber);
                     }
                     else if (typPlatby == "hotovost")
                     {
-                        // Логіка для оплати готівкою
                         if (decimal.TryParse(paymentWindowVM.CashGiven, out decimal cashGiven))
                         {
                             prijato = cashGiven;
@@ -104,7 +97,6 @@ namespace BDAS2_SEM.ViewModel
                         }
                     }
 
-                    // Виклик методу ManagePaymentAsync для збереження платежу
                     int platbaId = await _platbaRepository.ManagePaymentAsync(
                         action: "INSERT",
                         idPlatba: null,
@@ -119,7 +111,6 @@ namespace BDAS2_SEM.ViewModel
 
                     if (platbaId > 0)
                     {
-                        // Оновлення статусу оплати в моделі
                         NAVSTEVA navsteva = await _navstevaRepository.GetNavstevaById(diagnosis.IdNavsteva);
                         navsteva.StatusId = 5;
                         await _navstevaRepository.UpdateNavsteva(navsteva);
@@ -127,22 +118,21 @@ namespace BDAS2_SEM.ViewModel
                         // Перерахунок загальної суми
                         TotalPayment = Diagnoses.Where(d => d.StatusIdStatus != 2).Sum(d => d.TotalCost);
 
-                        MessageBox.Show($"Оплата за діагноз '{diagnosis.DiagnosisName}' успішна!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Payment for a diagnosis '{diagnosis.DiagnosisName}' successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        MessageBox.Show($"Сталася помилка під час оплати діагнозу '{diagnosis.DiagnosisName}'. Спробуйте ще раз.",
-                                        "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"An error occurred when paying for a diagnosis '{diagnosis.DiagnosisName}'. Try again.",
+                                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Виникла помилка: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                // Користувач відмінив оплату
             }
         }
 
@@ -164,7 +154,6 @@ namespace BDAS2_SEM.ViewModel
                 Diagnoses.Add(diagnosis);
             }
 
-            // Обчислення загальної суми платежів для неоплачених діагнозів
             TotalPayment = Diagnoses.Where(d => d.StatusIdStatus != 2).Sum(d => d.TotalCost);
 
             OnPropertyChanged(nameof(Diagnoses));

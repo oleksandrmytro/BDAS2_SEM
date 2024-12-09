@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows;
 
 namespace BDAS2_SEM.Converters
 {
+    // Převádí hodnoty typu decimal? na řetězec a naopak.
     public class DecimalNullableConverter : IValueConverter
     {
+        // Převádí hodnotu typu decimal? na řetězec.
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value?.ToString();
+            return value?.ToString(); // Null vrací prázdný řetězec.
         }
 
+        // Převádí hodnotu z řetězce zpět na decimal?.
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (string.IsNullOrWhiteSpace(value?.ToString()))
@@ -24,7 +23,7 @@ namespace BDAS2_SEM.Converters
             if (decimal.TryParse(value.ToString(), out var result))
                 return result;
 
-            return DependencyProperty.UnsetValue;
+            return DependencyProperty.UnsetValue; // Vrátí neplatnou hodnotu, pokud převod selže.
         }
     }
 }

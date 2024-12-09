@@ -22,7 +22,7 @@ namespace BDAS2_SEM.ViewModel
         private NAVSTEVA _appointment;
         private Func<NAVSTEVA, Task> _callback;
         private int _doctorId;
-        private int _ordinaceId; // Додано поле для зберігання ordinaceId
+        private int _ordinaceId; 
 
         private DateTime? _selectedDate;
         public DateTime? SelectedDate
@@ -96,7 +96,6 @@ namespace BDAS2_SEM.ViewModel
             _callback = callback;
             _doctorId = doctorId;
 
-            // Отримуємо ordinaceId за допомогою _ordinaceZamestnanecRepository
             var ordinaceZamestnanec = await _ordinaceZamestnanecRepository.GetOrdinaceZamestnanecByZamestnanecId(_doctorId);
             if (ordinaceZamestnanec != null)
             {
@@ -104,7 +103,7 @@ namespace BDAS2_SEM.ViewModel
             }
             else
             {
-                MessageBox.Show("Не вдалося знайти ординатуру для даного лікаря.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("We could not find a residency for this doctor.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -112,7 +111,7 @@ namespace BDAS2_SEM.ViewModel
             SelectedTime = _appointment.Datum?.ToString("HH:mm");
             SelectedRoom = _appointment.MistnostId;
 
-            await InitializeAvailableRoomsAndTimesAsync(); // Отримуємо доступні кімнати та часи
+            await InitializeAvailableRoomsAndTimesAsync(); 
         }
 
         private async Task InitializeAvailableRoomsAndTimesAsync()
@@ -121,18 +120,16 @@ namespace BDAS2_SEM.ViewModel
             {
                 try
                 {
-                    // Отримуємо доступні кімнати та часи
                     var availableRoomsTimes = await _navstevaRepository.GetAvailableRoomsAndTimes(_ordinaceId, SelectedDate.Value);
 
                     if (availableRoomsTimes == null || !availableRoomsTimes.Any())
                     {
-                        MessageBox.Show("Немає доступних кімнат для вибраної дати.", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("No rooms available for the selected date.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         AvailableRooms.Clear();
                         AvailableTimes.Clear();
                         return;
                     }
 
-                    // Отримуємо список унікальних кімнат
                     var rooms = availableRoomsTimes.Select(rt => rt.Room).Distinct();
 
                     AvailableRooms.Clear();
@@ -143,7 +140,6 @@ namespace BDAS2_SEM.ViewModel
 
                     if (AvailableRooms.Any())
                     {
-                        // Якщо обрана кімната недоступна, встановлюємо першу доступну кімнату
                         if (SelectedRoom == null || !AvailableRooms.Contains(SelectedRoom.Value))
                         {
                             SelectedRoom = AvailableRooms.First();
@@ -154,11 +150,11 @@ namespace BDAS2_SEM.ViewModel
                         SelectedRoom = null;
                     }
 
-                    await UpdateAvailableTimesAsync(); // Оновлюємо доступні часи
+                    await UpdateAvailableTimesAsync(); 
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Помилка при отриманні доступних кімнат та часу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error when getting available rooms and times: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -178,7 +174,7 @@ namespace BDAS2_SEM.ViewModel
 
                     if (availableRoomsTimes == null || !availableRoomsTimes.Any())
                     {
-                        MessageBox.Show("Немає доступних часових слотів для вибраної дати та кімнати.", "Інформація", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("No available time slots for the selected date and room.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         AvailableTimes.Clear();
                         SelectedTime = null;
                         return;
@@ -204,7 +200,7 @@ namespace BDAS2_SEM.ViewModel
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Помилка при отриманні доступного часу: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error when getting available time: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -223,45 +219,43 @@ namespace BDAS2_SEM.ViewModel
 
                     try
                     {
-                        // Check if the time slot is available
                         var isAvailable = await _navstevaRepository.IsTimeSlotAvailable(_doctorId, newAppointmentDateTime, SelectedRoom.Value, _appointment.IdNavsteva);
 
                         if (isAvailable)
                         {
-                            // Get the Mistnost by room number
                             var mistnost = await _mistnostRepository.GetMistnostByNumber(SelectedRoom.Value);
 
                             if (mistnost != null)
                             {
                                 _appointment.Datum = newAppointmentDateTime;
-                                _appointment.MistnostId = mistnost.IdMistnost; // Assign the correct MistnostId
+                                _appointment.MistnostId = mistnost.IdMistnost; 
                                 await _callback(_appointment);
                                 CloseWindow();
                             }
                             else
                             {
-                                MessageBox.Show("Не вдалося знайти кімнату з вказаним номером.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("The room with the specified number could not be found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                         else
                         {
-                            MessageBox.Show("Обраний часовий слот вже зайнятий. Будь ласка, виберіть інший час.", "Часовий слот недоступний", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("The selected time slot is already taken. Please select another time.", "Clock slot inaccessible", MessageBoxButton.OK, MessageBoxImage.Warning);
                             await InitializeAvailableRoomsAndTimesAsync();
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Помилка при збереженні запису: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error saving a record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Неправильний формат часу. Будь ласка, виберіть коректний час.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("The time format is incorrect. Please select the correct time.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                MessageBox.Show("Будь ласка, виберіть дату, час та кімнату.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please select a date, time and room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

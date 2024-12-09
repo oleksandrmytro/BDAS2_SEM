@@ -1,5 +1,4 @@
-﻿// Converters/PacientIdToNameConverter.cs
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
 using BDAS2_SEM.Repository.Interfaces;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 
 namespace BDAS2_SEM.Converters
 {
+    // Převádí ID pacienta na jeho jméno nebo příjmení.
     public class PacientIdToNameConverter : IValueConverter
     {
         private static IPacientRepository _pacientRepository;
@@ -18,7 +18,7 @@ namespace BDAS2_SEM.Converters
         {
             if (_pacientRepository == null)
             {
-                // Ініціалізуйте репозиторій пацієнтів (замініть на свій спосіб ініціалізації)
+                // Inicializace repozitáře pacientů (přizpůsobte svému prostředí)
                 _pacientRepository = new PacientRepository("YourConnectionString");
             }
         }

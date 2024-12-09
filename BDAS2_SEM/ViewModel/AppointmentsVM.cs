@@ -19,7 +19,6 @@ namespace BDAS2_SEM.ViewModel
         private readonly IWindowService _windowService;
         private ZAMESTNANEC _doctor;
 
-        // Constructor
         public AppointmentsVM(IServiceProvider serviceProvider, IWindowService windowService)
         {
             _navstevaRepository = serviceProvider.GetRequiredService<INavstevaRepository>();
@@ -202,7 +201,7 @@ namespace BDAS2_SEM.ViewModel
                         await _navstevaRepository.UpdateNavsteva(updatedAppointment);
                         await LoadAppointmentsAsync();
                     }
-                }, _doctor.IdZamestnanec); // Передача ID лікаря
+                }, _doctor.IdZamestnanec); 
             }
         }
 

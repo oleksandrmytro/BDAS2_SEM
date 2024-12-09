@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace BDAS2_SEM.Repository
 {
+
+    /// <summary>
+    /// Třída `AdresaRepository` implementuje přístup k tabulce ADRESA v databázi Oracle.
+    /// Umožňuje CRUD operace, jako je přidání, aktualizace, načtení a odstranění adres.
+    /// </summary>
     public class AdresaRepository : IAdresaRepository
     {
         private readonly string connection;
@@ -20,6 +25,10 @@ namespace BDAS2_SEM.Repository
             this.connection = connection;
         }
 
+
+        /// <summary>
+        /// Přidává novou adresu do databáze pomocí uložené procedury `manage_adresa`.
+        /// </summary>
         public async Task<int> AddAdresa(ADRESA adresa)
         {
             using (var db = new OracleConnection(this.connection))
@@ -57,6 +66,10 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+
+        /// <summary>
+        /// Aktualizuje existující adresu v databázi pomocí uložené procedury `manage_adresa`.
+        /// </summary>
         public async Task UpdateAdresa(int id, ADRESA adresa)
         {
             using (var db = new OracleConnection(this.connection))
@@ -74,6 +87,10 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+
+        /// <summary>
+        /// Načítá adresu podle ID z databáze.
+        /// </summary>
         public async Task<ADRESA> GetAdresaById(int id)
         {
             using (var db = new OracleConnection(this.connection))
@@ -92,6 +109,10 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+
+        /// <summary>
+        /// Načítá všechny adresy z databáze.
+        /// </summary>
         public async Task<IEnumerable<ADRESA>> GetAllAddresses()
         {
             using (var db = new OracleConnection(this.connection))
@@ -109,6 +130,10 @@ namespace BDAS2_SEM.Repository
             }
         }
 
+        
+        /// <summary>
+        /// Odstraňuje adresu podle ID z databáze.
+        /// </summary>
         public async Task DeleteAdresa(int id)
         {
             using (var db = new OracleConnection(this.connection))

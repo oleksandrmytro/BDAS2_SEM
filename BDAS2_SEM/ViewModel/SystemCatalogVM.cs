@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows; // Для MessageBox
+using System.Windows; 
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 
@@ -41,8 +41,6 @@ namespace BDAS2_SEM.ViewModel
         private ObservableCollection<SYSTEM_CATALOG> _allEntries;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        // Конструктор з ін'єкцією залежностей
         public SystemCatalogVM(ISystemCatalogRepository repository)
         {
             _repository = repository;
@@ -50,8 +48,6 @@ namespace BDAS2_SEM.ViewModel
             _allEntries = new ObservableCollection<SYSTEM_CATALOG>();
             LoadDataAsync();
         }
-
-        // Асинхронний метод для завантаження даних
         private async void LoadDataAsync()
         {
             try
@@ -64,17 +60,14 @@ namespace BDAS2_SEM.ViewModel
                     _allEntries.Add(entry);
                 }
 
-                // Ініціалізуємо відображувану колекцію
                 FilterCatalogEntries();
             }
             catch (Exception ex)
             {
-                // Обробка виключень (можна замінити на відображення повідомлення користувачу)
-                MessageBox.Show($"Помилка при завантаженні даних: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error loading data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Метод фільтрації даних за запитом пошуку
         private void FilterCatalogEntries()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -95,8 +88,6 @@ namespace BDAS2_SEM.ViewModel
                 SystemCatalog = filtered;
             }
         }
-
-        // Метод виклику події зміни властивості
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

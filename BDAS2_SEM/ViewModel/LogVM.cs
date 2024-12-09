@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows; // Для MessageBox
+using System.Windows; 
 using BDAS2_SEM.Model;
 using BDAS2_SEM.Repository.Interfaces;
 
@@ -42,7 +42,6 @@ namespace BDAS2_SEM.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // Конструктор з ін'єкцією залежностей
         public LogVM(ILogRepository repository)
         {
             _repository = repository;
@@ -51,7 +50,6 @@ namespace BDAS2_SEM.ViewModel
             LoadDataAsync();
         }
 
-        // Асинхронний метод для завантаження даних
         private async void LoadDataAsync()
         {
             try
@@ -63,18 +61,14 @@ namespace BDAS2_SEM.ViewModel
                 {
                     _allLogs.Add(entry);
                 }
-
-                // Ініціалізуємо відображувану колекцію
                 FilterLogs();
             }
             catch (Exception ex)
             {
-                // Обробка виключень
-                MessageBox.Show($"Помилка при завантаженні логів: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error downloading logs: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Метод фільтрації даних за запитом пошуку
         private void FilterLogs()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -96,7 +90,6 @@ namespace BDAS2_SEM.ViewModel
             }
         }
 
-        // Метод виклику події зміни властивості
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
